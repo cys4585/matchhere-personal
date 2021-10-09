@@ -1,15 +1,11 @@
 package com.ssafy.match.member.dto;
 
-import com.ssafy.match.file.entity.DBFile;
-import com.ssafy.match.group.dto.club.response.ClubInfoResponseDto;
-import com.ssafy.match.group.dto.project.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.dto.study.response.StudyInfoResponseDto;
 import com.ssafy.match.group.entity.club.Club;
 import com.ssafy.match.group.entity.project.Project;
 import com.ssafy.match.group.entity.study.Study;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.member.entity.Position;
+import com.ssafy.match.member.entity.DetailPosition;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +63,7 @@ public class MemberInfoDto {
     @ApiModelProperty(name = "snsList", example = "[{\"id\":1, \"snsName\":\"github\", \"snsAccount\":\"gitid\"},{\"id\":2, \"snsName\":\"twitter\", \"snsAccount\":\"twitterid\"}]")
     private List<MemberSns> snsList = new ArrayList<>();
     @ApiModelProperty(name = "dpositionList", example = "[{\"id\":1, \"name\":\"frontend\"},{\"id\":2, \"name\":\"devops\"}]")
-    private List<Position> dpositionList = new ArrayList<>();
+    private List<DetailPosition> dpositionList = new ArrayList<>();
 
 //    public MemberInfoDto(Member member) {
 //        email = member.getEmail();

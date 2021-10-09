@@ -1,4 +1,4 @@
-package com.ssafy.match.db.entity;
+package com.ssafy.match.member.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -26,22 +26,25 @@ public class Career {
     private int id;
 
     private String company;
-    private String department;
+    private String role;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
     private String description;
+    private Boolean is_incumbent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Career(String company, String department, LocalDateTime start_date,
-        LocalDateTime end_date, String description, Member member) {
+    public Career(String company, String role, LocalDateTime start_date,
+        LocalDateTime end_date, String description, Boolean is_incumbent,
+        Member member) {
         this.company = company;
-        this.department = department;
+        this.role = role;
         this.start_date = start_date;
         this.end_date = end_date;
         this.description = description;
+        this.is_incumbent = is_incumbent;
         this.member = member;
     }
 }

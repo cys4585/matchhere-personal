@@ -1,5 +1,6 @@
-package com.ssafy.match.db.entity;
+package com.ssafy.match.member.entity;
 
+import com.ssafy.match.db.entity.State;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,42 +31,23 @@ public class Education {
     private String major;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
-    private float my_credit;
-    private float full_credit;
+    private State state;
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public String getInstitution() {
-        return institution;
-    }
-
-    public String getDegree() {
-        return degree;
-    }
-
-    public String getMajor() {
-        return major;
-    }
-
-    public LocalDateTime getStart_date() {
-        return start_date;
-    }
-
-    public LocalDateTime getEnd_date() {
-        return end_date;
-    }
-
-    public float getMy_credit() {
-        return my_credit;
-    }
-
-    public float getFull_credit() {
-        return full_credit;
-    }
-
-    public Member getMember() {
-        return member;
+    public Education(String institution, String degree, String major,
+        LocalDateTime start_date, LocalDateTime end_date, State state, String description,
+        Member member) {
+        this.institution = institution;
+        this.degree = degree;
+        this.major = major;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.state = state;
+        this.description = description;
+        this.member = member;
     }
 }

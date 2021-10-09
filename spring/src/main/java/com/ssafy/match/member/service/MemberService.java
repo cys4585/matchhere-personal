@@ -1,29 +1,23 @@
 package com.ssafy.match.member.service;
 
-import com.ssafy.match.group.dto.club.response.ClubInfoResponseDto;
-import com.ssafy.match.group.dto.project.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.dto.study.response.StudyInfoResponseDto;
 import com.ssafy.match.group.entity.club.Club;
 import com.ssafy.match.group.entity.study.Study;
 import com.ssafy.match.group.repository.club.MemberClubRepository;
 import com.ssafy.match.group.repository.study.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.db.entity.*;
-import com.ssafy.match.db.entity.embedded.CompositeMemberTechstack;
+import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.db.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.entity.project.Project;
 import com.ssafy.match.group.repository.project.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
-import com.ssafy.match.member.repository.MemberBeginnerTechstackRepository;
-import com.ssafy.match.member.repository.MemberExperiencedTechstackRepository;
+import com.ssafy.match.member.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -46,7 +40,7 @@ public class MemberService {
     private final MemberClubRepository memberClubRepository;
     private final MemberProjectRepository memberProjectRepository;
     private final MemberSnsRepository memberSnsRepository;
-    private final PositionRepository positionRepository;
+    private final DetailPositionRepository detailPositionRepository;
     private final TechstackRepository techstackRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberStudyRepository memberStudyRepository;
@@ -112,7 +106,7 @@ public class MemberService {
         List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
         List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<Position> dpositionList = positionRepository.findAllByMember(member);
+        List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
         DBFile cover_pic = member.getCover_pic();
         DBFile portpolio = member.getPortfolio();
         memberInfoDto.setCover_pic((cover_pic == null) ? null : cover_pic.getDownload_uri());
@@ -152,7 +146,7 @@ public class MemberService {
         List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
         List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<Position> dpositionList = positionRepository.findAllByMember(member);
+        List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
 //        memberInfoDto.setCover_pic(member.getCover_pic());
 //        memberInfoDto.setPortfolio(member.getPortfolio());
         if (member.getCover_pic() != null) {
@@ -280,13 +274,13 @@ public class MemberService {
     public void addDposition(Member member, List<String> dpositionAddList) {
         if (dpositionAddList != null) {
             for (String dposition : dpositionAddList) {
-                if (!positionRepository.existsByMemberAndName(member, dposition)) {
-                    Position innerDposition = Position
+                if (!detailPositionRepository.existsByMemberAndName(member, dposition)) {
+                    DetailPosition innerDposition = DetailPosition
                             .builder()
                             .member(member)
                             .name(dposition)
                             .build();
-                    positionRepository.save(innerDposition);
+                    detailPositionRepository.save(innerDposition);
                 }
             }
         }
@@ -296,8 +290,8 @@ public class MemberService {
     public void delDposition(List<Integer> dpositionDelList) {
         if (dpositionDelList != null) {
             for (Integer dposition : dpositionDelList) {
-                if (positionRepository.existsById(dposition)) {
-                    positionRepository.delete(positionRepository.getById(dposition));
+                if (detailPositionRepository.existsById(dposition)) {
+                    detailPositionRepository.delete(detailPositionRepository.getById(dposition));
                 }
             }
         }

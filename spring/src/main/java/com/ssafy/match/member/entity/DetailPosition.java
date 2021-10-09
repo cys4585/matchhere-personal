@@ -14,9 +14,9 @@ import lombok.*;
 
 @Getter
 @Setter
-@Entity(name = "matching.position")
+@Entity(name = "matching.detail_position")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Position {
+public class DetailPosition {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
@@ -29,7 +29,7 @@ public class Position {
     private String name;
 
     @Builder
-    public Position(Member member, String name) {
+    public DetailPosition(Member member, String name) {
         this.member = member;
         this.name = name;
     }

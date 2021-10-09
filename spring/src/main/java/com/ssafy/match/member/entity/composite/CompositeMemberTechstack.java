@@ -1,4 +1,4 @@
-package com.ssafy.match.db.entity.embedded;
+package com.ssafy.match.member.entity.composite;
 
 import com.ssafy.match.db.entity.Techstack;
 import com.ssafy.match.member.entity.Member;

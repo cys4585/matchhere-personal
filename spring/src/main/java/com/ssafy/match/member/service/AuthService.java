@@ -2,17 +2,14 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.db.entity.*;
-import com.ssafy.match.db.entity.embedded.CompositeMemberTechstack;
+import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.db.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.MemberBeginnerTechstack;
-import com.ssafy.match.member.entity.MemberExperiencedTechstack;
-import com.ssafy.match.member.entity.Position;
-import com.ssafy.match.member.repository.MemberBeginnerTechstackRepository;
-import com.ssafy.match.member.repository.MemberExperiencedTechstackRepository;
+import com.ssafy.match.member.entity.DetailPosition;
+import com.ssafy.match.member.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +30,7 @@ public class AuthService {
     private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
     private final TechstackRepository techstackRepository;
     private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
-    private final PositionRepository positionRepository;
+    private final DetailPositionRepository detailPositionRepository;
     private final DBFileRepository dbFileRepository;
 
     @Transactional(readOnly = true)
@@ -93,12 +90,12 @@ public class AuthService {
         }
         if (memberRequestDto.getDpositionList() != null) {
             for (String dposition : memberRequestDto.getDpositionList()) {
-                Position innerDposition = Position
+                DetailPosition innerDposition = DetailPosition
                         .builder()
                         .member(ret)
                         .name(dposition)
                         .build();
-                positionRepository.save(innerDposition);
+                detailPositionRepository.save(innerDposition);
             }
         }
 //        member.setCover_pic(coverPic);
