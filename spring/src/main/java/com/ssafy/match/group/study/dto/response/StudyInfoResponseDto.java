@@ -95,7 +95,7 @@ public class StudyInfoResponseDto {
                 .city(study.getCity().name())
                 .status(study.getStatus().name())
                 .club((study.getClub() == null) ? null : new ClubSimpleInfoResponseDto(study.getClub()))
-                .cover_pic((study.getDbFile() == null) ? null : study.getDbFile().getDownload_uri())
+//                .cover_pic((study.getDbFile() == null) ? null : study.getDbFile().getDownload_uri())
                 .modifiedDate(study.getModifyDate())
                 .bio(study.getBio())
                 .build();

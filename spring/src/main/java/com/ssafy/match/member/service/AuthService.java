@@ -27,9 +27,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
+//    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
+//    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final TechstackRepository techstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final DetailPositionRepository detailPositionRepository;
     private final DBFileRepository dbFileRepository;
 
@@ -68,9 +68,9 @@ public class AuthService {
                         .member(ret)
                         .techstack(techstackExp)
                         .build();
-                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
-
-                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
+//                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
+//
+//                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
                 //            MemberExperiencedTechstack memberExperiencedTechstack = memberRequestDto.toMemberExperiencedTechstack(member, techstack);
                 //            memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
             }
@@ -84,8 +84,8 @@ public class AuthService {
                         .member(ret)
                         .techstack(techstackBegin)
                         .build();
-                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
-                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
+//                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
+//                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
             }
         }
         if (memberRequestDto.getDpositionList() != null) {

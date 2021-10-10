@@ -29,12 +29,12 @@ import com.ssafy.match.group.study.entity.CompositeStudyTechstack;
 import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
-import com.ssafy.match.group.study.entity.StudyTechstack;
+import com.ssafy.match.group.study.entity.StudySubject;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.group.study.repository.StudyApplicationFormRepository;
 import com.ssafy.match.group.study.repository.StudyRepository;
-import com.ssafy.match.group.study.repository.StudyTechstackRepository;
+import com.ssafy.match.group.study.repository.StudySubjectRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,10 +61,8 @@ public class StudyServiceImpl implements StudyService {
     private final MemberClubRepository memberClubRepository;
     private final StudyApplicationFormRepository studyApplicationFormRepository;
     private final TechstackRepository techstackRepository;
-    private final StudyTechstackRepository studyTechstackRepository;
+    private final StudySubjectRepository studySubjectRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final MemberSnsRepository memberSnsRepository;
     private final StudyBoardRepository studyBoardRepository;
 
@@ -131,10 +129,10 @@ public class StudyServiceImpl implements StudyService {
             mem.deActivation();
         }
 
-        List<StudyTechstack> sts = studyTechstackRepository.findStudyTechstackByStudy(study);
-        for (StudyTechstack st: sts) {
-            studyTechstackRepository.delete(st);
-        }
+//        List<StudySubject> sts = studySubjectRepository.findStudyTechstackByStudy(study);
+//        for (StudySubject st: sts) {
+//            studySubjectRepository.delete(st);
+//        }
 
         study.setIsActive(false);
 
@@ -146,7 +144,7 @@ public class StudyServiceImpl implements StudyService {
                 .map(StudyInfoResponseDto::of);
         for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
             studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
-            studyInfoResponseDto.setTechList(studyTechstackRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
+//            studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
         }
         return studyInfoResponseDtos;
     }
@@ -161,7 +159,7 @@ public class StudyServiceImpl implements StudyService {
         }
         StudyInfoResponseDto studyInfoResponseDto = studyRepository.findById(studyId).map(StudyInfoResponseDto::of).orElseThrow(() -> new NullPointerException("스터디가 없습니다."));
         studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
-        studyInfoResponseDto.setTechList(studyTechstackRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
+//        studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
         return studyInfoResponseDto;
     }
 
@@ -173,7 +171,7 @@ public class StudyServiceImpl implements StudyService {
         }
 
         StudyInfoForUpdateResponseDto dto = new StudyInfoForUpdateResponseDto(study);
-        dto.setStudyTechstack(studyTechstackName(study));
+//        dto.setStudyTechstack(studyTechstackName(study));
         dto.setClubList(makeClubDtos(memberClubRepository.findClubByMember(study.getMember())));
         dto.setMemberSimpleInfoResponseDtos(makeMemberDtos(findMemberInStudy(study)));
         dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
@@ -186,10 +184,10 @@ public class StudyServiceImpl implements StudyService {
         return techstackRepository.findAllName();
     }
 
-    // 현재 스터디 기술 스택의 이름 리스트
-    public List<String> studyTechstackName(Study study) {
-        return studyTechstackRepository.findByStudyTechstackName(study);
-    }
+//    // 현재 스터디 기술 스택의 이름 리스트
+//    public List<String> studyTechstackName(Study study) {
+//        return studySubjectRepository.findByStudyTechstackName(study);
+//    }
 
     public Techstack findTechstack(String techName) {
         return techstackRepository.findByName(techName)
@@ -203,7 +201,7 @@ public class StudyServiceImpl implements StudyService {
             CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
                 study);
 
-            studyTechstackRepository.save(new StudyTechstack(compositeStudyTechstack));
+//            studySubjectRepository.save(new StudySubject(compositeStudyTechstack));
         }
     }
 
@@ -214,11 +212,11 @@ public class StudyServiceImpl implements StudyService {
             CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
                 study);
 
-            StudyTechstack studyTechstack = studyTechstackRepository
+            StudySubject studySubject = studySubjectRepository
                 .findById(compositeStudyTechstack)
                 .orElseThrow(() -> new NullPointerException("제거할 기술 스택이 존재하지 않습니다."));
 
-            studyTechstackRepository.delete(studyTechstack);
+            studySubjectRepository.delete(studySubject);
         }
     }
 
@@ -368,8 +366,8 @@ public class StudyServiceImpl implements StudyService {
 
         InfoForApplyStudyFormResponseDto dto = InfoForApplyStudyFormResponseDto.builder()
             .nickname(member.getNickname())
-            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
+//            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
+//            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
             .build();
 
         Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
@@ -442,10 +440,10 @@ public class StudyServiceImpl implements StudyService {
         for (StudyApplicationForm form : forms) {
             studyFormInfoResponseDtos.add(StudyFormInfoResponseDto.builder()
                 .form(form)
-                .strong(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
-                .knowledgeable(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//                .strong(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//                .knowledgeable(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
                 .build());
         }
 
@@ -468,10 +466,10 @@ public class StudyServiceImpl implements StudyService {
         for (StudyApplicationForm form : forms) {
             studyFormInfoResponseDtos.add(StudyFormInfoResponseDto.builder()
                 .form(form)
-                .strong(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
-                .knowledgeable(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//                .strong(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//                .knowledgeable(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
                 .build());
         }
 
@@ -488,10 +486,10 @@ public class StudyServiceImpl implements StudyService {
 
         return StudyFormInfoResponseDto.builder()
             .form(form)
-            .strong(memberExperiencedTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
-            .knowledgeable(memberBeginnerTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//            .strong(memberExperiencedTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
+//            .knowledgeable(memberBeginnerTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberStudy().getMember()))
             .build();
     }
 

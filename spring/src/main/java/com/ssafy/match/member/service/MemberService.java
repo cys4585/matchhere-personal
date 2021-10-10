@@ -35,8 +35,6 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final MemberClubRepository memberClubRepository;
     private final MemberProjectRepository memberProjectRepository;
     private final MemberSnsRepository memberSnsRepository;
@@ -103,8 +101,8 @@ public class MemberService {
 //        for (Study study : memberStudyRepository.studyInMember(member)) {
 //            myStudyList.add(StudyInfoResponseDto.of(study));
 //        }
-        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
-        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
+//        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
+//        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
         DBFile cover_pic = member.getCover_pic();
@@ -114,8 +112,8 @@ public class MemberService {
         memberInfoDto.setMyStudyList(myStudyList);
         memberInfoDto.setMyProjectList(myProjectList);
         memberInfoDto.setMyClubList(myClubList);
-        memberInfoDto.setExpTechList(expTechList);
-        memberInfoDto.setBeginTechList(begTechList);
+//        memberInfoDto.setExpTechList(expTechList);
+//        memberInfoDto.setBeginTechList(begTechList);
         memberInfoDto.setSnsList(snsList);
         memberInfoDto.setDpositionList(dpositionList);
         return memberInfoDto;
@@ -143,8 +141,8 @@ public class MemberService {
 //        for (Study study : memberStudyRepository.studyInMember(member)) {
 //            myStudyList.add(StudyInfoResponseDto.of(study));
 //        }
-        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
-        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
+//        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
+//        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
 //        memberInfoDto.setCover_pic(member.getCover_pic());
@@ -160,8 +158,8 @@ public class MemberService {
         memberInfoDto.setMyStudyList(myStudyList);
         memberInfoDto.setMyProjectList(myProjectList);
         memberInfoDto.setMyClubList(myClubList);
-        memberInfoDto.setExpTechList(expTechList);
-        memberInfoDto.setBeginTechList(begTechList);
+//        memberInfoDto.setExpTechList(expTechList);
+//        memberInfoDto.setBeginTechList(begTechList);
         memberInfoDto.setSnsList(snsList);
         memberInfoDto.setDpositionList(dpositionList);
         return memberInfoDto;
@@ -307,8 +305,8 @@ public class MemberService {
                         .member(member)
                         .techstack(techstackExp)
                         .build();
-                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
-                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
+//                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
+//                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
             }
         }
     }
@@ -318,10 +316,10 @@ public class MemberService {
         if (expDelTechList != null) {
             for (String techstack : expDelTechList) {
                 Techstack techstackExp = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                Optional<MemberExperiencedTechstack> met = memberExperiencedTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackExp);
-                if (met.isPresent()){
-                    memberExperiencedTechstackRepository.delete(met.get());
-                }
+//                Optional<MemberExperiencedTechstack> met = memberExperiencedTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackExp);
+//                if (met.isPresent()){
+//                    memberExperiencedTechstackRepository.delete(met.get());
+//                }
             }
         }
     }
@@ -336,8 +334,8 @@ public class MemberService {
                         .member(member)
                         .techstack(techstackBeg)
                         .build();
-                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBeg).build();
-                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
+//                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBeg).build();
+//                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
             }
         }
     }
@@ -347,10 +345,10 @@ public class MemberService {
         if (begDelTechList != null) {
             for (String techstack : begDelTechList) {
                 Techstack techstackBeg = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                Optional<MemberBeginnerTechstack> met = memberBeginnerTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackBeg);
-                if (met.isPresent()){
-                    memberBeginnerTechstackRepository.delete(met.get());
-                }
+//                Optional<MemberBeginnerTechstack> met = memberBeginnerTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackBeg);
+//                if (met.isPresent()){
+//                    memberBeginnerTechstackRepository.delete(met.get());
+//                }
             }
         }
     }

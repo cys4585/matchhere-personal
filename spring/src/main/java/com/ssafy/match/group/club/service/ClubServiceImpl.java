@@ -47,8 +47,6 @@ public class ClubServiceImpl implements ClubService {
     private final MemberClubRepository memberClubRepository;
     private final ClubApplicationFormRepository clubApplicationFormRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final MemberSnsRepository memberSnsRepository;
     private final ClubBoardRepository clubBoardRepository;
 
@@ -234,8 +232,8 @@ public class ClubServiceImpl implements ClubService {
         InfoForApplyClubFormResponseDto dto = InfoForApplyClubFormResponseDto.builder()
             .nickname(member.getNickname())
             .city(member.getCity())
-            .experiencedTechstack(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-            .beginnerTechstack(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
+//            .experiencedTechstack(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
+//            .beginnerTechstack(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
             .build();
 
         Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
@@ -295,10 +293,10 @@ public class ClubServiceImpl implements ClubService {
         for (ClubApplicationForm form : forms) {
             clubFormInfoResponseDtos.add(ClubFormInfoResponseDto.builder()
                 .form(form)
-                .experiencedTechstack(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-                .beginnerTechstack(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//                .experiencedTechstack(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//                .beginnerTechstack(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
                 .build());
 
         }
@@ -322,10 +320,10 @@ public class ClubServiceImpl implements ClubService {
         for (ClubApplicationForm form : forms) {
             clubFormInfoResponseDtos.add(ClubFormInfoResponseDto.builder()
                 .form(form)
-                .experiencedTechstack(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-                .beginnerTechstack(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//                .experiencedTechstack(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//                .beginnerTechstack(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
                 .build());
         }
 
@@ -342,10 +340,10 @@ public class ClubServiceImpl implements ClubService {
 
         return ClubFormInfoResponseDto.builder()
             .form(form)
-            .experiencedTechstack(memberExperiencedTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-            .beginnerTechstack(memberBeginnerTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//            .experiencedTechstack(memberExperiencedTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
+//            .beginnerTechstack(memberBeginnerTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
             .build();
     }
 

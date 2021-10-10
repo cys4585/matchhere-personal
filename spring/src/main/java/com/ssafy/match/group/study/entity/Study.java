@@ -69,7 +69,7 @@ public class Study {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cover_pic")
-    private DBFile dbFile;
+    private DBFile coverPic;
 
     public void addMember(){
         this.memberCount++;
@@ -90,11 +90,11 @@ public class Study {
         this.club = club;
     }
 
-    public void setDBFile(DBFile dbFile){
-        if(dbFile == null) {
-            this.dbFile = null;
+    public void setDBFile(DBFile coverPic){
+        if(coverPic == null) {
+            this.coverPic = null;
         }
-        this.dbFile = dbFile;
+        this.coverPic = coverPic;
     }
 
     public void setMaxCount(int num) throws Exception {

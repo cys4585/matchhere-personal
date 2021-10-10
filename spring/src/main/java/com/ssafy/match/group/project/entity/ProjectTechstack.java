@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.entity;
 
+import com.ssafy.match.db.entity.Level;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import lombok.AccessLevel;
@@ -15,10 +16,12 @@ public class ProjectTechstack {
     @EmbeddedId
     private CompositeProjectTechstack compositeProjectTechstack;
 
+    private Level level;
+
     @Builder
     public ProjectTechstack(
-        CompositeProjectTechstack compositeProjectTechstack) {
+        CompositeProjectTechstack compositeProjectTechstack, Level level) {
         this.compositeProjectTechstack = compositeProjectTechstack;
-
+        this.level = level;
     }
 }

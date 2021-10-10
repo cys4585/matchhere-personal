@@ -109,7 +109,7 @@ public class StudyInfoForUpdateResponseDto {
         this.city = study.getCity().name();
         this.status = study.getStatus().name();
         setClub(study.getClub());
-        setData(study.getDbFile());
+//        setData(study.getDbFile());
         this.modifyDate = study.getModifyDate();
         this.bio = study.getBio();
     }

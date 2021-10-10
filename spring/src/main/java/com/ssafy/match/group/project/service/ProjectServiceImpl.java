@@ -61,8 +61,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final TechstackRepository techstackRepository;
     private final ProjectTechstackRepository projectTechstackRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final MemberSnsRepository memberSnsRepository;
 //    private final ProjectBoardRepository projectBoardRepository;
 
@@ -234,7 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
             CompositeProjectTechstack compositeProjectTechstack = new CompositeProjectTechstack(
                 techstack, project);
 
-            projectTechstackRepository.save(new ProjectTechstack(compositeProjectTechstack));
+//            projectTechstackRepository.save(new ProjectTechstack(compositeProjectTechstack));
 
         }
     }
@@ -454,8 +452,8 @@ public class ProjectServiceImpl implements ProjectService {
         InfoForApplyProjectFormResponseDto dto = InfoForApplyProjectFormResponseDto.builder()
             .nickname(member.getNickname())
             .position(member.getPosition()) // 역할도 받아와야할수도
-            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
+//            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
+//            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
             .build();
 
         Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
@@ -515,10 +513,10 @@ public class ProjectServiceImpl implements ProjectService {
         for (ProjectApplicationForm form: forms) {
             projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
                 .form(form)
-                .strong(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .knowledgeable(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//                .strong(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//                .knowledgeable(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
                 .build());
         }
 
@@ -539,10 +537,10 @@ public class ProjectServiceImpl implements ProjectService {
         for (ProjectApplicationForm form: forms) {
             projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
                 .form(form)
-                .strong(memberExperiencedTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .knowledgeable(memberBeginnerTechstackRepository
-                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//                .strong(memberExperiencedTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//                .knowledgeable(memberBeginnerTechstackRepository
+//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
                 .build());
         }
 
@@ -558,10 +556,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         return ProjectFormInfoResponseDto.builder()
             .form(form)
-            .strong(memberExperiencedTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-            .knowledgeable(memberBeginnerTechstackRepository
-                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//            .strong(memberExperiencedTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
+//            .knowledgeable(memberBeginnerTechstackRepository
+//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
             .build();
     }
 
