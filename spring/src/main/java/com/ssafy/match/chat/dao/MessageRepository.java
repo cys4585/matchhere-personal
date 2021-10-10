@@ -2,7 +2,6 @@ package com.ssafy.match.chat.dao;
 
 import com.ssafy.match.chat.config.TuningValuesConfig;
 import com.ssafy.match.chat.dto.ChatMessage;
-import com.ssafy.match.db.entity.Article;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

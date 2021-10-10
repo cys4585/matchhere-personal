@@ -1,7 +1,7 @@
 package com.ssafy.match.group.clubboard.board.service;
 
-import com.ssafy.match.group.entity.club.Club;
-import com.ssafy.match.group.repository.club.ClubRepository;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.clubboard.board.dto.ClubBoardCreateRequestDto;
 import com.ssafy.match.group.clubboard.board.dto.ClubBoardInfoDto;
 import com.ssafy.match.group.clubboard.board.dto.ClubBoardUpdateDto;

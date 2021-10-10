@@ -1,7 +1,7 @@
 package com.ssafy.match.group.studyboard.board.service;
 
-import com.ssafy.match.group.entity.study.Study;
-import com.ssafy.match.group.repository.study.StudyRepository;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.repository.StudyRepository;
 import com.ssafy.match.group.studyboard.board.dto.StudyBoardCreateRequestDto;
 import com.ssafy.match.group.studyboard.board.dto.StudyBoardInfoDto;
 import com.ssafy.match.group.studyboard.board.dto.StudyBoardUpdateDto;

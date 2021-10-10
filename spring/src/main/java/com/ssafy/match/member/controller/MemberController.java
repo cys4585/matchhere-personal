@@ -18,8 +18,6 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
 
-//    @GetMapping("")
-
     @PostMapping("/check/password")
     @ApiOperation(value = "비밀번호 체크")
     @ApiResponses({

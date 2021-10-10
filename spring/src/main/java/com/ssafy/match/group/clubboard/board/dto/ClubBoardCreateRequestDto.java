@@ -1,7 +1,7 @@
 package com.ssafy.match.group.clubboard.board.dto;
 
 
-import com.ssafy.match.group.entity.club.Club;
+import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;

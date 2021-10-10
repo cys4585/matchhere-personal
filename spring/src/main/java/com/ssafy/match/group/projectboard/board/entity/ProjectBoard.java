@@ -1,7 +1,7 @@
 package com.ssafy.match.group.projectboard.board.entity;
 
 
-import com.ssafy.match.group.entity.project.Project;
+import com.ssafy.match.group.project.entity.Project;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

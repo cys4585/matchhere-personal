@@ -1,8 +1,7 @@
 package com.ssafy.match.group.studyboard.board.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ssafy.match.group.entity.study.Study;
+import com.ssafy.match.group.study.entity.Study;
 import lombok.*;
 
 import javax.persistence.*;

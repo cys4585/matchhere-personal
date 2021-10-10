@@ -2,7 +2,7 @@ package com.ssafy.match.group.projectboard.board.dto;
 
 
 import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
-import com.ssafy.match.group.entity.project.Project;
+import com.ssafy.match.group.project.entity.Project;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import javax.validation.constraints.NotEmpty;
