@@ -1,6 +1,6 @@
 package com.ssafy.match.group.study.repository;
 
-import com.ssafy.match.db.entity.Status;
+import com.ssafy.match.common.entity.Status;
 import com.ssafy.match.group.study.entity.Study;
 import java.util.List;
 

@@ -1,12 +1,11 @@
 package com.ssafy.match.member.dto;
 
-import com.ssafy.match.db.entity.Authority;
+import com.ssafy.match.common.entity.Authority;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;

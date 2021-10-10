@@ -1,6 +1,6 @@
-package com.ssafy.match.db.repository;
+package com.ssafy.match.common.repository;
 
-import com.ssafy.match.db.entity.RefreshToken;
+import com.ssafy.match.common.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

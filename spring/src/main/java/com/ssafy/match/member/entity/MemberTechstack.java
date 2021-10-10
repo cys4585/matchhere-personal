@@ -1,6 +1,6 @@
 package com.ssafy.match.member.entity;
 
-import com.ssafy.match.db.entity.Level;
+import com.ssafy.match.common.entity.Level;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

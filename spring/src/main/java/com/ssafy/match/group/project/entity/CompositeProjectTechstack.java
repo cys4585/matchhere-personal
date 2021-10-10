@@ -1,6 +1,6 @@
 package com.ssafy.match.group.project.entity;
 
-import com.ssafy.match.db.entity.Techstack;
+import com.ssafy.match.common.entity.Techstack;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;

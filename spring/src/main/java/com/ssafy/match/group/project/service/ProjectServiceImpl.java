@@ -1,15 +1,15 @@
 package com.ssafy.match.group.project.service;
 
-import com.ssafy.match.db.entity.City;
+import com.ssafy.match.common.entity.City;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.db.entity.Status;
-import com.ssafy.match.db.entity.Techstack;
+import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberSnsRepository;
-import com.ssafy.match.db.repository.TechstackRepository;
+import com.ssafy.match.common.repository.TechstackRepository;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;

@@ -1,17 +1,13 @@
 package com.ssafy.match.member.dto;
 
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
-import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
 import com.ssafy.match.member.entity.DetailPosition;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import lombok.Builder;
@@ -53,8 +49,9 @@ public class MemberInfoDto {
     private List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
     private List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
 
-    @ApiModelProperty(name = "techList", example = "[{\"python\":{\"level\":\"상\", \"img_uri\":\"http://cdn.matchhere.me/path/python.png\"}}, {\"java\":{\"level\":\"중\", \"img_uri\":\"http://cdn.matchhere.me/path/java.png\"}}]")
-    private List<HashMap<String,HashMap<String,String>>> techList = new ArrayList<>();
+//    @ApiModelProperty(name = "techList", example = "[{\"python\":{\"level\":\"상\", \"img_uri\":\"http://cdn.matchhere.me/path/python.png\"}}, {\"java\":{\"level\":\"중\", \"img_uri\":\"http://cdn.matchhere.me/path/java.png\"}}]")
+    @ApiModelProperty(name = "techList", example = "[{\"name\":\"python\", \"level\":\"상\", \"img_uri\":\"http://cdn.matchhere.me/path/python.png\"}, {\"name\":\"java\", \"level\":\"중\", \"img_uri\":\"http://cdn.matchhere.me/path/java.png\"}]")
+    private List<MemberTechstackInterface> techList = new ArrayList<>();
     @ApiModelProperty(name = "snsList", example = "[{\"id\":1, \"snsName\":\"github\", \"snsAccount\":\"gitid\"},{\"id\":2, \"snsName\":\"twitter\", \"snsAccount\":\"twitterid\"}]")
     private List<MemberSns> snsList = new ArrayList<>();
     @ApiModelProperty(name = "dpositionList", example = "[{\"id\":1, \"name\":\"frontend\"},{\"id\":2, \"name\":\"devops\"}]")
