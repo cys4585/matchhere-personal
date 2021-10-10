@@ -19,7 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -136,17 +140,28 @@ public class AuthService {
     }
 
     @Transactional
-    public void addTechList(List<String> techList, Member member) {
-        for (String techBegin : techList) {
-            Techstack techstackBegin = techstackRepository.findByName(techBegin)
-                    .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-            CompositeMemberTechstack compositeMemberTechstackBegin = CompositeMemberTechstack
-                    .builder()
-                    .member(member)
-                    .techstack(techstackBegin)
-                    .build();
-            MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
-            memberTechstackRepository.save(memberTechstack);
+    public void addTechList(List<HashMap<String, String>> techList, Member member) throws Exception {
+        for (HashMap<String, String> hashmap : techList) {
+            for (Map.Entry<String, String> entry : hashmap.entrySet()) {
+                Techstack techstack = techstackRepository.findByName(entry.getKey())
+                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                validLevel(entry.getValue());
+                CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                        .builder()
+                        .member(member)
+                        .techstack(techstack)
+                        .build();
+                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(Level.from(entry.getValue())).build();
+                memberTechstackRepository.save(memberTechstack);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void validLevel(String level) throws Exception {
+        if (!Stream.of(Level.values()).map(Enum::name)
+                .collect(Collectors.toList()).contains(level)) {
+            throw new Exception("존재하지 않는 level입니다");
         }
     }
 
