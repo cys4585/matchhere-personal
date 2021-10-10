@@ -1,8 +1,8 @@
 package com.ssafy.match.member.dto;
 
-import com.ssafy.match.group.entity.club.Club;
-import com.ssafy.match.group.entity.project.Project;
-import com.ssafy.match.group.entity.study.Study;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
 import com.ssafy.match.member.entity.DetailPosition;

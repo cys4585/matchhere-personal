@@ -1,17 +1,17 @@
 package com.ssafy.match.member.service;
 
-import com.ssafy.match.group.entity.club.Club;
-import com.ssafy.match.group.entity.study.Study;
-import com.ssafy.match.group.repository.club.MemberClubRepository;
-import com.ssafy.match.group.repository.study.MemberStudyRepository;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.db.entity.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.db.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.group.entity.project.Project;
-import com.ssafy.match.group.repository.project.MemberProjectRepository;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
 import com.ssafy.match.member.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;

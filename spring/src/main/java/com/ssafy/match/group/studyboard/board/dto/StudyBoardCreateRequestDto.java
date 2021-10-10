@@ -1,7 +1,7 @@
 package com.ssafy.match.group.studyboard.board.dto;
 
 
-import com.ssafy.match.group.entity.study.Study;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;

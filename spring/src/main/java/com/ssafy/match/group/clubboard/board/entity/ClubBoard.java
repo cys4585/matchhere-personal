@@ -1,7 +1,7 @@
 package com.ssafy.match.group.clubboard.board.entity;
 
 
-import com.ssafy.match.group.entity.club.Club;
+import com.ssafy.match.group.club.entity.Club;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
