@@ -1,6 +1,9 @@
 package com.ssafy.match.member.service;
 
+import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
@@ -25,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -42,21 +46,6 @@ public class MemberService {
     private final TechstackRepository techstackRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberStudyRepository memberStudyRepository;
-//    private final MemberService memberService;
-//    @Transactional(readOnly = true)
-//    public MemberResponseDto getMemberInfo(String email) {
-//        return memberRepository.findByEmail(email)
-//                .map(MemberResponseDto::of)
-//                .orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
-//    }
-//
-//    // 현재 SecurityContext 에 있는 유저 정보 가져오기
-//    @Transactional(readOnly = true)
-//    public MemberResponseDto getMyInfo() {
-//        return memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .map(MemberResponseDto::of)
-//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-//    }
 
     @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {
@@ -66,12 +55,6 @@ public class MemberService {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
-//        System.out.println(authentication);
-//        if (memberRepository.existsMemberByIdAndPassword(SecurityUtil.getCurrentMemberId(), passwordEncoder.encode(password))) {
-//            return Boolean.TRUE;
-//        }
-//        return Boolean.FALSE;
-//        return Boolean.TRUE;
     }
 
     @Transactional(readOnly = true)
@@ -86,21 +69,21 @@ public class MemberService {
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        List<Club> myClubList = memberClubRepository.findClubByMember(member);
-        List<Project> myProjectList = memberProjectRepository.projectInMember(member);
-        List<Study> myStudyList = memberStudyRepository.studyInMember(member);
-//        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
-//        for (Club club : memberClubRepository.findClubByMember(member)) {
-//            myClubList.add(ClubInfoResponseDto.of(club));
-//        }
-//        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
-//        for (Project project : memberProjectRepository.projectInMember(member)) {
-//            myProjectList.add(ProjectInfoResponseDto.of(project));
-//        }
-//        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
-//        for (Study study : memberStudyRepository.studyInMember(member)) {
-//            myStudyList.add(StudyInfoResponseDto.of(study));
-//        }
+//        List<Club> myClubList = memberClubRepository.findClubByMember(member);
+//        List<Project> myProjectList = memberProjectRepository.projectInMember(member);
+//        List<Study> myStudyList = memberStudyRepository.studyInMember(member);
+        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
+        for (Club club : memberClubRepository.findClubByMember(member)) {
+            myClubList.add(ClubInfoResponseDto.of(club));
+        }
+        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
+        for (Project project : memberProjectRepository.projectInMember(member)) {
+            myProjectList.add(ProjectInfoResponseDto.of(project));
+        }
+        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
+        for (Study study : memberStudyRepository.studyInMember(member)) {
+            myStudyList.add(StudyInfoResponseDto.of(study));
+        }
 //        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
 //        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
@@ -109,9 +92,9 @@ public class MemberService {
         DBFile portpolio = member.getPortfolio();
         memberInfoDto.setCover_pic((cover_pic == null) ? null : cover_pic.getDownload_uri());
         memberInfoDto.setPortfolio((portpolio == null) ? null : portpolio.getDownload_uri());
-        memberInfoDto.setMyStudyList(myStudyList);
-        memberInfoDto.setMyProjectList(myProjectList);
-        memberInfoDto.setMyClubList(myClubList);
+//        memberInfoDto.setMyStudyList(myStudyList);
+//        memberInfoDto.setMyProjectList(myProjectList);
+//        memberInfoDto.setMyClubList(myClubList);
 //        memberInfoDto.setExpTechList(expTechList);
 //        memberInfoDto.setBeginTechList(begTechList);
         memberInfoDto.setSnsList(snsList);
@@ -126,35 +109,26 @@ public class MemberService {
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        List<Club> myClubList = memberClubRepository.findClubByMember(member);
-        List<Project> myProjectList = memberProjectRepository.projectInMember(member);
-        List<Study> myStudyList = memberStudyRepository.studyInMember(member);
-//        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
-//        for (Club club : memberClubRepository.findClubByMember(member)) {
-//            myClubList.add(ClubInfoResponseDto.of(club));
-//        }
-//        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
-//        for (Project project : memberProjectRepository.projectInMember(member)) {
-//            myProjectList.add(ProjectInfoResponseDto.of(project));
-//        }
-//        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
-//        for (Study study : memberStudyRepository.studyInMember(member)) {
-//            myStudyList.add(StudyInfoResponseDto.of(study));
-//        }
+        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
+        for (Club club : memberClubRepository.findClubByMember(member)) {
+            myClubList.add(ClubInfoResponseDto.of(club));
+        }
+        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
+        for (Project project : memberProjectRepository.projectInMember(member)) {
+            myProjectList.add(ProjectInfoResponseDto.of(project));
+        }
+        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
+        for (Study study : memberStudyRepository.studyInMember(member)) {
+            myStudyList.add(StudyInfoResponseDto.of(study));
+        }
 //        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
 //        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
-//        memberInfoDto.setCover_pic(member.getCover_pic());
-//        memberInfoDto.setPortfolio(member.getPortfolio());
-        if (member.getCover_pic() != null) {
-            DBFile cover_pic = member.getCover_pic();
-            memberInfoDto.setCover_pic(cover_pic.getDownload_uri());
-        }
-        if (member.getPortfolio() != null) {
-            DBFile portpolio = member.getPortfolio();
-            memberInfoDto.setPortfolio(portpolio.getDownload_uri());
-        }
+
+        getCoverPic(memberInfoDto, member.getCover_pic());
+        getPortfolio(memberInfoDto, member.getPortfolio());
+
         memberInfoDto.setMyStudyList(myStudyList);
         memberInfoDto.setMyProjectList(myProjectList);
         memberInfoDto.setMyClubList(myClubList);
@@ -165,12 +139,6 @@ public class MemberService {
         return memberInfoDto;
     }
 
-    //    @Transactional(readOnly = true)
-//    public MemberInfoDto getMyPage() {
-//        return memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .map(MemberInfoDto::new)
-//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-//    }
     @Transactional
     public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) {
         Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
@@ -350,6 +318,20 @@ public class MemberService {
 //                    memberBeginnerTechstackRepository.delete(met.get());
 //                }
             }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void getCoverPic(MemberInfoDto memberInfoDto, DBFile cover_pic) {
+        if (cover_pic != null) {
+            memberInfoDto.setCover_pic(cover_pic.getDownload_uri());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void getPortfolio(MemberInfoDto memberInfoDto, DBFile portfolio) {
+        if (portfolio != null) {
+            memberInfoDto.setPortfolio(portfolio.getDownload_uri());
         }
     }
 }
