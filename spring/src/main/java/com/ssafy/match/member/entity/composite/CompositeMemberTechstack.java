@@ -1,6 +1,6 @@
 package com.ssafy.match.member.entity.composite;
 
-import com.ssafy.match.db.entity.Techstack;
+import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.member.entity.Member;
 import java.io.Serializable;
 import javax.persistence.Embeddable;

@@ -1,6 +1,6 @@
 package com.ssafy.match.group.club.service;
 
-import com.ssafy.match.db.entity.City;
+import com.ssafy.match.common.entity.City;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.clubboard.board.entity.ClubBoard;

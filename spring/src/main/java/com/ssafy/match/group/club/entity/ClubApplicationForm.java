@@ -1,6 +1,6 @@
 package com.ssafy.match.group.club.entity;
 
-import com.ssafy.match.db.entity.City;
+import com.ssafy.match.common.entity.City;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.club.dto.request.ClubApplicationRequestDto;
 import java.time.LocalDateTime;

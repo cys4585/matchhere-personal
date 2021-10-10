@@ -1,6 +1,6 @@
-package com.ssafy.match.db.repository;
+package com.ssafy.match.common.repository;
 
-import com.ssafy.match.db.entity.Techstack;
+import com.ssafy.match.common.entity.Techstack;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

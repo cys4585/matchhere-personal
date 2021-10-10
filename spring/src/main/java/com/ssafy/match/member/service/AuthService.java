@@ -1,10 +1,10 @@
 package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.db.entity.*;
+import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
-import com.ssafy.match.db.repository.*;
+import com.ssafy.match.common.repository.*;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.DetailPosition;

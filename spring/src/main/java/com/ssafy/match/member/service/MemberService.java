@@ -8,9 +8,9 @@ import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.db.entity.*;
+import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
-import com.ssafy.match.db.repository.*;
+import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.project.entity.Project;
@@ -66,7 +66,6 @@ public class MemberService {
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-
         List<ClubInfoResponseDto> myClubList = new ArrayList<>();
         for (Club club : memberClubRepository.findClubByMember(member)) {
             myClubList.add(ClubInfoResponseDto.of(club));
@@ -79,20 +78,17 @@ public class MemberService {
         for (Study study : memberStudyRepository.studyInMember(member)) {
             myStudyList.add(StudyInfoResponseDto.of(study));
         }
-//        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
-//        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
-        List<HashMap<String,HashMap<String,String>>> techList = memberTechstackRepository.fin
+        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
-        DBFile cover_pic = member.getCover_pic();
-        DBFile portpolio = member.getPortfolio();
-        memberInfoDto.setCover_pic((cover_pic == null) ? null : cover_pic.getDownload_uri());
-        memberInfoDto.setPortfolio((portpolio == null) ? null : portpolio.getDownload_uri());
-//        memberInfoDto.setMyStudyList(myStudyList);
-//        memberInfoDto.setMyProjectList(myProjectList);
-//        memberInfoDto.setMyClubList(myClubList);
-//        memberInfoDto.setExpTechList(expTechList);
-//        memberInfoDto.setBeginTechList(begTechList);
+
+        getCoverPic(memberInfoDto, member.getCover_pic());
+        getPortfolio(memberInfoDto, member.getPortfolio());
+
+        memberInfoDto.setMyStudyList(myStudyList);
+        memberInfoDto.setMyProjectList(myProjectList);
+        memberInfoDto.setMyClubList(myClubList);
+        memberInfoDto.setTechList(techList);
         memberInfoDto.setSnsList(snsList);
         memberInfoDto.setDpositionList(dpositionList);
         return memberInfoDto;
@@ -117,8 +113,7 @@ public class MemberService {
         for (Study study : memberStudyRepository.studyInMember(member)) {
             myStudyList.add(StudyInfoResponseDto.of(study));
         }
-//        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
-//        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
+        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMemberName(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
 
@@ -128,8 +123,7 @@ public class MemberService {
         memberInfoDto.setMyStudyList(myStudyList);
         memberInfoDto.setMyProjectList(myProjectList);
         memberInfoDto.setMyClubList(myClubList);
-//        memberInfoDto.setExpTechList(expTechList);
-//        memberInfoDto.setBeginTechList(begTechList);
+        memberInfoDto.setTechList(techList);
         memberInfoDto.setSnsList(snsList);
         memberInfoDto.setDpositionList(dpositionList);
         return memberInfoDto;

@@ -1,7 +1,7 @@
 package com.ssafy.match.group.study.entity;
 
-import com.ssafy.match.db.entity.Level;
-import javax.persistence.EmbeddedId;
+import com.ssafy.match.common.entity.Level;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

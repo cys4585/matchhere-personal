@@ -1,4 +1,4 @@
-package com.ssafy.match.db.entity;
+package com.ssafy.match.common.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,8 +20,10 @@ public class Techstack {
     private int id;
 
     private String name;
+    private String img_uri;
 
-    public Techstack(String name) {
+    public Techstack(String name, String img_uri) {
         this.name = name;
+        this.img_uri = img_uri;
     }
 }

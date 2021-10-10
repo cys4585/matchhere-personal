@@ -1,4 +1,4 @@
-package com.ssafy.match.db.entity;
+package com.ssafy.match.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

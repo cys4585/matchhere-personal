@@ -1,6 +1,6 @@
 package com.ssafy.match.group.project.repository;
 
-import com.ssafy.match.db.entity.Status;
+import com.ssafy.match.common.entity.Status;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.entity.CompositeMemberProject;
 import com.ssafy.match.group.project.entity.MemberProject;
