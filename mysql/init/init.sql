@@ -872,29 +872,15 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `matching`.`subject`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `matching`.`subject` (
-  `id` INT NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `matching`.`study_subject`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`study_subject` (
-  `subject_id` INT NOT NULL,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `study_id` BIGINT NOT NULL,
-  INDEX `fk_study_subject_subject1_idx` (`subject_id` ASC) VISIBLE,
+  `name` VARCHAR(45) NOT NULL,
+  `level` VARCHAR(45) NOT NULL,
   INDEX `fk_study_subject_study1_idx` (`study_id` ASC) VISIBLE,
-  PRIMARY KEY (`subject_id`, `study_id`),
-  CONSTRAINT `fk_study_subject_subject1`
-    FOREIGN KEY (`subject_id`)
-    REFERENCES `matching`.`subject` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  PRIMARY KEY (`id`),
   CONSTRAINT `fk_study_subject_study1`
     FOREIGN KEY (`study_id`)
     REFERENCES `matching`.`study` (`id`)
