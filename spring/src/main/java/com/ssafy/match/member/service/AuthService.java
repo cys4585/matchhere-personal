@@ -2,15 +2,15 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.db.entity.*;
+import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.db.repository.*;
-import com.ssafy.match.file.entity.DBFile;
-import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.DetailPosition;
 import com.ssafy.match.member.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;
+import com.ssafy.match.member.repository.MemberTechstackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -27,11 +27,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final MemberExperiencedTechstackRepository memberExperiencedTechstackRepository;
     private final TechstackRepository techstackRepository;
-    private final MemberBeginnerTechstackRepository memberBeginnerTechstackRepository;
     private final DetailPositionRepository detailPositionRepository;
-    private final DBFileRepository dbFileRepository;
+    private final MemberTechstackRepository memberTechstackRepository;
 
     @Transactional(readOnly = true)
     public Boolean checkEmail(String email) {
@@ -50,46 +48,14 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberResponseDto signup(MemberRequestDto memberRequestDto) throws Exception {
-        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
+    public MemberResponseDto signup(SignupRequestDto signupRequestDto) throws Exception {
+        if (memberRepository.existsByEmail(signupRequestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
-        Member member = memberRequestDto.toMember(passwordEncoder);
+        Member member = signupRequestDto.toMember(passwordEncoder);
         Member ret = memberRepository.save(member);
-//        DBFile coverPic = setCoverPic(memberRequestDto.getCover_pic());
-//        DBFile portfolio = setPortfolioUuid(memberRequestDto.getPortfolio_uuid());
-
-        if (memberRequestDto.getExpTechList() != null){
-            for (String techExp : memberRequestDto.getExpTechList()) {
-                Techstack techstackExp = techstackRepository.findByName(techExp)
-                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                CompositeMemberTechstack compositeMemberTechstackExp = CompositeMemberTechstack
-                        .builder()
-                        .member(ret)
-                        .techstack(techstackExp)
-                        .build();
-                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
-
-                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
-                //            MemberExperiencedTechstack memberExperiencedTechstack = memberRequestDto.toMemberExperiencedTechstack(member, techstack);
-                //            memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
-            }
-        }
-        if (memberRequestDto.getBeginTechList() != null){
-            for (String techBegin : memberRequestDto.getBeginTechList()) {
-                Techstack techstackBegin = techstackRepository.findByName(techBegin)
-                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                CompositeMemberTechstack compositeMemberTechstackBegin = CompositeMemberTechstack
-                        .builder()
-                        .member(ret)
-                        .techstack(techstackBegin)
-                        .build();
-                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
-                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
-            }
-        }
-        if (memberRequestDto.getDpositionList() != null) {
-            for (String dposition : memberRequestDto.getDpositionList()) {
+        if (signupRequestDto.getDpositionList() != null) {
+            for (String dposition : signupRequestDto.getDpositionList()) {
                 DetailPosition innerDposition = DetailPosition
                         .builder()
                         .member(ret)
@@ -98,15 +64,26 @@ public class AuthService {
                 detailPositionRepository.save(innerDposition);
             }
         }
-//        member.setCover_pic(coverPic);
-//        member.setPortfolio(portfolio);
+        if (signupRequestDto.getBeginTechList() != null){
+            for (String techBegin : signupRequestDto.getBeginTechList()) {
+                Techstack techstackBegin = techstackRepository.findByName(techBegin)
+                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                CompositeMemberTechstack compositeMemberTechstackBegin = CompositeMemberTechstack
+                        .builder()
+                        .member(ret)
+                        .techstack(techstackBegin)
+                        .build();
+                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
+                memberTechstackRepository.save(memberTechstack);
+            }
+        }
         return MemberResponseDto.of(ret);
     }
 
     @Transactional
-    public TokenDto login(MemberRequestDto memberRequestDto) throws Exception{
+    public TokenDto login(SignupRequestDto signupRequestDto) throws Exception{
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken = signupRequestDto.toAuthentication();
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -160,23 +137,4 @@ public class AuthService {
         return tokenDto;
     }
 
-    public DBFile setCoverPic(String uuid) {
-//        if(uuid == null) {
-//            member.setCover_pic(null);
-//            return;
-//        }
-        DBFile dbFile = dbFileRepository.getById(uuid);
-        return dbFile;
-    }
-
-    @Transactional
-    public DBFile setPortfolioUuid(String uuid) {
-//        if(uuid == null) {
-//            member.setPortfolio(null);
-//            return;
-//        }
-        DBFile dbFile = dbFileRepository.getById(uuid);
-//        member.setPortfolio(dbFile);
-        return dbFile;
-    }
 }

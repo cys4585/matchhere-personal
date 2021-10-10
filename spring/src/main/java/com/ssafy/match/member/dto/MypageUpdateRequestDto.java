@@ -4,7 +4,9 @@ import com.ssafy.match.db.entity.Authority;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +20,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRequestDto {
+public class MypageUpdateRequestDto {
 
     @ApiModelProperty(name = "email", example = "my_email@gmail.com")
     @ApiParam(value = "이메일", required = true)
