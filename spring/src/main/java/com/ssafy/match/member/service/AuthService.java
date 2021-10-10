@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -54,28 +56,12 @@ public class AuthService {
         }
         Member member = signupRequestDto.toMember(passwordEncoder);
         Member ret = memberRepository.save(member);
+
         if (signupRequestDto.getDpositionList() != null) {
-            for (String dposition : signupRequestDto.getDpositionList()) {
-                DetailPosition innerDposition = DetailPosition
-                        .builder()
-                        .member(ret)
-                        .name(dposition)
-                        .build();
-                detailPositionRepository.save(innerDposition);
-            }
+            addDetailPosition(signupRequestDto.getDpositionList(), ret);
         }
-        if (signupRequestDto.getBeginTechList() != null){
-            for (String techBegin : signupRequestDto.getBeginTechList()) {
-                Techstack techstackBegin = techstackRepository.findByName(techBegin)
-                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                CompositeMemberTechstack compositeMemberTechstackBegin = CompositeMemberTechstack
-                        .builder()
-                        .member(ret)
-                        .techstack(techstackBegin)
-                        .build();
-                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
-                memberTechstackRepository.save(memberTechstack);
-            }
+        if (signupRequestDto.getTechList() != null) {
+            addTechList(signupRequestDto.getTechList(), ret);
         }
         return MemberResponseDto.of(ret);
     }
@@ -135,6 +121,33 @@ public class AuthService {
 
         // 토큰 발급
         return tokenDto;
+    }
+
+    @Transactional
+    public void addDetailPosition(List<String> dPositionList, Member member) {
+        for (String dPosition : dPositionList) {
+            DetailPosition innerDposition = DetailPosition
+                    .builder()
+                    .member(member)
+                    .name(dPosition)
+                    .build();
+            detailPositionRepository.save(innerDposition);
+        }
+    }
+
+    @Transactional
+    public void addTechList(List<String> techList, Member member) {
+        for (String techBegin : techList) {
+            Techstack techstackBegin = techstackRepository.findByName(techBegin)
+                    .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+            CompositeMemberTechstack compositeMemberTechstackBegin = CompositeMemberTechstack
+                    .builder()
+                    .member(member)
+                    .techstack(techstackBegin)
+                    .build();
+            MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBegin).build();
+            memberTechstackRepository.save(memberTechstack);
+        }
     }
 
 }
