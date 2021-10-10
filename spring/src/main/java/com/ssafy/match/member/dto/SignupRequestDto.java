@@ -13,6 +13,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Getter
@@ -57,9 +58,9 @@ public class SignupRequestDto {
     @ApiParam(value = "세부 포지션", required = false)
     private List<String> dpositionList;
 
-    @ApiModelProperty(name = "techList", example = "[\"python\",\"java\"]")
+    @ApiModelProperty(name = "techList", example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
     @ApiParam(value = "기술스택 리스트", required = false)
-    private List<String> techList;
+    private List<HashMap<String,String>> techList;
 
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()
