@@ -19,14 +19,14 @@ public class AuthController {
 
     @PostMapping("/signup")
     @ApiOperation(value = "회원가입")
-    public ResponseEntity<MemberResponseDto> signup(@RequestBody @Valid MemberRequestDto memberRequestDto) throws Exception {
-        return ResponseEntity.ok(authService.signup(memberRequestDto));
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) throws Exception {
+        return ResponseEntity.ok(authService.signup(signupRequestDto));
     }
 
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
-    public ResponseEntity<?> login(@RequestBody MemberRequestDto memberRequestDto) throws Exception {
-        return ResponseEntity.ok(authService.login(memberRequestDto));
+    public ResponseEntity<?> login(@RequestBody SignupRequestDto signupRequestDto) throws Exception {
+        return ResponseEntity.ok(authService.login(signupRequestDto));
     }
 
     @PostMapping("/reissue")

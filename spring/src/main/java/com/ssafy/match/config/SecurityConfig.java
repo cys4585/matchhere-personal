@@ -88,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOriginPattern("*");
 //        configuration.addAllowedOrigin("http://localhost");
 //        configuration.addAllowedOrigin("https://59.151.220.195:5501");
-        // above origin is for the test @ daebalprime local.
+        // above origin is for the test @ chat
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
