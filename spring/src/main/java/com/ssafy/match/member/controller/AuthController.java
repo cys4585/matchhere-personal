@@ -25,8 +25,8 @@ public class AuthController {
 
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
-    public ResponseEntity<?> login(@RequestBody SignupRequestDto signupRequestDto) throws Exception {
-        return ResponseEntity.ok(authService.login(signupRequestDto));
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) throws Exception {
+        return ResponseEntity.ok(authService.login(loginRequestDto));
     }
 
     @PostMapping("/reissue")

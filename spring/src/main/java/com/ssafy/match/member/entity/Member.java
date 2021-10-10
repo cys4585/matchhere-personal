@@ -57,10 +57,6 @@ public class Member {
     @JoinColumn(name = "portfolio_uuid")
     private DBFile portfolio;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "club_id")
-//    private Club club;
-
     @Builder
     public Member(LocalDateTime create_date, String email, String name, String password,
         String nickname, String tel, String bio, String city, Boolean banned, String position,
