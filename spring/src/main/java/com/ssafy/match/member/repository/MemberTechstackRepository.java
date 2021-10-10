@@ -1,5 +1,6 @@
 package com.ssafy.match.member.repository;
 
+import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.member.dto.MemberTechstackInterface;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberTechstack;
@@ -9,13 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberTechstackRepository extends JpaRepository<MemberTechstack, CompositeMemberTechstack> {
 
-//    @Query(value = "select mt.compositeMemberTechstack.techstack, mt.level from matching.member_techstack mt where mt.compositeMemberTechstack.member = :member")
-//    @Query(value = "select mt from matching.member_techstack mt where mt.compositeMemberTechstack.member = :member")
-//    List<MemberTechstackDto> findTechstackByMemberName(@Param("member") Member member);
     @Query(value = "select mt.compositeMemberTechstack.techstack.name as name, mt.compositeMemberTechstack.techstack.img_uri as img_uri, mt.level as level from matching.member_techstack mt where mt.compositeMemberTechstack.member = :member")
     List<MemberTechstackInterface> findTechstackByMemberName(@Param("member") Member member);
+
+    Optional<MemberTechstack> findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(Member member, Techstack techstack);
 
 }

@@ -15,10 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class MemberUpdateRequestDto {
 
-    @ApiModelProperty(name = "email", example = "my_email@gmail.com")
-    @ApiParam(value = "이메일", required = true)
-    private String email;
-
     @ApiModelProperty(name = "password", example = "mypassword")
     @ApiParam(value = "비밀번호", required = true)
     private String password;
@@ -49,7 +45,6 @@ public class MemberUpdateRequestDto {
 
     @ApiModelProperty(name = "cover_pic", example = "uuid")
     @ApiParam(value = "사용자 커버 사진", required = false)
-//    private DBFile cover_pic;
     private String cover_pic;
 
     @ApiModelProperty(name = "poltfolio_uuid", example = "uuid")
@@ -60,21 +55,13 @@ public class MemberUpdateRequestDto {
     @ApiParam(value = "포트폴리오 uri", required = false)
     private String portfolio_uri;
 
-    @ApiModelProperty(name = "expDelTechList", example = "[\"python\",\"java\"]")
-    @ApiParam(value = "experienced 기술 리스트(del)", required = false)
-    private List<String> expDelTechList;
+    @ApiModelProperty(name = "addTechList", example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiParam(value = "기술스택 리스트(add)", required = false)
+    private List<HashMap<String,String>> addTechList;
 
-    @ApiModelProperty(name = "expAddTechList", example = "[\"python\",\"java\"]")
-    @ApiParam(value = "experienced 기술 리스트(add)", required = false)
-    private List<String> expAddTechList;
-
-    @ApiModelProperty(name = "beginDelTechList", example = "[\"python\",\"java\"]")
-    @ApiParam(value = "beginner 기술 리스트(del)", required = false)
-    private List<String> beginDelTechList;
-
-    @ApiModelProperty(name = "beginAddTechList", example = "[\"python\",\"java\"]")
-    @ApiParam(value = "beginner 기술 리스트(add)", required = false)
-    private List<String> beginAddTechList;
+    @ApiModelProperty(name = "delTechList", example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiParam(value = "기술스택 리스트(del)", required = false)
+    private List<HashMap<String,String>> delTechList;
 
     @ApiModelProperty(name = "snsHashMap", example = "{\"github\":\"github id\",\"twitter\":\"twitter id\"}")
     @ApiParam(value = "sns 종류/계정", required = false)
