@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface StudySubjectRepository extends
-    JpaRepository<StudySubject, CompositeStudyTechstack> {
+    JpaRepository<StudySubject, Long> {
 
 //    // 현재 스터디의 기술 스택명 조회
 //    @Query("select st.compositeStudyTechstack.techstack.name from matching.study_techstack st "

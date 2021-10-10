@@ -111,7 +111,7 @@ public class StudyServiceImpl implements StudyService {
         study.setClub(findClub(dto.getClubId()));
         study.setDBFile(findDBFile(dto.getUuid()));
         addTechstack(study, dto.getAddStackList());
-        removeTechstack(study, dto.getRemoveStackList());
+//        removeTechstack(study, dto.getRemoveStackList());
 
         return HttpStatus.OK;
     }
@@ -205,20 +205,20 @@ public class StudyServiceImpl implements StudyService {
         }
     }
 
-    @Transactional
-    public void removeTechstack(Study study, List<String> techName) {
-        for (String name : techName) {
-            Techstack techstack = findTechstack(name);
-            CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
-                study);
-
-            StudySubject studySubject = studySubjectRepository
-                .findById(compositeStudyTechstack)
-                .orElseThrow(() -> new NullPointerException("제거할 기술 스택이 존재하지 않습니다."));
-
-            studySubjectRepository.delete(studySubject);
-        }
-    }
+//    @Transactional
+//    public void removeTechstack(Study study, List<String> techName) {
+//        for (String name : techName) {
+//            Techstack techstack = findTechstack(name);
+//            CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
+//                study);
+//
+//            StudySubject studySubject = studySubjectRepository
+//                .findById(compositeStudyTechstack)
+//                .orElseThrow(() -> new NullPointerException("제거할 기술 스택이 존재하지 않습니다."));
+//
+//            studySubjectRepository.delete(studySubject);
+//        }
+//    }
 
     @Transactional
     public void addMember(Study study, Member member) {

@@ -2,6 +2,9 @@ package com.ssafy.match.group.study.entity;
 
 import com.ssafy.match.db.entity.Level;
 import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +19,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Entity
 @Table(name = "study_subject")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudySubject {
@@ -28,6 +32,7 @@ public class StudySubject {
     private Study study;
 
     private String name;
+    @Enumerated(EnumType.STRING)
     private Level level;
 
     @Builder
