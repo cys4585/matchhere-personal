@@ -29,10 +29,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -130,15 +129,13 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) {
+    public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
         Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
 
-        updateMember(memberUpdateRequestDto.getEmail(), memberUpdateRequestDto.getName(), memberUpdateRequestDto.getPassword(), memberUpdateRequestDto.getNickname(), memberUpdateRequestDto.getTel(), memberUpdateRequestDto.getBio(), memberUpdateRequestDto.getCity(), memberUpdateRequestDto.getPosition(), memberUpdateRequestDto.getPortfolio_uri());
+        updateMember(memberUpdateRequestDto.getName(), memberUpdateRequestDto.getNickname(), memberUpdateRequestDto.getBio(), memberUpdateRequestDto.getCity(), memberUpdateRequestDto.getPosition(), memberUpdateRequestDto.getPortfolio_uri());
         updateSns(memberUpdateRequestDto.getSnsHashMap());
-        addExpTechstack(member, memberUpdateRequestDto.getExpAddTechList());
-        delExpTechstack(member, memberUpdateRequestDto.getExpDelTechList());
-        addBegTechstack(member, memberUpdateRequestDto.getBeginAddTechList());
-        delBegTechstack(member, memberUpdateRequestDto.getBeginDelTechList());
+        addTechstack(member, memberUpdateRequestDto.getAddTechList());
+        delTechstack(member, memberUpdateRequestDto.getDelTechList());
         addDposition(member, memberUpdateRequestDto.getDpositionAddList());
         delDposition(memberUpdateRequestDto.getDpositionDelList());
         setCoverPic(member, memberUpdateRequestDto.getCover_pic());
@@ -179,24 +176,15 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMember(String email, String name, String password, String nickname, String tel, String bio, String city, String position, String portfolio_uri) {
+    public void updateMember(String name, String nickname, String bio, String city, String position, String portfolio_uri) {
         Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
         if (memberRepository.existsByNickname(nickname)) {
         } else {
             member.setNickname(nickname);
         }
-        if (password == null || password == "") {
-        } else {
-            member.setPassword(passwordEncoder.encode(password));
-        }
-        member.setTel(tel);
         if (name == null || name == "") {
         } else {
             member.setName(name);
-        }
-        if (email == null || email == "") {
-        } else {
-            member.setEmail(email);
         }
         member.setBio(bio);
         member.setCity(city);
@@ -254,62 +242,49 @@ public class MemberService {
     }
 
     @Transactional
-    public void addExpTechstack(Member member, List<String> expAddTechList) {
-        if (expAddTechList != null) {
-            for (String techstack : expAddTechList) {
-                Techstack techstackExp = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                CompositeMemberTechstack compositeMemberTechstackExp = CompositeMemberTechstack
-                        .builder()
-                        .member(member)
-                        .techstack(techstackExp)
-                        .build();
-//                MemberExperiencedTechstack memberExperiencedTechstack = MemberExperiencedTechstack.builder().compositeMemberTechstack(compositeMemberTechstackExp).build();
-//                memberExperiencedTechstackRepository.save(memberExperiencedTechstack);
+    public void addTechstack(Member member, List<HashMap<String, String>> techList) throws Exception{
+        if (techList != null) {
+            for (HashMap<String,String> hashmap : techList) {
+                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
+                    Techstack techstack = techstackRepository.findByName(entry.getKey())
+                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                    validLevel(entry.getValue());
+                    CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                            .builder()
+                            .member(member)
+                            .techstack(techstack)
+                            .build();
+                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(Level.from(entry.getValue())).build();
+                    memberTechstackRepository.save(memberTechstack);
+                }
             }
         }
     }
 
     @Transactional
-    public void delExpTechstack(Member member, List<String> expDelTechList) {
-        if (expDelTechList != null) {
-            for (String techstack : expDelTechList) {
-                Techstack techstackExp = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-//                Optional<MemberExperiencedTechstack> met = memberExperiencedTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackExp);
-//                if (met.isPresent()){
-//                    memberExperiencedTechstackRepository.delete(met.get());
-//                }
+    public void delTechstack(Member member, List<HashMap<String, String>> techList) {
+        if (techList != null) {
+            for (HashMap<String,String> hashmap : techList) {
+                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
+                    Techstack techstack = techstackRepository.findByName(entry.getKey())
+                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                    Optional<MemberTechstack> memberTechstack = memberTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstack);
+                    if (memberTechstack.isPresent()) {
+                        memberTechstackRepository.delete(memberTechstack.get());
+                    }
+                }
             }
         }
     }
 
-    @Transactional
-    public void addBegTechstack(Member member, List<String> begAddTechList) {
-        if (begAddTechList != null) {
-            for (String techstack : begAddTechList) {
-                Techstack techstackBeg = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                CompositeMemberTechstack compositeMemberTechstackBeg = CompositeMemberTechstack
-                        .builder()
-                        .member(member)
-                        .techstack(techstackBeg)
-                        .build();
-//                MemberBeginnerTechstack memberBeginnerTechstack = MemberBeginnerTechstack.builder().compositeMemberTechstack(compositeMemberTechstackBeg).build();
-//                memberBeginnerTechstackRepository.save(memberBeginnerTechstack);
-            }
+    @Transactional(readOnly = true)
+    public void validLevel(String level) throws Exception {
+        if (!Stream.of(Level.values()).map(Enum::name)
+                .collect(Collectors.toList()).contains(level)) {
+            throw new Exception("존재하지 않는 level입니다");
         }
     }
 
-    @Transactional
-    public void delBegTechstack(Member member, List<String> begDelTechList) {
-        if (begDelTechList != null) {
-            for (String techstack : begDelTechList) {
-                Techstack techstackBeg = techstackRepository.findByName(techstack).orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-//                Optional<MemberBeginnerTechstack> met = memberBeginnerTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstackBeg);
-//                if (met.isPresent()){
-//                    memberBeginnerTechstackRepository.delete(met.get());
-//                }
-            }
-        }
-    }
 
     @Transactional(readOnly = true)
     public void getCoverPic(MemberInfoDto memberInfoDto, DBFile cover_pic) {
