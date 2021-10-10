@@ -19,6 +19,7 @@ import com.ssafy.match.member.entity.*;
 import com.ssafy.match.member.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberSnsRepository;
+import com.ssafy.match.member.repository.MemberTechstackRepository;
 import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,6 +47,7 @@ public class MemberService {
     private final TechstackRepository techstackRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberStudyRepository memberStudyRepository;
+    private final MemberTechstackRepository memberTechstackRepository;
 
     @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {
@@ -59,19 +61,12 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberInfoDto getMyPage(String email) {
-//        MemberInfoDto memberInfoDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .map(MemberInfoDto::of)
-//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         MemberInfoDto memberInfoDto = memberRepository.findByEmail(email)
                 .map(MemberInfoDto::of)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-//        List<Club> myClubList = memberClubRepository.findClubByMember(member);
-//        List<Project> myProjectList = memberProjectRepository.projectInMember(member);
-//        List<Study> myStudyList = memberStudyRepository.studyInMember(member);
+
         List<ClubInfoResponseDto> myClubList = new ArrayList<>();
         for (Club club : memberClubRepository.findClubByMember(member)) {
             myClubList.add(ClubInfoResponseDto.of(club));
@@ -86,6 +81,7 @@ public class MemberService {
         }
 //        List<String> expTechList = memberExperiencedTechstackRepository.findTechstackByMemberName(member);
 //        List<String> begTechList = memberBeginnerTechstackRepository.findTechstackByMemberName(member);
+        List<HashMap<String,HashMap<String,String>>> techList = memberTechstackRepository.fin
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
         DBFile cover_pic = member.getCover_pic();
