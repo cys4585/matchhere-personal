@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member` (
   `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
   `portfolio_uri` VARCHAR(1000) NULL DEFAULT NULL,
   `portfolio_uuid` VARCHAR(255) NULL,
+  `membercol` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_member_files1_idx` (`cover_pic` ASC),
   INDEX `fk_member_files2_idx` (`portfolio_uuid` ASC),
@@ -907,6 +908,18 @@ CREATE TABLE IF NOT EXISTS `matching`.`detail_position` (
     REFERENCES `matching`.`member` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `matching`.`emailcheck`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `matching`.`emailcheck` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(255) NOT NULL,
+  `auth_code` VARCHAR(45) NOT NULL,
+  `is_check` BIT(1) NOT NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 

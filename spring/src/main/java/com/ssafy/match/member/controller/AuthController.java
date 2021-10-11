@@ -40,7 +40,7 @@ public class AuthController {
             @ApiResponse(code = 200, message = "성공"),
     })
     public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.checkEmail(email));
+        return ResponseEntity.ok(authService.certEmail(email));
     }
 
     @GetMapping("/check/nickname/{nickname}")
