@@ -43,6 +43,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.certEmail(email));
     }
 
+    @PostMapping("/signup/authcode")
+    public ResponseEntity<Boolean> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto){
+        return ResponseEntity.ok(authService.emailAuthCode(emailCertRequestDto));
+    }
+
     @GetMapping("/check/nickname/{nickname}")
     @ApiOperation(value = "닉네임 체크")
     @ApiResponses({

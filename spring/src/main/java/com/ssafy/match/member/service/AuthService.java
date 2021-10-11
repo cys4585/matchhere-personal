@@ -63,11 +63,24 @@ public class AuthService {
                 EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
                 emailCheckRepository.save(check);
             } else {
-                emailCheck.get().update(key);
+                emailCheck.get().updateKey(key);
             }
             return Boolean.TRUE;
         }
+    }
 
+    @Transactional
+    public Boolean emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
+        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
+        if (emailCheck.isEmpty()) {
+            return false;
+        } else {
+            if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
+                emailCheck.get().updateIsCheck(Boolean.TRUE);
+                return true;
+            }
+            return false;
+        }
     }
 
     @Transactional(readOnly = true)

@@ -29,7 +29,11 @@ public class EmailCheck {
         this.is_check = is_check;
     }
 
-    public void update(String key) {
+    public void updateKey(String key) {
         this.authCode = key;
+    }
+
+    public void updateIsCheck(Boolean sig) {
+        this.is_check = sig;
     }
 }
