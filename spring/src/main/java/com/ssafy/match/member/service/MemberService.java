@@ -22,6 +22,7 @@ import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
 import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -58,10 +59,17 @@ public class MemberService {
         return Boolean.FALSE;
     }
 
+    @Transactional
+    public HttpStatus updatePassword(ChangePasswordDto changePasswordDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
+        changePassword(member, changePasswordDto);
+        return HttpStatus.OK;
+    }
+
     @Transactional(readOnly = true)
-    public MemberInfoDto getMyPage(String email) {
-        MemberInfoDto memberInfoDto = memberRepository.findByEmail(email)
-                .map(MemberInfoDto::of)
+    public MypageResponseDto getMyPage(String email) {
+        MypageResponseDto mypageResponseDto = memberRepository.findByEmail(email)
+                .map(MypageResponseDto::of)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
@@ -81,22 +89,22 @@ public class MemberService {
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
 
-        getCoverPic(memberInfoDto, member.getCover_pic());
-        getPortfolio(memberInfoDto, member.getPortfolio());
+        getCoverPic(mypageResponseDto, member.getCover_pic());
+        getPortfolio(mypageResponseDto, member.getPortfolio());
 
-        memberInfoDto.setMyStudyList(myStudyList);
-        memberInfoDto.setMyProjectList(myProjectList);
-        memberInfoDto.setMyClubList(myClubList);
-        memberInfoDto.setTechList(techList);
-        memberInfoDto.setSnsList(snsList);
-        memberInfoDto.setDpositionList(dpositionList);
-        return memberInfoDto;
+        mypageResponseDto.setMyStudyList(myStudyList);
+        mypageResponseDto.setMyProjectList(myProjectList);
+        mypageResponseDto.setMyClubList(myClubList);
+        mypageResponseDto.setTechList(techList);
+        mypageResponseDto.setSnsList(snsList);
+        mypageResponseDto.setDpositionList(dpositionList);
+        return mypageResponseDto;
     }
 
     @Transactional(readOnly = true)
-    public MemberInfoDto getMyPage() {
-        MemberInfoDto memberInfoDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberInfoDto::of)
+    public MypageResponseDto getMyPage() {
+        MypageResponseDto mypageResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MypageResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
@@ -116,28 +124,28 @@ public class MemberService {
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
 
-        getCoverPic(memberInfoDto, member.getCover_pic());
-        getPortfolio(memberInfoDto, member.getPortfolio());
+        getCoverPic(mypageResponseDto, member.getCover_pic());
+        getPortfolio(mypageResponseDto, member.getPortfolio());
 
-        memberInfoDto.setMyStudyList(myStudyList);
-        memberInfoDto.setMyProjectList(myProjectList);
-        memberInfoDto.setMyClubList(myClubList);
-        memberInfoDto.setTechList(techList);
-        memberInfoDto.setSnsList(snsList);
-        memberInfoDto.setDpositionList(dpositionList);
-        return memberInfoDto;
+        mypageResponseDto.setMyStudyList(myStudyList);
+        mypageResponseDto.setMyProjectList(myProjectList);
+        mypageResponseDto.setMyClubList(myClubList);
+        mypageResponseDto.setTechList(techList);
+        mypageResponseDto.setSnsList(snsList);
+        mypageResponseDto.setDpositionList(dpositionList);
+        return mypageResponseDto;
     }
 
     @Transactional
     public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
-        Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
 
-        updateMember(memberUpdateRequestDto.getName(), memberUpdateRequestDto.getNickname(), memberUpdateRequestDto.getBio(), memberUpdateRequestDto.getCity(), memberUpdateRequestDto.getPosition(), memberUpdateRequestDto.getPortfolio_uri());
-        updateSns(memberUpdateRequestDto.getSnsHashMap());
+        updateMember(member, memberUpdateRequestDto);
+        updateSns(member, memberUpdateRequestDto.getSnsHashMap());
         addTechstack(member, memberUpdateRequestDto.getAddTechList());
         delTechstack(member, memberUpdateRequestDto.getDelTechList());
-        addDposition(member, memberUpdateRequestDto.getDpositionAddList());
-        delDposition(memberUpdateRequestDto.getDpositionDelList());
+        addDposition(member, memberUpdateRequestDto.getAddDpositionList());
+        delDposition(member, memberUpdateRequestDto.getDelDpositionList());
         setCoverPic(member, memberUpdateRequestDto.getCover_pic());
         setPortfolioUuid(member, memberUpdateRequestDto.getPortfolio_uuid());
 
@@ -151,23 +159,33 @@ public class MemberService {
     }
 
     @Transactional
-    public void setCoverPic(Member member, String uuid){
-        if(uuid == null) {
+    public void setCoverPic(Member member, String uuid) throws Exception {
+        if (uuid == null && member.getCover_pic() != null) {
+            dbFileRepository.delete(member.getCover_pic());
             member.setCover_pic(null);
             return;
+        } else {
+            if (member.getCover_pic() != null) {
+                dbFileRepository.delete(member.getCover_pic());
+            }
+            DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
+            member.setCover_pic(dbFile);
         }
-        DBFile dbFile = dbFileRepository.getById(uuid);
-        member.setCover_pic(dbFile);
     }
 
     @Transactional
-    public void setPortfolioUuid(Member member, String uuid){
-        if(uuid == null) {
+    public void setPortfolioUuid(Member member, String uuid) throws Exception{
+        if(uuid == null && member.getPortfolio() != null) {
+            dbFileRepository.delete(member.getPortfolio());
             member.setPortfolio(null);
             return;
+        } else {
+            if (member.getPortfolio() != null) {
+                dbFileRepository.delete(member.getPortfolio());
+            }
+            DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
+            member.setPortfolio(dbFile);
         }
-        DBFile dbFile = dbFileRepository.getById(uuid);
-        member.setPortfolio(dbFile);
     }
 
     @Transactional
@@ -176,25 +194,28 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMember(String name, String nickname, String bio, String city, String position, String portfolio_uri) {
-        Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
-        if (memberRepository.existsByNickname(nickname)) {
+    public void updateMember(Member member, MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
+        member.setNickname(memberUpdateRequestDto.getNickname());
+        if (memberUpdateRequestDto.getNickname() == null) {
+            throw new Exception("nickname이 비어있습니다!");
         } else {
-            member.setNickname(nickname);
+            if (!memberRepository.existsByNickname(memberUpdateRequestDto.getNickname())) {
+                member.setNickname(memberUpdateRequestDto.getNickname());
+            }
         }
-        if (name == null || name == "") {
+        if (memberUpdateRequestDto.getName() == null) {
+            throw new Exception("name이 비어있습니다!");
         } else {
-            member.setName(name);
+            member.setName(memberUpdateRequestDto.getName());
         }
-        member.setBio(bio);
-        member.setCity(city);
-        member.setPosition(position);
-        member.setPortfolio_uri(portfolio_uri);
+        member.setBio(memberUpdateRequestDto.getBio());
+        member.setCity(memberUpdateRequestDto.getCity());
+        member.setPosition(memberUpdateRequestDto.getPosition());
+        member.setPortfolio_uri(memberUpdateRequestDto.getPortfolio_uri());
     }
 
     @Transactional
-    public void updateSns(HashMap<String, String> snsList) {
-        Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
+    public void updateSns(Member member, HashMap<String, String> snsList) {
         if (snsList != null && !snsList.isEmpty()) {
             snsList.forEach((strKey, strValue) -> {
                 Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
@@ -215,9 +236,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void addDposition(Member member, List<String> dpositionAddList) {
-        if (dpositionAddList != null) {
-            for (String dposition : dpositionAddList) {
+    public void addDposition(Member member, List<String> addDpositionList) {
+        if (addDpositionList != null) {
+            for (String dposition : addDpositionList) {
                 if (!detailPositionRepository.existsByMemberAndName(member, dposition)) {
                     DetailPosition innerDposition = DetailPosition
                             .builder()
@@ -231,11 +252,14 @@ public class MemberService {
     }
 
     @Transactional
-    public void delDposition(List<Integer> dpositionDelList) {
-        if (dpositionDelList != null) {
-            for (Integer dposition : dpositionDelList) {
-                if (detailPositionRepository.existsById(dposition)) {
-                    detailPositionRepository.delete(detailPositionRepository.getById(dposition));
+    public void delDposition(Member member, List<String> delDpositionList) throws Exception {
+        if (delDpositionList != null) {
+            for (String dposition : delDpositionList) {
+                Optional<DetailPosition> detailPosition = detailPositionRepository.findByMemberAndName(member, dposition);
+                if (detailPosition.isEmpty()) {
+                    throw new Exception("잘못된 접근입니다. 세부포지션이 저장되어있지 않습니다!");
+                } else {
+                    detailPositionRepository.delete(detailPosition.get());
                 }
             }
         }
@@ -287,16 +311,22 @@ public class MemberService {
 
 
     @Transactional(readOnly = true)
-    public void getCoverPic(MemberInfoDto memberInfoDto, DBFile cover_pic) {
+    public void getCoverPic(MypageResponseDto mypageResponseDto, DBFile cover_pic) {
         if (cover_pic != null) {
-            memberInfoDto.setCover_pic(cover_pic.getDownload_uri());
+            mypageResponseDto.setCover_pic(cover_pic.getDownload_uri());
         }
     }
 
     @Transactional(readOnly = true)
-    public void getPortfolio(MemberInfoDto memberInfoDto, DBFile portfolio) {
+    public void getPortfolio(MypageResponseDto mypageResponseDto, DBFile portfolio) {
         if (portfolio != null) {
-            memberInfoDto.setPortfolio(portfolio.getDownload_uri());
+            mypageResponseDto.setPortfolio(portfolio.getDownload_uri());
         }
     }
+
+    @Transactional
+    public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
+        member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
+    }
+
 }

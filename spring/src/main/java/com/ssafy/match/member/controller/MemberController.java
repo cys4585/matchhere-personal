@@ -27,15 +27,24 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkPassword(memberCheckPasswordDto));
     }
 
+    @PutMapping("/password")
+    @ApiOperation(value = "비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "성공"),
+    })
+    public ResponseEntity<HttpStatus> updatePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
+        return ResponseEntity.ok(memberService.updatePassword(changePasswordDto));
+    }
+
     @GetMapping("/mypage/{email}")
     @ApiOperation(value = "마이 페이지")
-    public ResponseEntity<MemberInfoDto> getMyPage(@PathVariable("email") String email) {
+    public ResponseEntity<MypageResponseDto> getMyPage(@PathVariable("email") String email) {
         return ResponseEntity.ok(memberService.getMyPage(email));
     }
 
     @GetMapping("/mypage")
     @ApiOperation(value = "마이 페이지")
-    public ResponseEntity<MemberInfoDto> getMyPage() {
+    public ResponseEntity<MypageResponseDto> getMyPage() {
         return ResponseEntity.ok(memberService.getMyPage());
     }
 

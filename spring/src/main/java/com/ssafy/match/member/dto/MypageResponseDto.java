@@ -14,7 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class MemberInfoDto {
+public class MypageResponseDto {
     @ApiModelProperty(name = "email", example = "my_email@gmail.com")
     private String email;
 
@@ -57,8 +57,8 @@ public class MemberInfoDto {
     @ApiModelProperty(name = "dpositionList", example = "[{\"id\":1, \"name\":\"frontend\"},{\"id\":2, \"name\":\"devops\"}]")
     private List<DetailPosition> dpositionList = new ArrayList<>();
 
-    public static MemberInfoDto of(Member member) {
-        return MemberInfoDto.builder()
+    public static MypageResponseDto of(Member member) {
+        return MypageResponseDto.builder()
                 .email(member.getEmail())
                 .name(member.getName())
                 .nickname(member.getNickname())
@@ -71,7 +71,7 @@ public class MemberInfoDto {
     }
 
     @Builder
-    public MemberInfoDto(String email, String name, String nickname, String bio, String city, String position, String cover_pic, String portfolio, String portfolio_uri) {
+    public MypageResponseDto(String email, String name, String nickname, String bio, String city, String position, String cover_pic, String portfolio, String portfolio_uri) {
         this.email = email;
         this.name = name;
         this.nickname = nickname;
