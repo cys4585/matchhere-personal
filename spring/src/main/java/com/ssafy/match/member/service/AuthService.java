@@ -2,6 +2,7 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
+import com.ssafy.match.member.entity.EmailCheck;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
@@ -9,9 +10,13 @@ import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.DetailPosition;
 import com.ssafy.match.member.repository.DetailPositionRepository;
+import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -19,9 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,13 +39,48 @@ public class AuthService {
     private final TechstackRepository techstackRepository;
     private final DetailPositionRepository detailPositionRepository;
     private final MemberTechstackRepository memberTechstackRepository;
+    private final EmailCheckRepository emailCheckRepository;
+    private final JavaMailSender javaMailSender;
 
-    @Transactional(readOnly = true)
-    public Boolean checkEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
+    @Value("${spring.mail.username}")
+    private String from;
+
+    @Transactional
+    public Boolean certEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (member.isPresent()) {
+            return Boolean.FALSE;
+        } else {
+            String key = certified_key();
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setFrom(from);
+            message.setSubject("이메일 인증");
+            message.setText(key);
+            javaMailSender.send(message);
+            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
+            if(emailCheck.isEmpty()) {
+                EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
+                emailCheckRepository.save(check);
+            } else {
+                emailCheck.get().updateKey(key);
+            }
             return Boolean.TRUE;
         }
-        return Boolean.FALSE;
+    }
+
+    @Transactional
+    public Boolean emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
+        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
+        if (emailCheck.isEmpty()) {
+            return false;
+        } else {
+            if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
+                emailCheck.get().updateIsCheck(Boolean.TRUE);
+                return true;
+            }
+            return false;
+        }
     }
 
     @Transactional(readOnly = true)
@@ -163,6 +201,23 @@ public class AuthService {
                 .collect(Collectors.toList()).contains(level)) {
             throw new Exception("존재하지 않는 level입니다");
         }
+    }
+
+    private String certified_key() { //10자리 임의의 문자열을 만드는 함수
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        int num = 0;
+
+        do {
+            num = random.nextInt(75) + 48; //0<=num<75
+            if ((num >= 48 && num <= 57) || (num >= 65 && num <= 90) || (num >= 97 && num <= 122)) {
+                sb.append((char) num);
+            } else {
+                continue;
+            }
+
+        } while (sb.length() < 10);
+        return sb.toString();
     }
 
 }
