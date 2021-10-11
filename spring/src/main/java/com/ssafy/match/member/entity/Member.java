@@ -1,6 +1,6 @@
 package com.ssafy.match.member.entity;
 
-import com.ssafy.match.db.entity.Authority;
+import com.ssafy.match.common.entity.Authority;
 import com.ssafy.match.file.entity.DBFile;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -56,10 +56,6 @@ public class Member {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_uuid")
     private DBFile portfolio;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "club_id")
-//    private Club club;
 
     @Builder
     public Member(LocalDateTime create_date, String email, String name, String password,

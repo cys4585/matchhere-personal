@@ -2,7 +2,7 @@ package com.ssafy.match.group.projectboard.board.repository;
 
 
 import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
-import com.ssafy.match.group.entity.project.Project;
+import com.ssafy.match.group.project.entity.Project;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

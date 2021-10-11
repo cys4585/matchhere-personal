@@ -28,10 +28,10 @@ public class MemberPortfolio {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String protfolio_path;
+    private String protfolio_uuid;
 
-    public MemberPortfolio(Member member, String protfolio_path) {
+    public MemberPortfolio(Member member, String protfolio_uuid) {
         this.member = member;
-        this.protfolio_path = protfolio_path;
+        this.protfolio_uuid = protfolio_uuid;
     }
 }

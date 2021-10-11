@@ -18,8 +18,6 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
 
-//    @GetMapping("")
-
     @PostMapping("/check/password")
     @ApiOperation(value = "비밀번호 체크")
     @ApiResponses({
@@ -29,15 +27,24 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkPassword(memberCheckPasswordDto));
     }
 
+    @PutMapping("/password")
+    @ApiOperation(value = "비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "성공"),
+    })
+    public ResponseEntity<HttpStatus> updatePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
+        return ResponseEntity.ok(memberService.updatePassword(changePasswordDto));
+    }
+
     @GetMapping("/mypage/{email}")
     @ApiOperation(value = "마이 페이지")
-    public ResponseEntity<MemberInfoDto> getMyPage(@PathVariable("email") String email) {
+    public ResponseEntity<MypageResponseDto> getMyPage(@PathVariable("email") String email) {
         return ResponseEntity.ok(memberService.getMyPage(email));
     }
 
     @GetMapping("/mypage")
     @ApiOperation(value = "마이 페이지")
-    public ResponseEntity<MemberInfoDto> getMyPage() {
+    public ResponseEntity<MypageResponseDto> getMyPage() {
         return ResponseEntity.ok(memberService.getMyPage());
     }
 
@@ -48,7 +55,7 @@ public class MemberController {
                     message = "성공"),
             @ApiResponse(code = 406, message = "데이터 에러"),
     })
-    public ResponseEntity<?> updateMember(@RequestBody @Valid MemberUpdateRequestDto memberUpdateRequestDto) {
+    public ResponseEntity<?> updateMember(@RequestBody @Valid MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
         MemberUpdateResponseDto memberUpdateResponseDto = memberService.updateMyInfo(memberUpdateRequestDto);
         if (memberUpdateResponseDto.getId().equals(SecurityUtil.getCurrentMemberId())) {
             return new ResponseEntity<String>("수정사항이 성공적으로 반영되었습니다.", HttpStatus.OK);

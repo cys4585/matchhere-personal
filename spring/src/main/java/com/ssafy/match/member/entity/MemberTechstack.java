@@ -1,6 +1,7 @@
 package com.ssafy.match.member.entity;
 
-import com.ssafy.match.db.entity.embedded.CompositeMemberTechstack;
+import com.ssafy.match.common.entity.Level;
+import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
@@ -15,9 +16,12 @@ public class MemberTechstack {
     @EmbeddedId
     private CompositeMemberTechstack compositeMemberTechstack;
 
+    private Level level;
+
     @Builder
     public MemberTechstack(
-        CompositeMemberTechstack compositeMemberTechstack) {
+        CompositeMemberTechstack compositeMemberTechstack, Level level) {
         this.compositeMemberTechstack = compositeMemberTechstack;
+        this.level = level;
     }
 }
