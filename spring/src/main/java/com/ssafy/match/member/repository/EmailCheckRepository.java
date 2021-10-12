@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface EmailCheckRepository extends JpaRepository<EmailCheck, Long> {
     Optional<EmailCheck> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

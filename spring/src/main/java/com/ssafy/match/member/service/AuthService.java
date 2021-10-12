@@ -15,6 +15,7 @@ import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,17 +71,15 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
+    public String emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
         Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
-        if (emailCheck.isEmpty()) {
-            return false;
-        } else {
+        if (emailCheck.isPresent()) {
             if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
                 emailCheck.get().updateIsCheck(Boolean.TRUE);
-                return true;
+                return emailCheck.get().getEmail();
             }
-            return false;
         }
+        return "";
     }
 
     @Transactional(readOnly = true)
@@ -96,15 +95,19 @@ public class AuthService {
         if (memberRepository.existsByEmail(signupRequestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
         }
+//        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(signupRequestDto.getEmail());
+//        if (emailCheck.isEmpty() || emailCheck.get().getIs_check() == Boolean.FALSE) {
+//            throw new Exception("email인증이 완료되지 않았습니다!");
+//        }
         Member member = signupRequestDto.toMember(passwordEncoder);
         Member ret = memberRepository.save(member);
 
-        if (signupRequestDto.getDpositionList() != null) {
-            addDetailPosition(signupRequestDto.getDpositionList(), ret);
-        }
-        if (signupRequestDto.getTechList() != null) {
-            addTechList(signupRequestDto.getTechList(), ret);
-        }
+//        if (signupRequestDto.getDpositionList() != null) {
+//            addDetailPosition(signupRequestDto.getDpositionList(), ret);
+//        }
+//        if (signupRequestDto.getTechList() != null) {
+//            addTechList(signupRequestDto.getTechList(), ret);
+//        }
         return MemberResponseDto.of(ret);
     }
 

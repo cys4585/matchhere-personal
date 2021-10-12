@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,8 +45,14 @@ public class AuthController {
     }
 
     @PostMapping("/signup/authcode")
-    public ResponseEntity<Boolean> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto){
-        return ResponseEntity.ok(authService.emailAuthCode(emailCertRequestDto));
+    public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
+        String response = authService.emailAuthCode(emailCertRequestDto);
+        if (response == "") {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
     }
 
     @GetMapping("/check/nickname/{nickname}")
