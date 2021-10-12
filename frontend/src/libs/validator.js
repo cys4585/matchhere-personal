@@ -23,7 +23,7 @@ export const emailValidator = (value, fieldKey) => {
     alert("emailValidator 올바른 타입을 입력하세요")
     return
   }
-  const regex = /([\d\w-_]+)@([\w]+).([\w]{1,3})/
+  const regex = /([\d\w-_]+)[@]([\w]+)[.]([\w]{1,3})/
   if (!regex.test(value)) {
     return {
       fieldKey,
@@ -58,6 +58,6 @@ export const passwordValidator = (value, fieldKey) => {
   return {
     fieldKey,
     status: true,
-    type: "passwordInvalid",
+    type: "invalidPassword",
   }
 }
