@@ -94,23 +94,59 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket groupApi() {
+    public Docket clubApi() {
         return new Docket(DocumentationType.SWAGGER_2)
 //            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
             .globalRequestParameters(headers)
             .apiInfo(apiInfo)
-            .groupName("Group")
+            .groupName("Club")
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.controller"))
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.club"))
+
+            // api 필요한 클래스패스 추가하기
+            .paths(
+                PathSelectors.ant("/**/club/**")
+                    .or(PathSelectors.ant("/**/clubapplication/**"))
+//                PathSelectors.any()
+            )
+            .build()
+            .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public Docket studyApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+//            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
+            .globalRequestParameters(headers)
+            .apiInfo(apiInfo)
+            .groupName("Study")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.study"))
 
             // api 필요한 클래스패스 추가하기
             .paths(
                 PathSelectors.ant("/**/study/**")
                     .or(PathSelectors.ant("/**/studyapplication/**"))
-                    .or(PathSelectors.ant("/**/project/**"))
+//                PathSelectors.any()
+            )
+            .build()
+            .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public Docket projectApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+//            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
+            .globalRequestParameters(headers)
+            .apiInfo(apiInfo)
+            .groupName("Project")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.project"))
+
+            // api 필요한 클래스패스 추가하기
+            .paths(
+                PathSelectors.ant("/**/project/**")
                     .or(PathSelectors.ant("/**/projectapplication/**"))
-                    .or(PathSelectors.ant("/**/club/**"))
-                    .or(PathSelectors.ant("/**/clubapplication/**"))
 //                PathSelectors.any()
             )
             .build()
