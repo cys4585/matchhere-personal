@@ -50,7 +50,8 @@ public class SignupRequestDto {
     private String city;
 
     @ApiModelProperty(name = "position", example = "개발자")
-    @ApiParam(value = "포지션", required = false)
+    @ApiParam(value = "포지션", required = true)
+    @NotEmpty
     private String position;
 
     @ApiModelProperty(name = "dpositionList", example = "[\"frontend\",\"devops\"]")
