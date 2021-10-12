@@ -87,6 +87,9 @@ module.exports = {
       4: "4px",
       8: "8px",
     },
+    container: {
+      center: true,
+    },
     cursor: {
       auto: "auto",
       default: "default",
