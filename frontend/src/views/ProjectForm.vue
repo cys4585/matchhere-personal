@@ -40,6 +40,18 @@
             <div v-else-if="field.type == 'date'">
               <input :type="field.type" v-model="field.value" />
             </div>
+            <div v-else-if="field.type == 'select'">
+              <select v-model="field.value">
+                <option disabled value="">{{ field.description }}</option>
+                <option
+                  v-for="value in field.valueList"
+                  :key="value.id"
+                  :value="value"
+                >
+                  {{ value }}
+                </option>
+              </select>
+            </div>
             <div v-else-if="field.type == 'textarea'">
               <textarea
                 :placeholder="field.placeholder"
@@ -59,19 +71,24 @@
         </div>
         <hr v-if="index < Object.keys(formFields).length - 1" />
       </div>
+      <SubmitButton :disabled="!canSubmit" @click="createProject"
+        >생성</SubmitButton
+      >
     </div>
   </div>
 </template>
 
 <script>
 import InputFormField from "@/components/common/InputFormField.vue"
-import { ref } from "vue"
+import SubmitButton from "@/components/common/SubmitButton.vue"
+import { ref, computed } from "vue"
 import { requiredValidator } from "@/libs/validator"
 
 export default {
   name: "ProjectForm",
   components: {
     InputFormField,
+    SubmitButton,
   },
   setup() {
     const formFields = ref({
@@ -83,6 +100,7 @@ export default {
           // label: "프로젝트 이름",
           type: "string",
           value: "",
+          notNull: true,
           placeholder: "ex) 11월까지 진행하는 사이드 프로젝트",
           errors: {},
           validators: [requiredValidator],
@@ -93,6 +111,7 @@ export default {
           idList: ["will", "ing", "done"],
           stateList: ["진행 예정", "진행 중", "완료"],
           value: "진행 예정",
+          notNull: true,
           errors: {},
           validators: [],
         },
@@ -100,6 +119,7 @@ export default {
           label: "썸네일 이미지",
           type: "file",
           value: "",
+          notNull: false,
           errors: {},
           validators: [],
         },
@@ -109,6 +129,7 @@ export default {
           // label: "기술스택",
           type: "string",
           value: "",
+          notNull: false,
           placeholder: "ex) Vue, Spring, MySQL",
           errors: {},
           validators: [],
@@ -118,6 +139,7 @@ export default {
           // label: "일정",
           type: "string",
           value: "",
+          notNull: false,
           placeholder: "ex) 주말 10시 - 18시 / 평일 논의",
           errors: {},
           validators: [],
@@ -126,13 +148,37 @@ export default {
           label: "프로젝트 마감 예정일",
           type: "date",
           value: "",
-          erros: {},
+          notNull: false,
+          errors: {},
+          validators: [],
+        },
+        region: {
+          label: "지역",
+          type: "select",
+          description: "지역을 선택하세요",
+          // 일단은!
+          valueList: ["온라인", "무관", "서울", "경기", "경남", "대구"],
+          value: "",
+          notNull: true,
+          errors: {},
+          validators: [],
+        },
+        club: {
+          label: "소속 클럽",
+          type: "select",
+          description: "클럽을 선택하세요",
+          // 일단은!
+          valueList: ["최고의 클럽", "멋쟁이 클럽", "굇수모임"],
+          value: "",
+          notNull: false,
+          errors: {},
           validators: [],
         },
         introduction: {
           label: "소개",
           type: "textarea",
           value: "",
+          notNull: false,
           placeholder: "해당 프로젝트에 대해 소개해주세요",
           errors: {},
           validators: [],
@@ -143,6 +189,7 @@ export default {
           idList: ["all", "club", "project"],
           stateList: ["전체 공개", "클럽 멤버에게만 공개", "비공개"],
           value: "전체 공개",
+          notNull: true,
           errors: {},
           validators: [],
         },
@@ -154,6 +201,7 @@ export default {
           idList: ["rec-ing", "rec-done"],
           stateList: ["모집 중", "완료"],
           value: "모집 중",
+          notNull: true,
           errors: {},
           validators: [],
         },
@@ -161,6 +209,7 @@ export default {
           label: "개발자",
           type: "number",
           value: 0,
+          notNull: true,
           errors: {},
           validators: [],
         },
@@ -168,6 +217,7 @@ export default {
           label: "디자이너",
           type: "number",
           value: 0,
+          notNull: true,
           errors: {},
           validators: [],
         },
@@ -175,11 +225,46 @@ export default {
           label: "기획자",
           type: "number",
           value: 0,
+          notNull: true,
           errors: {},
           validators: [],
         },
       },
     })
+    // 유효성 검사
+    const isAllFieldsValid = computed(() => {
+      const fields = [
+        ...Object.values(formFields.value.project),
+        ...Object.values(formFields.value.member),
+      ]
+      return fields.every((f) => Object.keys(f.errors).length === 0)
+    })
+    // notNull인 데이터 필수입력
+    const notNullCheck = computed(() => {
+      const fields = [
+        ...Object.values(formFields.value.project),
+        ...Object.values(formFields.value.member),
+      ]
+      return fields.every(
+        (f) =>
+          (f.notNull && f.value === 0) || (f.notNull && f.value) || !f.notNull
+      )
+    })
+    // 모집구성원 적어도 1명 이상
+    const totalMember = computed(() => {
+      const memberFields = formFields.value.member
+      return (
+        memberFields.developer.value +
+        memberFields.designer.value +
+        memberFields.planner.value
+      )
+    })
+
+    const canSubmit = computed(
+      // 유효성 검사 + notNull인 데이터 필수입력 + 모집구성원 적어도 1명 이상
+      () =>
+        isAllFieldsValid.value && notNullCheck.value && totalMember.value > 0
+    )
 
     // 취소 버튼 누르면 기존에 선택된 것도 사라짐.
     const selectThumbnailImage = (event) => {
@@ -201,10 +286,14 @@ export default {
       }
     }
 
+    const createProject = () => {}
+
     return {
       formFields,
       selectThumbnailImage,
       handleUpdateErrors,
+      canSubmit,
+      createProject,
     }
   },
 }
