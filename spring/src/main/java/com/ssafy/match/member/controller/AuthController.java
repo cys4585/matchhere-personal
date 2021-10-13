@@ -35,16 +35,16 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 
-    @GetMapping("/check/email/{email}")
-    @ApiOperation(value = "이메일 체크")
+    @GetMapping("/cert/email/{email}")
+    @ApiOperation(value = "authcode 이메일 발송")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) {
+    public ResponseEntity<Boolean> certEmail(@PathVariable("email") String email) {
         return ResponseEntity.ok(authService.certEmail(email));
     }
 
-    @PostMapping("/signup/authcode")
+    @PostMapping("/cert/authcode")
     public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
         String response = authService.emailAuthCode(emailCertRequestDto);
         if (response == "") {

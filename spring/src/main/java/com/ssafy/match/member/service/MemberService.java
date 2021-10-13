@@ -9,6 +9,8 @@ import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
+import com.ssafy.match.member.dto.request.MemberBasicinfoRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
@@ -137,6 +139,24 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberBasicinfo(MemberBasicinfoRequestDto memberBasicinfoRequestDto) throws Exception {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        validNickname(member, memberBasicinfoRequestDto.getNickname());
+        updateBasicinfo(member, memberBasicinfoRequestDto.getNickname(), memberBasicinfoRequestDto.getName(), memberBasicinfoRequestDto.getCity(), memberBasicinfoRequestDto.getBio());
+        setCoverPic(member, memberBasicinfoRequestDto.getCoverpic_uuid());
+        return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public void validNickname(Member member, String nickname) throws Exception {
+        if (member.getNickname().equals(nickname)) {
+            return;
+        } else if (memberRepository.existsByNickname(nickname)) {
+            throw new Exception("닉네임이 존재합니다!");
+        }
+    }
+
+    @Transactional
     public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
 
@@ -160,9 +180,11 @@ public class MemberService {
 
     @Transactional
     public void setCoverPic(Member member, String uuid) throws Exception {
-        if (uuid == null && member.getCover_pic() != null) {
-            dbFileRepository.delete(member.getCover_pic());
-            member.setCover_pic(null);
+        if (uuid == null || uuid.equals("")) {
+            if (member.getCover_pic() != null) {
+                dbFileRepository.delete(member.getCover_pic());
+                member.setCover_pic(null);
+            }
             return;
         } else {
             if (member.getCover_pic() != null) {
@@ -212,6 +234,24 @@ public class MemberService {
         member.setCity(memberUpdateRequestDto.getCity());
         member.setPosition(memberUpdateRequestDto.getPosition());
         member.setPortfolio_uri(memberUpdateRequestDto.getPortfolio_uri());
+    }
+
+    @Transactional
+    public void updateBasicinfo(Member member, String nickname, String name, String city, String bio) throws Exception {
+        if (nickname == null) {
+            throw new Exception("nickname이 비어있습니다!");
+        } else {
+            if (!memberRepository.existsByNickname(nickname)) {
+                member.setNickname(nickname);
+            }
+        }
+        if (name == null) {
+            throw new Exception("name이 비어있습니다!");
+        } else {
+            member.setName(name);
+        }
+        member.setCity(city);
+        member.setBio(bio);
     }
 
     @Transactional
