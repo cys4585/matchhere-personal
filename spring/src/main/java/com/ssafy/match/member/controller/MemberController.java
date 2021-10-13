@@ -3,6 +3,7 @@ package com.ssafy.match.member.controller;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -57,6 +58,12 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberBasicinfo(@RequestBody @Valid MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberBasicInfo(memberBasicinfoRequestDto));
+    }
+
+    @GetMapping("/skills")
+    @ApiOperation(value = "내 직무/기술스택 Get")
+    public ResponseEntity<MemberSkillResponseDto> getMemberSkills() {
+        return ResponseEntity.ok(memberService.getMemberSkills());
     }
 
     @PutMapping("/skills")
