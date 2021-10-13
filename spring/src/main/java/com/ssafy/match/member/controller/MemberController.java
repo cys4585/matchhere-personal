@@ -3,6 +3,7 @@ package com.ssafy.match.member.controller;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
@@ -49,6 +50,12 @@ public class MemberController {
     @ApiOperation(value = "마이 페이지")
     public ResponseEntity<MypageResponseDto> getMyPage() {
         return ResponseEntity.ok(memberService.getMyPage());
+    }
+
+    @GetMapping("/basicinfo")
+    @ApiOperation(value = "내 기본정보 Get")
+    public ResponseEntity<MemberBasicinfoResponseDto> getMemberBasicinfo() {
+        return ResponseEntity.ok(memberService.getMemberBasicinfo());
     }
 
     @PutMapping("/basicinfo")

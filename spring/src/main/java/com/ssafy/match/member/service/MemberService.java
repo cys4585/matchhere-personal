@@ -12,6 +12,7 @@ import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
@@ -138,6 +139,20 @@ public class MemberService {
         mypageResponseDto.setSnsList(snsList);
         mypageResponseDto.setDpositionList(dpositionList);
         return mypageResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberBasicinfoResponseDto getMemberBasicinfo() {
+        MemberBasicinfoResponseDto memberBasicinfoResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberBasicinfoResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        DBFile cover_pic = member.getCover_pic();
+        if (cover_pic != null) {
+            memberBasicinfoResponseDto.setCoverpic_uri(cover_pic.getDownload_uri());
+        }
+        return memberBasicinfoResponseDto;
     }
 
     @Transactional
