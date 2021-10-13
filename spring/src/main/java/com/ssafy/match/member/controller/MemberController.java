@@ -4,6 +4,7 @@ import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
@@ -80,6 +81,12 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
+    }
+
+    @GetMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Get")
+    public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberPortfolio());
     }
 
     @PutMapping

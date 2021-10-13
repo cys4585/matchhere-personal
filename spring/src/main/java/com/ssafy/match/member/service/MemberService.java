@@ -13,6 +13,7 @@ import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
@@ -187,6 +188,23 @@ public class MemberService {
         updateDposition(member, memberSkillRequestDto.getDpositionList());
         updatePosition(member, memberSkillRequestDto.getPosition());
         return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberPortfolioResponseDto getMemberPortfolio() {
+        MemberPortfolioResponseDto memberPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberPortfolioResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        DBFile portfolio = member.getPortfolio();
+        if (portfolio != null) {
+            memberPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
+        }
+        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
+        memberPortfolioResponseDto.setSnsList(snsList);
+
+        return memberPortfolioResponseDto;
     }
 
     @Transactional
