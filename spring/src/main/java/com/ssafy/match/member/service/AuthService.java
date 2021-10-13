@@ -195,7 +195,7 @@ public class AuthService {
                         .member(member)
                         .techstack(techstack)
                         .build();
-                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(Level.from(entry.getValue())).build();
+                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
                 memberTechstackRepository.save(memberTechstack);
             }
         }

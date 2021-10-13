@@ -148,12 +148,12 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus updateMemberSkill(MemberSkillRequestDto memberSkillRequestDto) {
+    public HttpStatus updateMemberSkills(MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-        validPosition();
-        validDPosition();
-        validTechstack();
-
+        updateTechList(member, memberSkillRequestDto.getTechList());
+        updateDposition(member, memberSkillRequestDto.getDpositionList());
+        updatePosition(member, memberSkillRequestDto.getPosition());
+        return HttpStatus.OK;
     }
 
     @Transactional
@@ -255,6 +255,11 @@ public class MemberService {
     }
 
     @Transactional
+    public void updatePosition(Member member, String position) {
+        member.setPosition(position);
+    }
+
+    @Transactional
     public void updateSns(Member member, HashMap<String, String> snsList) {
         if (snsList != null && !snsList.isEmpty()) {
             snsList.forEach((strKey, strValue) -> {
@@ -277,6 +282,7 @@ public class MemberService {
 
     @Transactional
     public void addDposition(Member member, List<String> addDpositionList) {
+//        if (addDpositionList != null && addDpositionList != null) {
         if (addDpositionList != null) {
             for (String dposition : addDpositionList) {
                 if (!detailPositionRepository.existsByMemberAndName(member, dposition)) {
@@ -286,6 +292,49 @@ public class MemberService {
                             .name(dposition)
                             .build();
                     detailPositionRepository.save(innerDposition);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void updateDposition(Member member, List<String> dpositionList) {
+        List<DetailPosition> detailPositions = detailPositionRepository.findAllByMember(member);
+        if (!detailPositions.isEmpty()) {
+            detailPositionRepository.deleteAll();
+        }
+        if (dpositionList != null && !dpositionList.isEmpty()) {
+            for (String dposition : dpositionList) {
+                DetailPosition innerDposition = DetailPosition
+                        .builder()
+                        .member(member)
+                        .name(dposition)
+                        .build();
+                detailPositionRepository.save(innerDposition);
+            }
+        }
+    }
+
+    @Transactional
+    public void updateTechList(Member member, List<HashMap<String, String>> techList) throws Exception {
+        List<MemberTechstack> memberTechstacks = memberTechstackRepository.findAllByCompositeMemberTechstack_Member(member);
+        if (!memberTechstacks.isEmpty()) {
+            memberTechstackRepository.deleteAll();
+        }
+//        if (techList != null && !techList.isEmpty()) {
+        if (!techList.isEmpty()) {
+            for (HashMap<String,String> hashmap : techList) {
+                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
+                    Techstack techstack = techstackRepository.findByName(entry.getKey())
+                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                    validLevel(entry.getValue());
+                    CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                            .builder()
+                            .member(member)
+                            .techstack(techstack)
+                            .build();
+                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
+                    memberTechstackRepository.save(memberTechstack);
                 }
             }
         }
@@ -318,7 +367,7 @@ public class MemberService {
                             .member(member)
                             .techstack(techstack)
                             .build();
-                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(Level.from(entry.getValue())).build();
+                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
                     memberTechstackRepository.save(memberTechstack);
                 }
             }

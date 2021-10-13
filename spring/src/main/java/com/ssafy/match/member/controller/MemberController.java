@@ -2,6 +2,7 @@ package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -38,7 +39,7 @@ public class MemberController {
     }
 
     @GetMapping("/mypage/{email}")
-    @ApiOperation(value = "마이 페이지")
+    @ApiOperation(value = "다른사람의 마이페이지")
     public ResponseEntity<MypageResponseDto> getMyPage(@PathVariable("email") String email) {
         return ResponseEntity.ok(memberService.getMyPage(email));
     }
@@ -52,12 +53,19 @@ public class MemberController {
     @PutMapping("/basicinfo")
     @ApiOperation(value = "내 기본정보 Update")
     @ApiResponses(value = {
-            @ApiResponse(code = 200,
-                    message = "성공"),
-            @ApiResponse(code = 406, message = "데이터 에러"),
+            @ApiResponse(code = 200, message = "성공")
     })
     public ResponseEntity<HttpStatus> updateMemberBasicinfo(@RequestBody @Valid MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberBasicInfo(memberBasicinfoRequestDto));
+    }
+
+    @PutMapping("/skills")
+    @ApiOperation(value = "내 직무/기술스택 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
     }
 
     @PutMapping
