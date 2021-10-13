@@ -4,7 +4,7 @@ import com.ssafy.match.common.entity.City;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -135,7 +135,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Page<ProjectInfoResponseDto> getAllProject(Pageable pageable) {
-        Page<ProjectInfoResponseDto> projectInfoResponseDtos = projectRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, Status.종료, pageable)
+        Page<ProjectInfoResponseDto> projectInfoResponseDtos = projectRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.종료, pageable)
                 .map(ProjectInfoResponseDto::of);
         for (ProjectInfoResponseDto projectInfoResponseDto: projectInfoResponseDtos.getContent()) {
             projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberProjectRepository.findMemberByProjectId(projectInfoResponseDto.getId())));
@@ -199,8 +199,8 @@ public class ProjectServiceImpl implements ProjectService {
     // 특정 멤버의 활성화 프로젝트 리스트
     public List<ProjectInfoResponseDto> projectInMember(Long memberId) throws Exception {
 //        List<ProjectInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
-        System.out.println(memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), Status.종료));
-        List<Project> projects = memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), Status.종료);
+        System.out.println(memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), ProjectProgressState.종료));
+        List<Project> projects = memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), ProjectProgressState.종료);
         System.out.println("!!!!!!!!!!!!");
         System.out.println(projects);
 //        projects.ma
@@ -340,7 +340,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
     public void validStatus(String status) throws Exception {
-        if(!Stream.of(Status.values()).map(Enum::name)
+        if(!Stream.of(ProjectProgressState.values()).map(Enum::name)
             .collect(Collectors.toList()).contains(status)){
             throw new Exception("존재하지 않는 상태입니다");
         }

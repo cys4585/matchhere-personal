@@ -24,6 +24,9 @@ public enum ErrorCode {
     PLANNER_COUNT_BELOW_ZERO(BAD_REQUEST, "기획자 인원은 0 아래가 될 수 없습니다."),
     DESIGNER_COUNT_BELOW_ZERO(BAD_REQUEST, "디자이너은 0 아래가 될 수 없습니다."),
     MEMBER_COUNT_BELOW_ZERO(BAD_REQUEST, "인원은 0 아래가 될 수 없습니다."),
+    DEVELOPER_COUNT_MORE_THAN_MAX(BAD_REQUEST, "개발자 최대 인원이 현재 인원보다 작습니다."),
+    PLANNER_COUNT_MORE_THAN_MAX(BAD_REQUEST, "기획자 최대 인원이 현재 인원보다 작습니다."),
+    DESIGNER_COUNT_MORE_THAN_MAX(BAD_REQUEST, "디자이너 최대 인원이 현재 인원보다 작습니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "권한 정보가 없는 토큰입니다"),

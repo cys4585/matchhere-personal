@@ -107,7 +107,7 @@ public class StudyInfoForUpdateResponseDto {
         this.isPublic = study.getIsPublic();
         this.isParticipate = study.getIsParticipate();
         this.city = study.getCity().name();
-        this.status = study.getStatus().name();
+        this.status = study.getProjectProgressState().name();
         setClub(study.getClub());
 //        setData(study.getDbFile());
         this.modifyDate = study.getModifyDate();

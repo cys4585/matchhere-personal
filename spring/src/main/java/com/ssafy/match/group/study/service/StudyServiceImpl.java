@@ -6,7 +6,7 @@ import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -139,7 +139,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, Status.종료, pageable)
+        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.Progress, pageable)
                 .map(StudyInfoResponseDto::of);
         for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
             studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
@@ -313,7 +313,7 @@ public class StudyServiceImpl implements StudyService {
         }
     }
     public void validStatus(String status) throws Exception {
-        if(!Stream.of(Status.values()).map(Enum::name)
+        if(!Stream.of(ProjectProgressState.values()).map(Enum::name)
             .collect(Collectors.toList()).contains(status)){
             throw new Exception("존재하지 않는 상태입니다");
         }

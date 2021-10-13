@@ -1,6 +1,6 @@
 package com.ssafy.match.group.project.repository;
 
-import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.group.project.entity.Project;
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("select p from matching.project p where p.isActive = true and p.isPublic = true")
     List<Project> findAllProject();
 
-    Page<Project> findByIsActiveAndIsPublicAndStatusIsNot(Boolean isActive, Boolean isPublic, Enum<Status> status, Pageable pageable);
+    Page<Project> findByIsActiveAndIsPublicAndStatusIsNot(Boolean isActive, Boolean isPublic, Enum<ProjectProgressState> status, Pageable pageable);
 }

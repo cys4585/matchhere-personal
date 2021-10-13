@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CompositeProjectTechstack implements Serializable {
 
+    private static final long serialVersionUID = 6083487924395890406L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "techstack_id")
     private Techstack techstack;
