@@ -1,5 +1,6 @@
 package com.ssafy.match.member.service;
 
+import com.ssafy.match.common.dto.DetailPositionInterface;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
@@ -11,6 +12,9 @@ import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
+import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
@@ -18,7 +22,7 @@ import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
-import com.ssafy.match.member.repository.DetailPositionRepository;
+import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
@@ -87,9 +91,9 @@ public class MemberService {
         for (Study study : memberStudyRepository.studyInMember(member)) {
             myStudyList.add(StudyInfoResponseDto.of(study));
         }
-        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMemberName(member);
+        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -122,9 +126,9 @@ public class MemberService {
         for (Study study : memberStudyRepository.studyInMember(member)) {
             myStudyList.add(StudyInfoResponseDto.of(study));
         }
-        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMemberName(member);
+        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPosition> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -138,6 +142,20 @@ public class MemberService {
         return mypageResponseDto;
     }
 
+    @Transactional(readOnly = true)
+    public MemberBasicinfoResponseDto getMemberBasicinfo() {
+        MemberBasicinfoResponseDto memberBasicinfoResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberBasicinfoResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        DBFile cover_pic = member.getCover_pic();
+        if (cover_pic != null) {
+            memberBasicinfoResponseDto.setCoverpic_uri(cover_pic.getDownload_uri());
+        }
+        return memberBasicinfoResponseDto;
+    }
+
     @Transactional
     public HttpStatus updateMemberBasicInfo(MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
@@ -147,6 +165,22 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
+    @Transactional(readOnly = true)
+    public MemberSkillResponseDto getMemberSkills() {
+        MemberSkillResponseDto memberSkillResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberSkillResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
+        memberSkillResponseDto.setDpositionList(dpositionList);
+        memberSkillResponseDto.setTechList(techList);
+
+        return memberSkillResponseDto;
+    }
+
     @Transactional
     public HttpStatus updateMemberSkills(MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
@@ -154,6 +188,23 @@ public class MemberService {
         updateDposition(member, memberSkillRequestDto.getDpositionList());
         updatePosition(member, memberSkillRequestDto.getPosition());
         return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberPortfolioResponseDto getMemberPortfolio() {
+        MemberPortfolioResponseDto memberPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberPortfolioResponseDto::of)
+                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        DBFile portfolio = member.getPortfolio();
+        if (portfolio != null) {
+            memberPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
+        }
+        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
+        memberPortfolioResponseDto.setSnsList(snsList);
+
+        return memberPortfolioResponseDto;
     }
 
     @Transactional
@@ -299,7 +350,7 @@ public class MemberService {
 
     @Transactional
     public void updateDposition(Member member, List<String> dpositionList) {
-        List<DetailPosition> detailPositions = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> detailPositions = detailPositionRepository.findAllByMember(member);
         if (!detailPositions.isEmpty()) {
             detailPositionRepository.deleteAll();
         }

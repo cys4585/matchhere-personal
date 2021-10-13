@@ -1,14 +1,10 @@
 package com.ssafy.match.member.dto.response;
 
 
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.ssafy.match.member.entity.Member;
+import lombok.*;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class MemberBasicinfoResponseDto {
     private String coverpic_uri;
     private String nickname;
@@ -16,11 +12,20 @@ public class MemberBasicinfoResponseDto {
     private String city;
     private String bio;
 
-//    public static MemberBasicinfoResponseDto of(String coverpic_uri, String nickname, String name, String city, String bio) {
-//        return new MemberBasicinfoResponseDto(coverpic_uri, nickname, name, city, bio);
-//    }
+    public static MemberBasicinfoResponseDto of(Member member) {
+        return MemberBasicinfoResponseDto.builder()
+                .nickname(member.getNickname())
+                .name(member.getName())
+                .city(member.getCity())
+                .bio(member.getBio())
+                .build();
+    }
 
-    public static MemberBasicinfoResponseDto of(MemberBasicInfoRequestDto memberBasicinfoRequestDto) {
-        return new MemberBasicinfoResponseDto(memberBasicinfoRequestDto.getCoverpic_uuid(), memberBasicinfoRequestDto.getNickname(), memberBasicinfoRequestDto.getName(), memberBasicinfoRequestDto.getCity(), memberBasicinfoRequestDto.getBio());
+    @Builder
+    public MemberBasicinfoResponseDto(String nickname, String name, String city, String bio) {
+        this.nickname = nickname;
+        this.name = name;
+        this.city = city;
+        this.bio = bio;
     }
 }

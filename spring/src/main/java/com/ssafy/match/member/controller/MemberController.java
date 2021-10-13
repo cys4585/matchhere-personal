@@ -3,6 +3,9 @@ package com.ssafy.match.member.controller;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
+import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -50,6 +53,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMyPage());
     }
 
+    @GetMapping("/basicinfo")
+    @ApiOperation(value = "내 기본정보 Get")
+    public ResponseEntity<MemberBasicinfoResponseDto> getMemberBasicinfo() {
+        return ResponseEntity.ok(memberService.getMemberBasicinfo());
+    }
+
     @PutMapping("/basicinfo")
     @ApiOperation(value = "내 기본정보 Update")
     @ApiResponses(value = {
@@ -59,6 +68,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateMemberBasicInfo(memberBasicinfoRequestDto));
     }
 
+    @GetMapping("/skills")
+    @ApiOperation(value = "내 직무/기술스택 Get")
+    public ResponseEntity<MemberSkillResponseDto> getMemberSkills() {
+        return ResponseEntity.ok(memberService.getMemberSkills());
+    }
+
     @PutMapping("/skills")
     @ApiOperation(value = "내 직무/기술스택 Update")
     @ApiResponses(value = {
@@ -66,6 +81,12 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
+    }
+
+    @GetMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Get")
+    public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberPortfolio());
     }
 
     @PutMapping
