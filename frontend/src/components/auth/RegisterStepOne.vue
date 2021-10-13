@@ -1,5 +1,5 @@
 <template>
-  <form class="form">
+  <form class="form" @submit.prevent="handleSubmit">
     <div class="fields">
       <InputFormField
         v-for="field in formFields"
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { computed, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import {
   confirmPasswordValidator,
   emailValidator,
@@ -32,7 +32,8 @@ import { useStore } from "vuex"
 export default {
   name: "RegisterStepOne",
   components: { InputFormField, SubmitButton, SelectFormField },
-  setup() {
+  emits: ["update:step"],
+  setup(_, { emit }) {
     const store = useStore()
     const formFields = ref({
       email: {
@@ -88,6 +89,7 @@ export default {
       placeholder: "지역을 선택하세요",
       options: cityList,
     })
+    const loading = ref(false)
 
     const isAllfieldsFilled = computed(() => {
       return (
@@ -119,16 +121,40 @@ export default {
       }
     }
 
-    // const handleSubmit = () => {
+    const handleSubmit = async () => {
+      const formData = {
+        email: formFields.value.email.value,
+        password: formFields.value.password.value,
+        nickname: formFields.value.nickname.value,
+        name: formFields.value.name.value,
+        city: cityField.value.value,
+      }
+      loading.value = true
+      await store.dispatch("auth/submitStepOne", formData)
+      loading.value = false
+      emit("update:step", 2)
+    }
 
-    // }
+    onMounted(() => {
+      if (store.getters["auth/getStep"] === 2) {
+        const { email, password, nickname, name, city } =
+          store.getters["auth/getRegisterFormData"]
+        formFields.value.email.value = email
+        formFields.value.password.value = password
+        formFields.value.confirmPassword.value = password
+        formFields.value.nickname.value = nickname
+        formFields.value.name.value = name
+        cityField.value.value = city
+      }
+    })
 
     return {
       formFields,
       cityField,
+      canSubmit,
       handleChange,
       handleUpdateErrors,
-      canSubmit,
+      handleSubmit,
     }
   },
 }

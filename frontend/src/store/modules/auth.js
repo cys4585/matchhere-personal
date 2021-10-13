@@ -52,5 +52,15 @@ export default {
     getEmail(state) {
       return state.registerFormData.email
     },
+    getStep(state) {
+      if (state.registerFormData.password) {
+        return 2
+      } else {
+        return 1
+      }
+    },
+    getRegisterFormData(state) {
+      return state.registerFormData
+    },
   },
 }

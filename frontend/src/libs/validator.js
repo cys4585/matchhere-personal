@@ -91,7 +91,7 @@ export const nameValidator = (value, fieldKey) => {
       fieldKey,
       type,
       status: false,
-      message: "한글(1-8자) 또는 영어(2-8자)로 입력하세요.",
+      message: "한글(1 - 8자) 또는 영어(2 - 8자)로 입력하세요.",
     }
   }
   return {

@@ -1,43 +1,83 @@
 <template>
   <header class="page-header">
-    <div class="flex items-center justify-between">
+    <div class="inner">
       <h2>회원가입</h2>
-      <div class="flex gap-2">
-        <router-link to="/">Step 1</router-link>
+      <div class="buttons">
+        <button
+          class="button"
+          :class="{ active: currentStep === 1 }"
+          @click="handleChangeStep(1)"
+        >
+          Step 1
+        </button>
         <div class="divider"></div>
-        <router-link to="/">Step 2</router-link>
+        <button
+          class="button"
+          :class="{ active: currentStep === 2 }"
+          :disabled="maxStep === 1"
+          @click="handleChangeStep(2)"
+        >
+          Step 2
+        </button>
       </div>
     </div>
   </header>
   <section class="register-section">
     <keep-alive>
-      <component :is="currentComponent" />
+      <component :is="currentComponent" @update:step="handleChangeStep" />
     </keep-alive>
   </section>
 </template>
 
 <script>
 import RegisterStepOne from "@/components/auth/RegisterStepOne.vue"
+import RegisterStepTwo from "@/components/auth/RegisterStepTwo.vue"
 import { computed, ref } from "vue"
+import { useStore } from "vuex"
 
 export default {
   name: "Register",
   components: { RegisterStepOne },
   setup() {
-    const step = ref(1)
+    const store = useStore()
+    const currentStep = ref(store.getters["auth/getStep"])
     const currentComponent = computed(() => {
-      switch (step.value) {
+      switch (currentStep.value) {
         case 1: {
           return RegisterStepOne
         }
         default: {
-          return RegisterStepOne
+          return RegisterStepTwo
         }
       }
     })
-    return { currentComponent }
+    const maxStep = computed(() => store.getters["auth/getStep"])
+
+    const handleChangeStep = (step) => {
+      currentStep.value = step
+    }
+
+    return { currentComponent, currentStep, maxStep, handleChangeStep }
   },
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.page-header {
+  .inner {
+    @apply flex items-center justify-between;
+
+    .buttons {
+      @apply flex gap-2;
+
+      button {
+        @apply text-gray-300;
+
+        &.active {
+          @apply text-gray-900 font-medium;
+        }
+      }
+    }
+  }
+}
+</style>
