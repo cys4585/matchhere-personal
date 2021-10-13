@@ -1,8 +1,7 @@
 package com.ssafy.match.member.dto.response;
 
 
-import com.ssafy.match.member.dto.MemberUpdateResponseDto;
-import com.ssafy.match.member.dto.request.MemberBasicinfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class MemberBasicinfoResponseDto {
 //        return new MemberBasicinfoResponseDto(coverpic_uri, nickname, name, city, bio);
 //    }
 
-    public static MemberBasicinfoResponseDto of(MemberBasicinfoRequestDto memberBasicinfoRequestDto) {
+    public static MemberBasicinfoResponseDto of(MemberBasicInfoRequestDto memberBasicinfoRequestDto) {
         return new MemberBasicinfoResponseDto(memberBasicinfoRequestDto.getCoverpic_uuid(), memberBasicinfoRequestDto.getNickname(), memberBasicinfoRequestDto.getName(), memberBasicinfoRequestDto.getCity(), memberBasicinfoRequestDto.getBio());
     }
 }

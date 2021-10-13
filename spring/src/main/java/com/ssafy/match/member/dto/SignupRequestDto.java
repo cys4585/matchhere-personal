@@ -41,12 +41,14 @@ public class SignupRequestDto {
 
     @ApiModelProperty(name = "nickname", example = "별명")
     @ApiParam(value = "닉네임", required = true)
+    @Pattern(regexp = "^[0-9a-zA-Z가-힣]{4,20}$")
     @Length(min = 2, max=10)
     @NotEmpty
     private String nickname;
 
     @ApiModelProperty(name = "city", example = "부산")
     @ApiParam(value = "도시", required = true)
+
     private String city;
 
     @ApiModelProperty(name = "position", example = "개발자")

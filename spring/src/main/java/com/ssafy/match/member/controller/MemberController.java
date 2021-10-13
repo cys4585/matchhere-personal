@@ -1,8 +1,7 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.MemberBasicinfoRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -57,8 +56,8 @@ public class MemberController {
                     message = "성공"),
             @ApiResponse(code = 406, message = "데이터 에러"),
     })
-    public ResponseEntity<HttpStatus> updateMemberBasicinfo(@RequestBody @Valid MemberBasicinfoRequestDto memberBasicinfoRequestDto) throws Exception {
-        return ResponseEntity.ok(memberService.updateMemberBasicinfo(memberBasicinfoRequestDto));
+    public ResponseEntity<HttpStatus> updateMemberBasicinfo(@RequestBody @Valid MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberBasicInfo(memberBasicinfoRequestDto));
     }
 
     @PutMapping

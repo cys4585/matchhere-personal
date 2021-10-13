@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberBasicinfoRequestDto {
+public class MemberSkillRequestDto {
 
     @ApiModelProperty(name = "coverpic_uuid", example = "uuid")
     @ApiParam(value = "사용자 커버 사진 uuid", required = false)
@@ -18,14 +20,17 @@ public class MemberBasicinfoRequestDto {
 
     @ApiModelProperty(name = "nickname", example = "별명")
     @ApiParam(value = "별명", required = true)
+    @NotEmpty
     private String nickname;
 
     @ApiModelProperty(name = "name", example = "문일민")
     @ApiParam(value = "이름", required = true)
+    @NotEmpty
     private String name;
 
     @ApiModelProperty(name = "city", example = "부산")
     @ApiParam(value = "지역", required = true)
+    @NotEmpty
     private String city;
 
     @ApiModelProperty(name = "bio", example = "let me introduce")
