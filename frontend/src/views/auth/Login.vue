@@ -1,31 +1,32 @@
 <template>
-  <div class="container">
-    <section class="login-section">
-      <header>
-        <h2>로그인</h2>
-        <p>여러분이 원하는 스터디와 프로젝트를 찾아보세요!</p>
-      </header>
-      <div class="login-container">
-        <div class="form">
-          <div class="fields">
-            <InputFormField
-              v-for="(field, key) in formFields"
-              :key="key"
-              :field="field"
-              v-model="field.value"
-              @update:errors="handleUpdateErrors"
-            />
-          </div>
-          <SubmitButton :disabled="!canSubmit">로그인</SubmitButton>
+  <header class="page-header">
+    <h2>로그인</h2>
+    <p>여러분이 원하는 스터디와 프로젝트를 찾아보세요!</p>
+  </header>
+  <section class="login-section">
+    <div class="login-container">
+      <div class="form">
+        <div class="fields">
+          <InputFormField
+            v-for="(field, key) in formFields"
+            :key="key"
+            :field="field"
+            :formFields="formFields"
+            v-model="field.value"
+            @update:errors="handleUpdateErrors"
+          />
         </div>
-        <div class="links">
-          <router-link to="/" class="link">회원가입</router-link>
-          <div class="divider"></div>
-          <router-link to="/" class="link">비밀번호 찾기</router-link>
-        </div>
+        <SubmitButton :disabled="!canSubmit">로그인</SubmitButton>
       </div>
-    </section>
-  </div>
+      <div class="links">
+        <router-link :to="{ name: 'RegisterCheckEmail' }" class="link">
+          회원가입
+        </router-link>
+        <div class="divider"></div>
+        <router-link to="/" class="link">비밀번호 찾기</router-link>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -41,7 +42,8 @@ export default {
   setup() {
     const formFields = ref({
       email: {
-        label: "email",
+        key: "email",
+        label: "이메일",
         type: "string",
         value: "",
         placeholder: "이메일을 입력하세요",
@@ -49,7 +51,8 @@ export default {
         validators: [emailValidator],
       },
       password: {
-        label: "password",
+        key: "password",
+        label: "비밀번호",
         type: "password",
         value: "",
         placeholder: "비밀번호를 입력하세요",
@@ -88,15 +91,8 @@ export default {
 
 <style lang="scss" scoped>
 .login-section {
-  @apply py-10 px-4 grid gap-10;
+  @apply grid gap-10;
 
-  header {
-    @apply grid gap-4;
-
-    h2 {
-      @apply font-bold text-2xl;
-    }
-  }
   .login-container {
     @apply flex flex-col gap-2 items-center;
 

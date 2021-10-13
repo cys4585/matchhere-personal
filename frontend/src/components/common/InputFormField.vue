@@ -1,12 +1,14 @@
 <template>
   <div class="form-field">
-    <p class="label">{{ field.label }}</p>
-    <div class="input-error">
+    <label :for="field.key" class="label">{{ field.label }}</label>
+    <div class="input-wrapper">
       <input
+        :id="field.key"
         :class="{ error: isError }"
         :type="field.type"
         :placeholder="field.placeholder"
         :value="modelValue"
+        :disabled="field.disabled"
         @input="handleInput"
       />
       <div class="errors" v-if="isError">
@@ -25,9 +27,15 @@ export default {
   props: {
     field: {
       type: Object,
+      required: true,
+    },
+    formFields: {
+      type: Object,
+      required: true,
     },
     modelValue: {
       type: [String, Number],
+      required: true,
     },
   },
   emits: ["update:modelValue", "update:errors"],
@@ -37,7 +45,7 @@ export default {
     const handleValidate = (value, fieldKey) => {
       const { validators } = props.field
       validators.every((validator) => {
-        const validateRes = validator(value, fieldKey)
+        const validateRes = validator(value, fieldKey, props.formFields)
         emit("update:errors", validateRes)
         return validateRes.status
       })
@@ -45,7 +53,7 @@ export default {
 
     const handleInput = (event) => {
       emit("update:modelValue", event.target.value)
-      handleValidate(event.target.value, props.field.label)
+      handleValidate(event.target.value, props.field.key)
     }
 
     return { isError, handleInput }
@@ -61,7 +69,7 @@ export default {
     @apply text-sm font-medium;
   }
 
-  .input-error {
+  .input-wrapper {
     @apply grid gap-1;
 
     input {
