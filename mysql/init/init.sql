@@ -898,7 +898,7 @@ ENGINE = InnoDB;
 -- Table `matching`.`detail_position`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`detail_position` (
-  `id` INT NOT NULL,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `member_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
@@ -926,6 +926,7 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
 
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (1, "ionicons");
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (2, "material-ui");

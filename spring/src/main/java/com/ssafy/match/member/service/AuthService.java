@@ -8,8 +8,8 @@ import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.DetailPosition;
-import com.ssafy.match.member.repository.DetailPositionRepository;
+import com.ssafy.match.common.entity.DetailPosition;
+import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
@@ -70,17 +70,15 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
+    public String emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
         Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
-        if (emailCheck.isEmpty()) {
-            return false;
-        } else {
+        if (emailCheck.isPresent()) {
             if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
                 emailCheck.get().updateIsCheck(Boolean.TRUE);
-                return true;
+                return emailCheck.get().getEmail();
             }
-            return false;
         }
+        return "";
     }
 
     @Transactional(readOnly = true)
@@ -95,6 +93,13 @@ public class AuthService {
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) throws Exception {
         if (memberRepository.existsByEmail(signupRequestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        }
+        if (memberRepository.existsByNickname(signupRequestDto.getNickname())) {
+            throw new Exception("중복된 닉네임 입니다");
+        }
+        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(signupRequestDto.getEmail());
+        if (emailCheck.isEmpty() || emailCheck.get().getIs_check() == Boolean.FALSE) {
+            throw new Exception("email인증이 완료되지 않았습니다!");
         }
         Member member = signupRequestDto.toMember(passwordEncoder);
         Member ret = memberRepository.save(member);
@@ -189,7 +194,7 @@ public class AuthService {
                         .member(member)
                         .techstack(techstack)
                         .build();
-                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(Level.from(entry.getValue())).build();
+                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
                 memberTechstackRepository.save(memberTechstack);
             }
         }
