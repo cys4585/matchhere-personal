@@ -147,14 +147,14 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
-//    @Transactional
-//    public HttpStatus updateMemberSkill(MemberSkillRequestDto memberSkillRequestDto) {
-//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-//        validPosition();
-//        validDPosition();
-//        validTechstack();
-//
-//    }
+    @Transactional
+    public HttpStatus updateMemberSkill(MemberSkillRequestDto memberSkillRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        validPosition();
+        validDPosition();
+        validTechstack();
+
+    }
 
     @Transactional
     public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
