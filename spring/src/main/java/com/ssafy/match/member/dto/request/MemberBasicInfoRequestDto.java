@@ -1,6 +1,8 @@
 package com.ssafy.match.member.dto.request;
 
 
+import com.ssafy.match.common.annotation.Enum;
+import com.ssafy.match.common.entity.City;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,7 @@ public class MemberBasicInfoRequestDto {
     @ApiModelProperty(name = "nickname", example = "별명")
     @ApiParam(value = "별명", required = true)
     @Pattern(regexp = "^[0-9a-zA-Z가-힣]{4,20}$")
-    @Length(min = 2, max=10)
+//    @Length(min = 2, max=10)
     @NotEmpty
     private String nickname;
 
@@ -35,6 +37,7 @@ public class MemberBasicInfoRequestDto {
 
     @ApiModelProperty(name = "city", example = "부산")
     @ApiParam(value = "지역", required = true)
+    @Enum(enumClass = City.class, ignoreCase = false)
     @NotEmpty
     private String city;
 

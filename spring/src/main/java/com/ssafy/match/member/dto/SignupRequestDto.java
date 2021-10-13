@@ -1,6 +1,8 @@
 package com.ssafy.match.member.dto;
 
+import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.Authority;
+import com.ssafy.match.common.entity.City;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
@@ -48,7 +50,7 @@ public class SignupRequestDto {
 
     @ApiModelProperty(name = "city", example = "부산")
     @ApiParam(value = "도시", required = true)
-
+    @Enum(enumClass = City.class, ignoreCase = true)
     private String city;
 
     @ApiModelProperty(name = "position", example = "개발자")
