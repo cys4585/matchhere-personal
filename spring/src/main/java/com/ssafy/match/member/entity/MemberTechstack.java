@@ -16,11 +16,11 @@ public class MemberTechstack {
     @EmbeddedId
     private CompositeMemberTechstack compositeMemberTechstack;
 
-    private Level level;
+    private String level;
 
     @Builder
     public MemberTechstack(
-        CompositeMemberTechstack compositeMemberTechstack, Level level) {
+        CompositeMemberTechstack compositeMemberTechstack, String level) {
         this.compositeMemberTechstack = compositeMemberTechstack;
         this.level = level;
     }

@@ -19,4 +19,6 @@ public interface MemberTechstackRepository extends JpaRepository<MemberTechstack
 
     Optional<MemberTechstack> findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(Member member, Techstack techstack);
 
+    List<MemberTechstack> findAllByCompositeMemberTechstack_Member(Member member);
+
 }
