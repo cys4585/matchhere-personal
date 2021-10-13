@@ -6,7 +6,7 @@ public enum GroupAuthority {
     소유자, 관리자, 팀원;
 
     @JsonCreator
-    public static Status from(String s) {
-        return Status.valueOf(s.toUpperCase());
+    public static ProjectProgressState from(String s) {
+        return ProjectProgressState.valueOf(s.toUpperCase());
     }
 }

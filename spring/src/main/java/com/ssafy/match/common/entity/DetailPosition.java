@@ -1,4 +1,4 @@
-package com.ssafy.match.member.entity;
+package com.ssafy.match.common.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
