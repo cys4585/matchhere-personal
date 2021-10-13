@@ -1,80 +1,87 @@
 <template>
-  <div>
-    <div>
-      <h1>프로젝트 만들기</h1>
-      <p>매치히어에서 내 프로젝트를 만들고 나의 성공시대 시작됐다!</p>
-    </div>
-    <div>
-      <div v-for="(form, name, index) in formFields" :key="form.id">
-        <h3 v-if="name == 'project'">프로젝트</h3>
-        <h3 v-else-if="name == 'member'">구성원</h3>
-        <div v-for="field in form" :key="field.id">
-          <InputFormField
-            v-if="field.type == 'string'"
-            :field="field"
-            v-model="field.value"
-            @update:errors="handleUpdateErrors"
-          />
-          <div v-else>
-            <p>{{ field.label }}</p>
-            <div v-if="field.type == 'radio'">
-              <div v-for="(state, index, key) in field.stateList" :key="key">
+  <div class="container">
+    <section class="project-form-section">
+      <header>
+        <h2>프로젝트 만들기</h2>
+        <p>매치히어에서 내 프로젝트를 만들고 나의 성공시대 시작됐다!</p>
+      </header>
+      <div class="project-form-container">
+        <div
+          class="form"
+          v-for="(form, name, index) in formFields"
+          :key="form.id"
+        >
+          <h3 v-if="name == 'project'">프로젝트</h3>
+          <h3 v-else-if="name == 'member'">구성원</h3>
+          <div class="fields" v-for="field in form" :key="field.id">
+            <InputFormField
+              v-if="field.type == 'string'"
+              :field="field"
+              v-model="field.value"
+              @update:errors="handleUpdateErrors"
+            />
+            <div v-else class="form-field">
+              <p class="label">{{ field.label }}</p>
+              <div v-if="field.type == 'radio'">
+                <div v-for="(state, index, key) in field.stateList" :key="key">
+                  <input
+                    class="input-radio"
+                    :type="field.type"
+                    :id="field.idList[index]"
+                    :value="state"
+                    v-model="field.value"
+                  />
+                  <label :for="field.idList[index]">{{ state }}</label>
+                </div>
+              </div>
+              <div v-else-if="field.type == 'file'">
+                <!-- file 타입은 양방향 바인딩 할 수 없다. method로 구현 -->
                 <input
                   :type="field.type"
-                  :id="field.idList[index]"
-                  :value="state"
+                  accept="image/png, image/jpeg"
+                  @change="selectThumbnailImage"
+                />
+                <p>{{ field.value }}</p>
+              </div>
+              <div v-else-if="field.type == 'date'">
+                <input :type="field.type" v-model="field.value" />
+              </div>
+              <div v-else-if="field.type == 'select'">
+                <select v-model="field.value">
+                  <option disabled value="">{{ field.description }}</option>
+                  <option
+                    v-for="value in field.valueList"
+                    :key="value.id"
+                    :value="value"
+                  >
+                    {{ value }}
+                  </option>
+                </select>
+              </div>
+              <div v-else-if="field.type == 'textarea'">
+                <textarea
+                  :placeholder="field.placeholder"
+                  v-model="field.value"
+                  class="w-full h-32 border-2"
+                ></textarea>
+              </div>
+              <div v-else-if="field.type == 'number'">
+                <input
+                  :type="field.type"
+                  min="0"
+                  max="10"
                   v-model="field.value"
                 />
-                <label :for="field.idList[index]">{{ state }}</label>
               </div>
             </div>
-            <div v-else-if="field.type == 'file'">
-              <!-- file 타입은 양방향 바인딩 할 수 없다. method로 구현 -->
-              <input
-                :type="field.type"
-                accept="image/png, image/jpeg"
-                @change="selectThumbnailImage"
-              />
-              <p>{{ field.value }}</p>
-            </div>
-            <div v-else-if="field.type == 'date'">
-              <input :type="field.type" v-model="field.value" />
-            </div>
-            <div v-else-if="field.type == 'select'">
-              <select v-model="field.value">
-                <option disabled value="">{{ field.description }}</option>
-                <option
-                  v-for="value in field.valueList"
-                  :key="value.id"
-                  :value="value"
-                >
-                  {{ value }}
-                </option>
-              </select>
-            </div>
-            <div v-else-if="field.type == 'textarea'">
-              <textarea
-                :placeholder="field.placeholder"
-                v-model="field.value"
-                class="w-full h-32 border-2"
-              ></textarea>
-            </div>
-            <div v-else-if="field.type == 'number'">
-              <input
-                :type="field.type"
-                min="0"
-                max="10"
-                v-model="field.value"
-              />
-            </div>
           </div>
+          <hr v-if="index < Object.keys(formFields).length - 1" />
         </div>
-        <hr v-if="index < Object.keys(formFields).length - 1" />
+        <SubmitButton :disabled="!canSubmit" @click="createProject"
+          >생성</SubmitButton
+        >
       </div>
-      <SubmitButton :disabled="!canSubmit" @click="createProject"
-        >생성</SubmitButton
-      >
-    </div>
+    </section>
   </div>
 </template>
 
@@ -299,4 +306,55 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.project-form-section {
+  @apply py-10 px-4 grid gap-10;
+
+  header {
+    @apply grid gap-4;
+
+    h2 {
+      @apply font-bold text-2xl;
+    }
+  }
+
+  .project-form-container {
+    @apply flex flex-col gap-6 items-center;
+
+    .form {
+      @apply w-full grid gap-6;
+
+      h3 {
+        @apply font-bold text-lg;
+      }
+
+      .fields {
+        @apply grid gap-4;
+
+        .form-field {
+          @apply grid gap-2 w-full;
+
+          .label {
+            @apply text-sm font-medium;
+          }
+          input,
+          select {
+            @apply border border-gray-400 rounded py-2 px-4 outline-none w-full;
+
+            &:focus {
+              @apply ring-2 ring-blue-500;
+            }
+
+            &.error {
+              @apply border-red-500 bg-red-50;
+            }
+          }
+          .input-radio {
+            @apply w-auto;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
