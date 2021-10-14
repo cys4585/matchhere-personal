@@ -1,11 +1,12 @@
 package com.ssafy.match.member.dto;
 
+import com.ssafy.match.common.dto.DetailPositionInterface;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.member.entity.DetailPosition;
+import com.ssafy.match.common.entity.DetailPosition;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class MypageResponseDto {
     @ApiModelProperty(name = "snsList", example = "[{\"id\":1, \"snsName\":\"github\", \"snsAccount\":\"gitid\"},{\"id\":2, \"snsName\":\"twitter\", \"snsAccount\":\"twitterid\"}]")
     private List<MemberSns> snsList = new ArrayList<>();
     @ApiModelProperty(name = "dpositionList", example = "[{\"id\":1, \"name\":\"frontend\"},{\"id\":2, \"name\":\"devops\"}]")
-    private List<DetailPosition> dpositionList = new ArrayList<>();
+    private List<DetailPositionInterface> dpositionList = new ArrayList<>();
 
     public static MypageResponseDto of(Member member) {
         return MypageResponseDto.builder()
