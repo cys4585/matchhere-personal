@@ -11,6 +11,7 @@ import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
 import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
@@ -36,6 +37,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PreRemove;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -208,6 +211,15 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
+        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
+        member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
 
@@ -233,31 +245,40 @@ public class MemberService {
     public void setCoverPic(Member member, String uuid) throws Exception {
         if (uuid == null || uuid.equals("")) {
             if (member.getCover_pic() != null) {
-                dbFileRepository.delete(member.getCover_pic());
                 member.setCover_pic(null);
+                dbFileRepository.delete(member.getCover_pic());
             }
             return;
         } else {
             if (member.getCover_pic() != null) {
+                DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
+                dbFileRepository.delete(dbFile);
+            } else if (!member.getCover_pic().getId().equals(uuid)) {
+                DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
                 dbFileRepository.delete(member.getCover_pic());
+                member.setCover_pic(dbFile);
             }
-            DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
-            member.setCover_pic(dbFile);
         }
     }
 
+//    @PreRemove
     @Transactional
     public void setPortfolioUuid(Member member, String uuid) throws Exception{
-        if(uuid == null && member.getPortfolio() != null) {
-            dbFileRepository.delete(member.getPortfolio());
-            member.setPortfolio(null);
-            return;
-        } else {
+        if (uuid == null || uuid.equals("")) {
             if (member.getPortfolio() != null) {
+                member.setPortfolio(null);
                 dbFileRepository.delete(member.getPortfolio());
             }
-            DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
-            member.setPortfolio(dbFile);
+            return;
+        } else {
+            if (member.getPortfolio() == null) {
+                DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
+                member.setPortfolio(dbFile);
+            } else if (!member.getPortfolio().getId().equals(uuid)) {
+                DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
+                dbFileRepository.delete(member.getPortfolio());
+                member.setPortfolio(dbFile);
+            }
         }
     }
 
@@ -312,7 +333,8 @@ public class MemberService {
 
     @Transactional
     public void updateSns(Member member, HashMap<String, String> snsList) {
-        if (snsList != null && !snsList.isEmpty()) {
+        if (!snsList.isEmpty()) {
+//        if (snsList != null && !snsList.isEmpty()) {
             snsList.forEach((strKey, strValue) -> {
                 Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
                 if (memberSns.isEmpty()) {
