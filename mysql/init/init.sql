@@ -14,7 +14,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema matching
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `matching` ;
 
 -- -----------------------------------------------------
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`files` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 46
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_board` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`career` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`certification` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_application_form` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`education` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_club` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 12
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -308,7 +308,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_project` (
     REFERENCES `matching`.`project` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -327,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_sns` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 17
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -367,7 +367,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`study` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -389,7 +389,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_study` (
     REFERENCES `matching`.`study` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -403,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`techstack` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -423,7 +423,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_techstack` (
     REFERENCES `matching`.`techstack` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -448,7 +448,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`message` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -483,7 +483,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_application_form` (
     REFERENCES `matching`.`project` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -504,7 +504,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_techstack` (
     REFERENCES `matching`.`techstack` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -516,7 +516,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`refresh_token` (
   PRIMARY KEY (`member_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -548,7 +548,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`study_application_form` (
     REFERENCES `matching`.`study` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
@@ -928,11 +928,6 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
-insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'ian.ilminmoon@gmail.com', true, '문일민', '문일민', '$2a$10$Nq9bmux./5Wl.gLOtFzB9.PA1U/TNmm7I84JHMeLaRtu6zStRwP6O', NULL, NULL, '개발자', NULL);
-insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'mim1994@naver.com', true, '문일민', 'Admin', '$2a$10$F14BdCTi8oQkS2TSK6cEDe2F1oXoVSCkTzqJnRBmBrLIy0Lt/kyHG', NULL, NULL, '개발자', NULL);
-insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'figma@kakao.com', true, '김병훈', '김병훈', '$2a$10$E1/GHayTjMI36n56vdgybOGkK.PKuvkBdx048Kg1Vg4DOWAybjePi', NULL, NULL, '개발자', NULL);
-insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'soc4585@gmail.com', true, '최영수', '최영수', '$2a$10$CZnlgvo29W2m1LQ1o7WzOupsPBcPQ4Beu8Xe2dA4.lNyfx7KzQBe6', NULL, NULL, '개발자', NULL);
 
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (1, "ionicons");
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (2, "material-ui");
