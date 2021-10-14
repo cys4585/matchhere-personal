@@ -1,4 +1,4 @@
-package com.ssafy.match.config;
+package com.ssafy.match.common.config;
 
 import com.ssafy.match.jwt.JwtAccessDeniedHandler;
 import com.ssafy.match.jwt.JwtAuthenticationEntryPoint;

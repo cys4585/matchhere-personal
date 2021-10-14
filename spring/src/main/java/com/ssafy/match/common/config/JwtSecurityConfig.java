@@ -1,4 +1,4 @@
-package com.ssafy.match.config;
+package com.ssafy.match.common.config;
 
 import com.ssafy.match.jwt.JwtFilter;
 import com.ssafy.match.jwt.TokenProvider;

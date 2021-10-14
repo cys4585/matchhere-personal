@@ -1,4 +1,4 @@
-package com.ssafy.match.config;
+package com.ssafy.match.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

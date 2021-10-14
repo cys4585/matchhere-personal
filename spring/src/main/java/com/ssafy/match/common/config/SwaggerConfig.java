@@ -1,4 +1,4 @@
-package com.ssafy.match.config;
+package com.ssafy.match.common.config;
 
 
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.service.RequestParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 public class SwaggerConfig {
