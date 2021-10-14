@@ -2,6 +2,7 @@ package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
 import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
@@ -87,6 +88,15 @@ public class MemberController {
     @ApiOperation(value = "내 포트폴리오 Get")
     public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {
         return ResponseEntity.ok(memberService.getMemberPortfolio());
+    }
+
+    @PutMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
     }
 
     @PutMapping
