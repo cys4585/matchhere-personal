@@ -24,7 +24,7 @@
           {{ submitButtonLabel }}
         </SubmitButton>
       </form>
-      <router-link :to="{ name: 'RegisterCheckEmail' }"> 뒤로가기 </router-link>
+      <router-link :to="{ name: 'CheckEmail' }"> 뒤로가기 </router-link>
     </div>
   </section>
   <section class="error-section">
@@ -45,7 +45,7 @@ import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
 export default {
-  name: "RegisterCheckEmail",
+  name: "AuthEmail",
   components: { InputFormField, SubmitButton },
   setup() {
     const store = useStore()
@@ -96,7 +96,7 @@ export default {
       const authCode = formFields.value.authCode.value
       loading.value = true
       await store.dispatch("auth/authEmail", authCode)
-      router.push({ name: "Register" })
+      router.push({ name: "Signup" })
     }
 
     return {

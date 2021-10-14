@@ -31,7 +31,7 @@ import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
 export default {
-  name: "RegisterCheckEmail",
+  name: "CheckEmail",
   components: { InputFormField, SubmitButton },
   setup() {
     const store = useStore()
@@ -79,7 +79,7 @@ export default {
       const email = formFields.value.email.value
       sendEmailLoading.value = true
       await store.dispatch("auth/checkEmail", email)
-      router.push({ name: "RegisterAuthEmail" })
+      router.push({ name: "AuthEmail" })
     }
 
     return {

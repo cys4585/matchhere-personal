@@ -19,7 +19,7 @@
         <SubmitButton :disabled="!canSubmit">로그인</SubmitButton>
       </div>
       <div class="links">
-        <router-link :to="{ name: 'RegisterCheckEmail' }" class="link">
+        <router-link :to="{ name: 'CheckEmail' }" class="link">
           회원가입
         </router-link>
         <div class="divider"></div>

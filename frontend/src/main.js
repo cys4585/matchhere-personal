@@ -6,7 +6,7 @@ import "./assets/tailwind.css"
 
 if (localStorage.getItem("registerFormData")) {
   store.commit(
-    "auth/SET_REGISTER_FORMDATA",
+    "auth/SET_SIGNUP_FORMDATA",
     JSON.parse(localStorage.getItem("registerFormData"))
   )
 }

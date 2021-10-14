@@ -1,25 +1,37 @@
 <template>
-  <form class="form" @submit.prevent="handleSubmit">
+  <div class="form">
     <div class="fields">
-      <div>
+      <div class="grid gap-4">
         <SelectFormField
           :field="positionField"
           v-model="positionField.value"
-          @update:modelValue="handlePositionUpdate"
+          @update:modelValue="handleUpdatePosition"
         />
         <div class="dplist">
           <DetailPositionButton
             v-for="dp in displayedDPList"
             :key="dp.id"
             :dp="dp"
-            @onUpdateStatus="handleDPClick"
+            @onUpdateStatus="handleClickDP"
           />
         </div>
       </div>
-      <TeckStackField />
+      <div class="grid gap-2">
+        <TeckStackField @SelectTeckStack="handleSelectTeckStack" />
+        <div class="tslist">
+          <ul v-for="(userLevel, key) in selectedTeckStackList" :key="key">
+            <TeckStackListItem
+              :name="key"
+              :userLevel="userLevel"
+              @change:userLevel="handleChangeUserLevel"
+              @remove:teckStack="handleRemoveTeckStack"
+            />
+          </ul>
+        </div>
+      </div>
     </div>
-    <SubmitButton>회원가입</SubmitButton>
-  </form>
+    <SubmitButton @click="handleSubmit">회원가입</SubmitButton>
+  </div>
 </template>
 
 <script>
@@ -28,18 +40,22 @@ import SubmitButton from "@/components/common/SubmitButton.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
 import DetailPositionButton from "@/components/auth/DetailPositionButton.vue"
 import TeckStackField from "@/components/auth/TeckStackField.vue"
+import TeckStackListItem from "@/components/auth/TeckStackListItem.vue"
 import { detailPositionList } from "@/libs/data"
+import { useStore } from "vuex"
 
 export default {
-  name: "RegisterStepTwo",
+  name: "SignupStepTwo",
   components: {
     SubmitButton,
     SelectFormField,
     DetailPositionButton,
     TeckStackField,
+    TeckStackListItem,
   },
   emits: ["update:step"],
   setup() {
+    const store = useStore()
     const dpList = ref({ ...detailPositionList })
     const positionField = ref({
       label: "포지션",
@@ -47,6 +63,7 @@ export default {
       placeholder: "포지션을 선택하세요",
       options: ["개발자", "기획자", "디자이너"],
     })
+    const selectedTeckStackList = ref({})
 
     const positionKey = computed(() => {
       if (positionField.value.value === "개발자") {
@@ -57,6 +74,7 @@ export default {
         return "designer"
       }
     })
+
     const detailPositionListField = computed(() =>
       dpList.value[positionKey.value]
         .filter((dp) => dp.selected)
@@ -77,13 +95,13 @@ export default {
       }
     })
 
-    const handlePositionUpdate = () => {
+    const handleUpdatePosition = () => {
       Object.keys(dpList.value).forEach((key) => {
         dpList.value[key].forEach((dp) => (dp.selected = false))
       })
     }
 
-    const handleDPClick = (id) => {
+    const handleClickDP = (id) => {
       dpList.value[positionKey.value].forEach((dp) => {
         if (dp.id === id) {
           dp.selected = !dp.selected
@@ -91,13 +109,47 @@ export default {
       })
     }
 
+    const handleSelectTeckStack = (teckStackKey) => {
+      if (selectedTeckStackList.value[teckStackKey]) return
+      selectedTeckStackList.value[teckStackKey] = "하"
+    }
+
+    const handleChangeUserLevel = ({ key, level }) => {
+      selectedTeckStackList.value[key] = level
+    }
+
+    const handleRemoveTeckStack = (key) => {
+      console.log(key)
+      delete selectedTeckStackList.value[key]
+    }
+
+    const handleSubmit = () => {
+      const formData = {
+        position: positionField.value.value,
+        dpositionList: [...detailPositionListField.value],
+        techList: Object.entries(selectedTeckStackList.value).map(
+          ([key, value]) => ({
+            [key]: value,
+          })
+        ),
+      }
+
+      console.log(formData)
+      store.commit("auth/SET_SIGNUP_FORMDATA", formData)
+    }
+
     return {
       positionField,
       positionKey,
       displayedDPList,
+      selectedTeckStackList,
       detailPositionListField,
-      handleDPClick,
-      handlePositionUpdate,
+      handleClickDP,
+      handleUpdatePosition,
+      handleSelectTeckStack,
+      handleChangeUserLevel,
+      handleRemoveTeckStack,
+      handleSubmit,
     }
   },
 }
@@ -106,6 +158,7 @@ export default {
 <style lang="scss" scoped>
 .form {
   @apply grid gap-6;
+
   .fields {
     @apply grid gap-4;
 
@@ -123,6 +176,10 @@ export default {
           @apply bg-blue-200;
         }
       }
+    }
+
+    .tslist {
+      @apply grid gap-2;
     }
   }
 }

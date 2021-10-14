@@ -3,7 +3,7 @@ import AuthAPI from "@/api/auth"
 export default {
   namespaced: true,
   state: {
-    registerFormData: {
+    signupFormData: {
       email: "",
       password: "",
       nickname: "",
@@ -15,11 +15,11 @@ export default {
     },
   },
   mutations: {
-    SET_REGISTER_FORMDATA(state, formData) {
-      state.registerFormData = { ...state.registerFormData, ...formData }
+    SET_SIGNUP_FORMDATA(state, formData) {
+      state.signupFormData = { ...state.signupFormData, ...formData }
       localStorage.setItem(
-        "registerFormData",
-        JSON.stringify(state.registerFormData)
+        "signupFormData",
+        JSON.stringify(state.signupFormData)
       )
     },
   },
@@ -27,7 +27,7 @@ export default {
     async checkEmail({ commit }, email) {
       try {
         await AuthAPI.checkEmail(email)
-        commit("SET_REGISTER_FORMDATA", { email })
+        commit("SET_SIGNUP_FORMDATA", { email })
       } catch (error) {
         alert(error)
       }
@@ -42,7 +42,7 @@ export default {
     async submitStepOne({ commit }, formData) {
       try {
         await AuthAPI.checkNickname(formData.nickname)
-        commit("SET_REGISTER_FORMDATA", formData)
+        commit("SET_SIGNUP_FORMDATA", formData)
       } catch (error) {
         alert(error)
       }
@@ -50,17 +50,17 @@ export default {
   },
   getters: {
     getEmail(state) {
-      return state.registerFormData.email
+      return state.signupFormData.email
     },
     getStep(state) {
-      if (state.registerFormData.password) {
+      if (state.signupFormData.password) {
         return 2
       } else {
         return 1
       }
     },
-    getRegisterFormData(state) {
-      return state.registerFormData
+    getSIgnupFormData(state) {
+      return state.signupFormData
     },
   },
 }

@@ -30,7 +30,7 @@ import SubmitButton from "@/components/common/SubmitButton.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
 import { useStore } from "vuex"
 export default {
-  name: "RegisterStepOne",
+  name: "SignupStepOne",
   components: { InputFormField, SubmitButton, SelectFormField },
   emits: ["update:step"],
   setup(_, { emit }) {
@@ -138,7 +138,7 @@ export default {
     onMounted(() => {
       if (store.getters["auth/getStep"] === 2) {
         const { email, password, nickname, name, city } =
-          store.getters["auth/getRegisterFormData"]
+          store.getters["auth/getSIgnupFormData"]
         formFields.value.email.value = email
         formFields.value.password.value = password
         formFields.value.confirmPassword.value = password

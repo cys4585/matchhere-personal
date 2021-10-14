@@ -22,7 +22,7 @@
       </div>
     </div>
   </header>
-  <section class="register-section">
+  <section class="signup-section">
     <keep-alive>
       <component :is="currentComponent" @update:step="handleChangeStep" />
     </keep-alive>
@@ -30,24 +30,24 @@
 </template>
 
 <script>
-import RegisterStepOne from "@/components/auth/RegisterStepOne.vue"
-import RegisterStepTwo from "@/components/auth/RegisterStepTwo.vue"
+import SignupStepOne from "@/components/auth/SignupStepOne.vue"
+import SignupStepTwo from "@/components/auth/SignupStepTwo.vue"
 import { computed, ref } from "vue"
 import { useStore } from "vuex"
 
 export default {
-  name: "Register",
-  components: { RegisterStepOne },
+  name: "Signup",
+  components: { SignupStepOne },
   setup() {
     const store = useStore()
     const currentStep = ref(store.getters["auth/getStep"])
     const currentComponent = computed(() => {
       switch (currentStep.value) {
         case 1: {
-          return RegisterStepOne
+          return SignupStepOne
         }
         default: {
-          return RegisterStepTwo
+          return SignupStepTwo
         }
       }
     })

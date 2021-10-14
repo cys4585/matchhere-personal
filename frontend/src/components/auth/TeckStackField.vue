@@ -3,20 +3,24 @@
     <div class="input-field">
       <label for="teckstack-input">기술스택</label>
       <div class="input-wrapper">
-        <input type="text" id="teckstack-input" v-model="searchKeyword" />
-        <button class="material-icons" v-if="searchKeyword.length === 0">
+        <input
+          type="text"
+          id="teckstack-input"
+          v-model="searchTerm"
+          placeholder="ex) javascript, java, k8s"
+        />
+        <button class="material-icons" v-if="searchTerm.length === 0">
           search
         </button>
-        <button class="material-icons" v-else @click="searchKeyword = ''">
+        <button class="material-icons" v-else @click="handleResetSearchTerm">
           close
         </button>
       </div>
     </div>
-    <ul class="teckstack-list" v-if="searchKeyword">
+    <ul class="teckstack-list" v-if="searchTerm">
       <template v-if="searchedTechStackList.length !== 0">
         <li v-for="ts in searchedTechStackList" :key="ts.refIndex">
-          <button @click="handleClickTeckStack(ts.item)">
-            <img :src="require(`${ts.item}.png`)" :alt="`$${ts.item}로고`" />
+          <button @click="handleSelectTeckStack(ts.item)">
             <span>{{ ts.item }}</span>
           </button>
         </li>
@@ -33,23 +37,32 @@ import { computed, ref } from "vue"
 
 export default {
   name: "TeckStackField",
-  emits: ["clickTeckStack"],
+  emits: ["SelectTeckStack"],
   setup(_, { emit }) {
     const fuseOptions = {
-      // includeScore: true,
       threshold: 0.06,
     }
     const teckStackFuse = new Fuse(teckStackList, fuseOptions)
-    const searchKeyword = ref("")
+    const searchTerm = ref("")
     const searchedTechStackList = computed(() =>
-      teckStackFuse.search(searchKeyword.value)
+      teckStackFuse.search(searchTerm.value)
     )
 
-    const handleClickTeckStack = (ts) => {
-      emit("clickTeckStack", ts)
+    const handleResetSearchTerm = () => {
+      searchTerm.value = ""
     }
 
-    return { searchKeyword, searchedTechStackList, handleClickTeckStack }
+    const handleSelectTeckStack = (ts) => {
+      emit("SelectTeckStack", ts)
+      handleResetSearchTerm()
+    }
+
+    return {
+      searchTerm,
+      searchedTechStackList,
+      handleSelectTeckStack,
+      handleResetSearchTerm,
+    }
   },
 }
 </script>
@@ -84,9 +97,15 @@ export default {
   }
 
   .teckstack-list {
-    @apply grid gap-2 max-h-40 overflow-scroll absolute left-0 w-full bg-white shadow-md p-4;
+    @apply grid gap-2 max-h-40 overflow-scroll absolute left-0 w-full bg-white shadow-md p-2;
 
     li {
+      @apply transition-colors p-2;
+
+      &:hover {
+        @apply bg-gray-100;
+      }
+
       button {
         @apply w-full text-left;
       }

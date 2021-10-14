@@ -7,9 +7,9 @@ import ProjectList from "@/views/ProjectList.vue"
 import Profile from "@/views/Profile.vue"
 
 import Login from "@/views/auth/Login.vue"
-import Register from "@/views/auth/Register.vue"
-import RegisterCheckEmail from "@/views/auth/RegisterCheckEmail.vue"
-import RegisterAuthEmail from "@/views/auth/RegisterAuthEmail.vue"
+import Signup from "@/views/auth/Signup.vue"
+import CheckEmail from "@/views/auth/CheckEmail.vue"
+import AuthEmail from "@/views/auth/AuthEmail.vue"
 
 const routes = [
   {
@@ -26,19 +26,19 @@ const routes = [
         component: Login,
       },
       {
-        path: "register",
-        name: "Register",
-        component: Register,
+        path: "signup",
+        name: "Signup",
+        component: Signup,
       },
       {
-        path: "register/check-email",
-        name: "RegisterCheckEmail",
-        component: RegisterCheckEmail,
+        path: "check-email",
+        name: "CheckEmail",
+        component: CheckEmail,
       },
       {
-        path: "register/auth-email",
-        name: "RegisterAuthEmail",
-        component: RegisterAuthEmail,
+        path: "auth-email",
+        name: "AuthEmail",
+        component: AuthEmail,
       },
     ],
   },
