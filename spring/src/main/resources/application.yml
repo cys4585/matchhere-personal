@@ -67,9 +67,9 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-#  sql:
-#    init:
-#      mode: always
+  sql:
+    init:
+      mode: embedded
 #logging:
 #  level:
 #    org.hibernate.SQL: debug # JPA, 하이버네이트가 생성하는 SQL이 로그에 생성 (logger)
