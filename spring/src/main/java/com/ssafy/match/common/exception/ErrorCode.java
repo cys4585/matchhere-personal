@@ -35,6 +35,13 @@ public enum ErrorCode {
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
     MEMBER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
     REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 된 사용자입니다"),
+    PROJECT_NOT_FOUND(NOT_FOUND, "해당 프로젝트 정보를 찾을 수 없습니다"),
+    STUDY_NOT_FOUND(NOT_FOUND, "해당 스터디 정보를 찾을 수 없습니다"),
+    CLUB_NOT_FOUND(NOT_FOUND, "해당 클럽 정보를 찾을 수 없습니다"),
+    FILE_NOT_FOUND(NOT_FOUND, "해당 파일 정보를 찾을 수 없습니다"),
+    DELETED_PROJECT(NOT_FOUND, "제거된 프로젝트입니다."),
+    DELETED_STUDY(NOT_FOUND, "제거된 스터디입니다."),
+    DELETED_CLUB(NOT_FOUND, "제거된 클럽입니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),

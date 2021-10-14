@@ -1,6 +1,8 @@
 package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
@@ -62,7 +64,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectTechstackRepository projectTechstackRepository;
     private final DBFileRepository dbFileRepository;
     private final MemberSnsRepository memberSnsRepository;
-//    private final ProjectBoardRepository projectBoardRepository;
 
     public ProjectInfoForCreateResponseDto getInfoForCreate() throws Exception {
         return ProjectInfoForCreateResponseDto.builder()
@@ -284,29 +285,23 @@ public class ProjectServiceImpl implements ProjectService {
         changeRole(project, member, "");
     }
 
-//    @Transactional
-//    public void makeBasicBoards(Club club){
-//        projectBoardRepository.save(new ProjectBoard("공지사항", project));
-//        projectBoardRepository.save(new ProjectBoard("게시판", project));
-//    }
-
-    public Project findProject(Long projectId) throws Exception {
+    public Project findProject(Long projectId) {
         Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new NullPointerException("프로젝트 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
 
-        if (!project.getIsActive()) {
-            throw new Exception("삭제된 프로젝트입니다.");
+        if (Boolean.FALSE.equals(project.getIsActive())) {
+            throw new CustomException(ErrorCode.DELETED_PROJECT);
         }
 
         return project;
     }
 
-    public Member findMember(Long memberId) throws Exception {
+    public Member findMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NullPointerException("회원 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (member.getIs_active() == false) {
-            throw new Exception("삭제된 멤버입니다.");
+        if (Boolean.FALSE.equals(member.getIs_active())) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         return member;
@@ -322,7 +317,7 @@ public class ProjectServiceImpl implements ProjectService {
             return null;
         }
         return clubRepository.findById(clubId)
-            .orElseThrow(() -> new NullPointerException("클럽 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.CLUB_NOT_FOUND));
     }
 
     public DBFile findDBFile(String uuid) {
@@ -330,7 +325,7 @@ public class ProjectServiceImpl implements ProjectService {
             return null;
         }
         return dbFileRepository.findById(uuid)
-            .orElseThrow(() -> new NullPointerException("파일 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
     }
 
     public void validCity(String city) throws Exception {
