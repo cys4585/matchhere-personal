@@ -1,7 +1,7 @@
 <template>
   <div class="field">
     <div class="input-field">
-      <label for="teckstack-input">기술스택</label>
+      <label for="teckstack-input" class="text-sm font-medium">기술스택</label>
       <div class="input-wrapper">
         <input
           type="text"

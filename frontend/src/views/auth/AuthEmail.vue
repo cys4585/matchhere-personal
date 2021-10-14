@@ -61,7 +61,7 @@ export default {
         validators: [requiredValidator],
       },
     })
-    const email = computed(() => store.state.auth.email)
+    const email = computed(() => store.getters["auth/getEmail"])
     const loading = ref(false)
     const submitButtonLabel = computed(() => {
       if (loading.value) {

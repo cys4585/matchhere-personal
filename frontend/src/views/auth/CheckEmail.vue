@@ -41,7 +41,7 @@ export default {
         key: "email",
         label: "이메일",
         type: "string",
-        value: "",
+        value: store.getters["auth/getEmail"],
         placeholder: "이메일을 입력하세요",
         errors: {},
         validators: [emailValidator],

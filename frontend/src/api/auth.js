@@ -17,8 +17,13 @@ const checkNickname = async (nickname) => {
   await http.get(`/auth/check/nickname/${nickname}`)
 }
 
+const signup = async (formData) => {
+  await http.post(`/auth/signup`, formData)
+}
+
 export default {
   checkEmail,
   authEmail,
   checkNickname,
+  signup,
 }
