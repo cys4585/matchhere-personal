@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS `matching`.`member` (
   `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
   `portfolio_uri` VARCHAR(1000) NULL DEFAULT NULL,
   `portfolio_uuid` VARCHAR(255) NULL,
-  `membercol` VARCHAR(45) NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_member_files1_idx` (`cover_pic` ASC) VISIBLE,
   INDEX `fk_member_files2_idx` (`portfolio_uuid` ASC) VISIBLE,
@@ -123,7 +122,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `matching`.`career`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`career` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `company` VARCHAR(255) NOT NULL,
   `role` VARCHAR(50) NOT NULL,
   `description` VARCHAR(255) NULL DEFAULT NULL,
@@ -145,7 +144,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `matching`.`certification`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`certification` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(255) NULL DEFAULT NULL,
   `expired_date` DATETIME(6) NULL DEFAULT NULL,
   `grade` VARCHAR(255) NULL DEFAULT NULL,
@@ -200,7 +199,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `matching`.`education`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`education` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `degree` VARCHAR(255) NOT NULL,
   `end_date` DATETIME(6) NULL DEFAULT NULL,
   `institution` VARCHAR(255) NOT NULL,
@@ -930,6 +929,14 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
+<<<<<<< HEAD
+=======
+insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'ian.ilminmoon@gmail.com', true, '문일민', '문일민', '$2a$10$Nq9bmux./5Wl.gLOtFzB9.PA1U/TNmm7I84JHMeLaRtu6zStRwP6O', NULL, NULL, '개발자', NULL);
+insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'mim1994@naver.com', true, '문일민', 'Admin', '$2a$10$F14BdCTi8oQkS2TSK6cEDe2F1oXoVSCkTzqJnRBmBrLIy0Lt/kyHG', NULL, NULL, '개발자', NULL);
+insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'figma@kakao.com', true, '김병훈', '김병훈', '$2a$10$E1/GHayTjMI36n56vdgybOGkK.PKuvkBdx048Kg1Vg4DOWAybjePi', NULL, NULL, '개발자', NULL);
+insert into matching.member (authority, banned, bio, city, cover_pic, create_date, email, is_active, name, nickname, password, portfolio_uuid, portfolio_uri, position, tel) values ('ROLE_USER', false, NULL, '서울', NULL, '2021-10-13 13:59:44.898294', 'soc4585@gmail.com', true, '최영수', '최영수', '$2a$10$CZnlgvo29W2m1LQ1o7WzOupsPBcPQ4Beu8Xe2dA4.lNyfx7KzQBe6', NULL, NULL, '개발자', NULL);
+
+>>>>>>> c80f6d1562b9dd957a020bf5e3ebbd7b8fce544f
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (1, "ionicons");
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (2, "material-ui");
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (3, "ant design");
