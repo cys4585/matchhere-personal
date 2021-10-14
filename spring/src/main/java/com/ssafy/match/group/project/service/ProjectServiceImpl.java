@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.Level;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.group.club.entity.Club;
@@ -38,6 +39,7 @@ import com.ssafy.match.group.project.repository.ProjectTechstackRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,11 +67,9 @@ public class ProjectServiceImpl implements ProjectService {
     private final DBFileRepository dbFileRepository;
     private final MemberSnsRepository memberSnsRepository;
 
-    public ProjectInfoForCreateResponseDto getInfoForCreate() throws Exception {
-        return ProjectInfoForCreateResponseDto.builder()
-            .hostClub(makeClubDtos(memberClubRepository.
-                findClubByMember(findMember(SecurityUtil.getCurrentMemberId()))))
-            .build();
+    public ProjectInfoForCreateResponseDto getInfoForCreate() {
+        return ProjectInfoForCreateResponseDto.from(makeClubSimpleInfoResponseDtos(
+            memberClubRepository.findClubByMember(findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
     @Transactional
@@ -120,13 +120,15 @@ public class ProjectServiceImpl implements ProjectService {
             throw new Exception("권한이 없습니다.");
         }
 
-        List<MemberProject> memberProjects = memberProjectRepository.findMemberRelationInProject(project);
+        List<MemberProject> memberProjects = memberProjectRepository.findMemberRelationInProject(
+            project);
         for (MemberProject mem : memberProjects) {
             mem.deactivation();
         }
 
-        List<ProjectTechstack> pts = projectTechstackRepository.findProjectTechstackByProject(project);
-        for (ProjectTechstack pt: pts) {
+        List<ProjectTechstack> pts = projectTechstackRepository.findProjectTechstackByProject(
+            project);
+        for (ProjectTechstack pt : pts) {
             projectTechstackRepository.delete(pt);
         }
 
@@ -136,10 +138,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Page<ProjectInfoResponseDto> getAllProject(Pageable pageable) {
-        Page<ProjectInfoResponseDto> projectInfoResponseDtos = projectRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.종료, pageable)
-                .map(ProjectInfoResponseDto::of);
-        for (ProjectInfoResponseDto projectInfoResponseDto: projectInfoResponseDtos.getContent()) {
-            projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberProjectRepository.findMemberByProjectId(projectInfoResponseDto.getId())));
+        Page<ProjectInfoResponseDto> projectInfoResponseDtos = projectRepository.findByIsActiveAndIsPublicAndStatusIsNot(
+                Boolean.TRUE, Boolean.TRUE, ProjectProgressState.종료, pageable)
+            .map(ProjectInfoResponseDto::of);
+        for (ProjectInfoResponseDto projectInfoResponseDto : projectInfoResponseDtos.getContent()) {
+            projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(
+                memberProjectRepository.findMemberByProjectId(projectInfoResponseDto.getId())));
         }
         return projectInfoResponseDtos;
     }
@@ -161,8 +165,11 @@ public class ProjectServiceImpl implements ProjectService {
             && !project.getIsPublic()) {
             throw new Exception("비공개된 프로젝트입니다.");
         }
-        ProjectInfoResponseDto projectInfoResponseDto = projectRepository.findById(projectId).map(ProjectInfoResponseDto::of).orElseThrow(() -> new NullPointerException("프로젝트가 존재하지 않습니다."));
-        projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberProjectRepository.findMemberByProjectId(projectId)));
+        ProjectInfoResponseDto projectInfoResponseDto = projectRepository.findById(projectId)
+            .map(ProjectInfoResponseDto::of)
+            .orElseThrow(() -> new NullPointerException("프로젝트가 존재하지 않습니다."));
+        projectInfoResponseDto.setMemberSimpleInfoResponseDtos(
+            makeMemberDtos(memberProjectRepository.findMemberByProjectId(projectId)));
         projectInfoResponseDto.setDeveloperNicknames(memberNicknames(projectId, "개발자"));
         projectInfoResponseDto.setDesignerNicknames(memberNicknames(projectId, "디자이너"));
         projectInfoResponseDto.setPlannerNicknames(memberNicknames(projectId, "기획자"));
@@ -171,7 +178,8 @@ public class ProjectServiceImpl implements ProjectService {
         return projectInfoResponseDto;
     }
 
-    public ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId) throws Exception {
+    public ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId)
+        throws Exception {
         Project project = findProject(projectId);
         if (!SecurityUtil.getCurrentMemberId().equals(project.getMember().getId())) {
             throw new Exception("권한이 없습니다");
@@ -200,16 +208,21 @@ public class ProjectServiceImpl implements ProjectService {
     // 특정 멤버의 활성화 프로젝트 리스트
     public List<ProjectInfoResponseDto> projectInMember(Long memberId) throws Exception {
 //        List<ProjectInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
-        System.out.println(memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), ProjectProgressState.종료));
-        List<Project> projects = memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId), ProjectProgressState.종료);
+        System.out.println(
+            memberProjectRepository.getProjectsByMemberAndStatus(findMember(memberId),
+                ProjectProgressState.종료));
+        List<Project> projects = memberProjectRepository.getProjectsByMemberAndStatus(
+            findMember(memberId), ProjectProgressState.종료);
         System.out.println("!!!!!!!!!!!!");
         System.out.println(projects);
 //        projects.ma
-        List<ProjectInfoResponseDto> projectInfoResponseDtos = projects.stream().map(ProjectInfoResponseDto::of).collect(Collectors.toList());
+        List<ProjectInfoResponseDto> projectInfoResponseDtos = projects.stream()
+            .map(ProjectInfoResponseDto::of).collect(Collectors.toList());
         System.out.println("here!!!!!!!!!!!!!!!");
         System.out.println(projectInfoResponseDtos);
-        for (ProjectInfoResponseDto projectInfoResponseDto: projectInfoResponseDtos) {
-            projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberProjectRepository.findMemberByProjectId(projectInfoResponseDto.getId())));
+        for (ProjectInfoResponseDto projectInfoResponseDto : projectInfoResponseDtos) {
+            projectInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(
+                memberProjectRepository.findMemberByProjectId(projectInfoResponseDto.getId())));
         }
 //        for (Project project: memberProjectRepository.projectInMember(findMember(memberId))) {
 //            if(project.getStatus().equals(Status.종료)) continue;
@@ -227,13 +240,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public void addTechstack(Project project, List<String> techName) {
-        for (String name : techName) {
-            Techstack techstack = findTechstack(name);
+    public void addTechstack(Project project, HashMap<String, String> techstacks) {
+        for (String tech: techstacks.keySet()) {
+            Techstack techstack = findTechstack(tech);
+            Level level = techstacks.get(tech);
+            validLevel(techstacks.get(tech));
             CompositeProjectTechstack compositeProjectTechstack = new CompositeProjectTechstack(
                 techstack, project);
 
-//            projectTechstackRepository.save(new ProjectTechstack(compositeProjectTechstack));
+            projectTechstackRepository.save(new ProjectTechstack(compositeProjectTechstack));
 
         }
     }
@@ -273,8 +288,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void removeMember(Long projectId) throws Exception {
         Project project = findProject(projectId);
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 입니다.(사용자 없음)"));
-        if(project.getMember().getId().equals(member.getId())){
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+            .orElseThrow(() -> new NullPointerException("잘못된 사용자 입니다.(사용자 없음)"));
+        if (project.getMember().getId().equals(member.getId())) {
             throw new Exception("프로젝트장은 탈퇴할 수 없습니다.");
         }
         CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
@@ -309,7 +325,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     public Techstack findTechstack(String techName) {
         return techstackRepository.findByName(techName)
-            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.TECHSTACK_NOT_FOUND));
     }
 
     public Club findClub(Long clubId) {
@@ -328,44 +344,31 @@ public class ProjectServiceImpl implements ProjectService {
             .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
     }
 
-    public void validCity(String city) throws Exception {
-        if(!Stream.of(City.values()).map(Enum::name)
-            .collect(Collectors.toList()).contains(city)){
-            throw new Exception("존재하지 않는 지역입니다");
-        }
-    }
-    public void validStatus(String status) throws Exception {
-        if(!Stream.of(ProjectProgressState.values()).map(Enum::name)
-            .collect(Collectors.toList()).contains(status)){
-            throw new Exception("존재하지 않는 상태입니다");
-        }
-    }
-    public void validTechstack(List<String> techstacks) throws Exception {
-        for (String inTech: techstacks) {
-            if(!techstackRepository.findAllName().contains(inTech)){
-                throw new Exception("존재하지 않는 기술 스택입니다");
-            }
+    public void validCity(String city) {
+        if (!Stream.of(City.values()).map(Enum::name)
+            .collect(Collectors.toList()).contains(city)) {
+            throw new CustomException(ErrorCode.CITY_NOT_FOUND);
         }
     }
 
-    public List<ClubSimpleInfoResponseDto> makeClubDtos(List<Club> hostClub) {
-        List<ClubSimpleInfoResponseDto> clubSimpleInfoResponseDtos = new ArrayList<>();
-
-        for (Club club : hostClub) {
-            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
+    public void validLevel(String level) {
+        if (!Stream.of(Level.values()).map(Enum::name)
+            .collect(Collectors.toList()).contains(level)) {
+            throw new CustomException(ErrorCode.LEVEL_NOT_FOUND);
         }
-
-        return clubSimpleInfoResponseDtos;
     }
 
-    public List<MemberSimpleInfoResponseDto> makeMemberDtos(List<Member> members) {
-        List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
+    public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
+        return clubs.stream()
+            .map(ClubSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
+    }
 
-        for (Member member : members) {
-            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
-        }
-
-        return memberSimpleInfoResponseDtos;
+    public List<MemberSimpleInfoResponseDto> makeMemberSimpleInfoResponseDtos(
+        List<Member> members) {
+        return members.stream()
+            .map(MemberSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     // (아이디어가 생각이 안나서 임시로 If문 사용 조언 구함)
@@ -434,13 +437,13 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = findProject(projectId);
 
         List<Member> memberList = memberInProject(project);
-        for (Member mem: memberList) {
-            if(SecurityUtil.getCurrentMemberId() == mem.getId()){
+        for (Member mem : memberList) {
+            if (SecurityUtil.getCurrentMemberId() == mem.getId()) {
                 throw new Exception("이미 가입한 멤버입니다.");
             }
         }
 
-        if(!project.getIsParticipate()){
+        if (!project.getIsParticipate()) {
             throw new Exception("참여 불가능한 프로젝트입니다.");
         }
 
@@ -475,7 +478,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) throws Exception {
+    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto)
+        throws Exception {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
 
@@ -498,14 +502,15 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception {
         Project project = findProject(projectId);
 
-        if(SecurityUtil.getCurrentMemberId() != project.getMember().getId()){
+        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
             throw new Exception("조회 권한이 없습니다.");
         }
 
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(project);
+        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
+            project);
         List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
 
-        for (ProjectApplicationForm form: forms) {
+        for (ProjectApplicationForm form : forms) {
             projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
                 .form(form)
 //                .strong(memberExperiencedTechstackRepository
@@ -519,17 +524,19 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 닉네임으로 신청서 검색
-    public List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId, String nickname) throws Exception{
+    public List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId,
+        String nickname) throws Exception {
         Project project = findProject(projectId);
 
-        if(SecurityUtil.getCurrentMemberId() != project.getMember().getId()){
+        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
             throw new Exception("조회 권한이 없습니다.");
         }
 
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(project);
+        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
+            project);
         List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
 
-        for (ProjectApplicationForm form: forms) {
+        for (ProjectApplicationForm form : forms) {
             projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
                 .form(form)
 //                .strong(memberExperiencedTechstackRepository
@@ -543,11 +550,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회 (프론트 방식에 따라 불필요할 수 있음)
-    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId) throws Exception {
-        CompositeMemberProject cmp = new CompositeMemberProject(findMember(memberId), findProject(projectId));
+    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId)
+        throws Exception {
+        CompositeMemberProject cmp = new CompositeMemberProject(findMember(memberId),
+            findProject(projectId));
 
         ProjectApplicationForm form = projectApplicationFormRepository.oneFormById(cmp)
-            .orElseThrow(()-> new NullPointerException("존재하지 않는 신청서입니다"));
+            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다"));
 
         return ProjectFormInfoResponseDto.builder()
             .form(form)
@@ -565,8 +574,8 @@ public class ProjectServiceImpl implements ProjectService {
         List<Member> members = memberInProject(project);
         Member member = findMember(memberId);
 
-        for (Member mem: members) {
-            if(mem.equals(member)){
+        for (Member mem : members) {
+            if (mem.equals(member)) {
                 throw new Exception("이미 가입되어있는 회원입니다.");
             }
         }

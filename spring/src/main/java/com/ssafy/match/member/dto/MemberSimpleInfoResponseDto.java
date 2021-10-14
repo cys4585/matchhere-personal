@@ -19,8 +19,8 @@ public class MemberSimpleInfoResponseDto {
     private String name;
     private String nickname;
     private String email;
-    @ApiModelProperty(name = "fileDownloadUri", example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
-    private String fileDownloadUri;
+    @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
+    private String coverPicUri;
 
     public static MemberSimpleInfoResponseDto from(Member member) {
         return MemberSimpleInfoResponseDto.builder()
@@ -28,7 +28,7 @@ public class MemberSimpleInfoResponseDto {
             .name(member.getName())
             .nickname(member.getNickname())
             .email(member.getEmail())
-            .fileDownloadUri((member.getCover_pic() == null) ? null : member.getCover_pic().getDownload_uri())
+            .coverPicUri((member.getCover_pic() == null) ? null : member.getCover_pic().getDownload_uri())
             .build();
     }
 

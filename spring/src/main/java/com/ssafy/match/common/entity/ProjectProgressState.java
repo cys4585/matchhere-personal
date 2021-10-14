@@ -1,7 +1,10 @@
 package com.ssafy.match.common.entity;
 
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
+
 public enum ProjectProgressState {
-    Ready("프로젝트 준비 중"), Progress("프로젝트 진행 중"), Finish("프로젝트 종료");
+    READY("프로젝트 준비 중"), PROGRESS("프로젝트 진행 중"), FINISH("프로젝트 종료");
 
     private final String state;
 
@@ -15,12 +18,14 @@ public enum ProjectProgressState {
 
     public static ProjectProgressState from(String s) {
         ProjectProgressState projectProgressState;
-        if(s.equals(Ready.state)){
-            projectProgressState = Ready;
-        }else if(s.equals(Progress.state)){
-            projectProgressState = Progress;
-        }else {
-            projectProgressState = Finish;
+        if(s.equals(READY.state)){
+            projectProgressState = READY;
+        }else if(s.equals(PROGRESS.state)){
+            projectProgressState = PROGRESS;
+        }else if(s.equals(FINISH.state)){
+            projectProgressState = FINISH;
+        }else{
+            throw new CustomException(ErrorCode.PROJECT_PROGRESS_STATE_NOT_FOUND);
         }
         return projectProgressState;
     }

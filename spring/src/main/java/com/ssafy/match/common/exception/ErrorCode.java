@@ -42,6 +42,12 @@ public enum ErrorCode {
     DELETED_PROJECT(NOT_FOUND, "제거된 프로젝트입니다."),
     DELETED_STUDY(NOT_FOUND, "제거된 스터디입니다."),
     DELETED_CLUB(NOT_FOUND, "제거된 클럽입니다."),
+    CITY_NOT_FOUND(NOT_FOUND, "해당 지역 정보를 찾을 수 없습니다."),
+    PROJECT_PROGRESS_STATE_NOT_FOUND(NOT_FOUND, "해당 프로젝트 진행 상태를 찾을 수 없습니다."),
+    STUDY_PROGRESS_STATE_NOT_FOUND(NOT_FOUND, "해당 스터디 진행 상태를 찾을 수 없습니다."),
+    RECRUITMENT_STATE_NOT_FOUND(NOT_FOUND, "해당 모집 상태를 찾을 수 없습니다."),
+    LEVEL_NOT_FOUND(NOT_FOUND, "해당 레벨을 찾을 수 없습니다."),
+    TECHSTACK_NOT_FOUND(NOT_FOUND, "해당 기술 스택을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),
