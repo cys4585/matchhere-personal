@@ -1,19 +1,22 @@
 <template>
   <form class="form" @submit.prevent="handleSubmit">
     <div class="fields">
-      <SelectFormField
-        :field="positionField"
-        v-model="positionField.value"
-        @update:modelValue="handlePositionUpdate"
-      />
-      <div class="dplist">
-        <DetailPositionButton
-          v-for="dp in displayedDPList"
-          :key="dp.id"
-          :dp="dp"
-          @onUpdateStatus="handleDPClick"
+      <div>
+        <SelectFormField
+          :field="positionField"
+          v-model="positionField.value"
+          @update:modelValue="handlePositionUpdate"
         />
+        <div class="dplist">
+          <DetailPositionButton
+            v-for="dp in displayedDPList"
+            :key="dp.id"
+            :dp="dp"
+            @onUpdateStatus="handleDPClick"
+          />
+        </div>
       </div>
+      <TeckStackField />
     </div>
     <SubmitButton>회원가입</SubmitButton>
   </form>
@@ -24,11 +27,17 @@ import { computed, ref } from "vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
 import DetailPositionButton from "@/components/auth/DetailPositionButton.vue"
+import TeckStackField from "@/components/auth/TeckStackField.vue"
 import { detailPositionList } from "@/libs/data"
 
 export default {
   name: "RegisterStepTwo",
-  components: { SubmitButton, SelectFormField, DetailPositionButton },
+  components: {
+    SubmitButton,
+    SelectFormField,
+    DetailPositionButton,
+    TeckStackField,
+  },
   emits: ["update:step"],
   setup() {
     const dpList = ref({ ...detailPositionList })
@@ -38,6 +47,7 @@ export default {
       placeholder: "포지션을 선택하세요",
       options: ["개발자", "기획자", "디자이너"],
     })
+
     const positionKey = computed(() => {
       if (positionField.value.value === "개발자") {
         return "developer"
