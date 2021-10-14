@@ -245,14 +245,14 @@ public class MemberService {
     public void setCoverPic(Member member, String uuid) throws Exception {
         if (uuid == null || uuid.equals("")) {
             if (member.getCover_pic() != null) {
-                member.setCover_pic(null);
                 dbFileRepository.delete(member.getCover_pic());
+                member.setCover_pic(null);
             }
             return;
         } else {
-            if (member.getCover_pic() != null) {
+            if (member.getCover_pic() == null) {
                 DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
-                dbFileRepository.delete(dbFile);
+                member.setCover_pic(dbFile);
             } else if (!member.getCover_pic().getId().equals(uuid)) {
                 DBFile dbFile = dbFileRepository.findById(uuid).orElseThrow(() -> new NullPointerException("존재하지 않는 파일입니다."));
                 dbFileRepository.delete(member.getCover_pic());
@@ -266,8 +266,8 @@ public class MemberService {
     public void setPortfolioUuid(Member member, String uuid) throws Exception{
         if (uuid == null || uuid.equals("")) {
             if (member.getPortfolio() != null) {
-                member.setPortfolio(null);
                 dbFileRepository.delete(member.getPortfolio());
+                member.setPortfolio(null);
             }
             return;
         } else {
