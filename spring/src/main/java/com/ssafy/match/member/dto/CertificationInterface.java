@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class CertificationDto {
+public class CertificationInterface {
     private String name;
     private String organization;
     private String code;

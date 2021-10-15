@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class EducationDto {
+public class EducationInterface {
     private String institution;
     private String degree;
     private String major;

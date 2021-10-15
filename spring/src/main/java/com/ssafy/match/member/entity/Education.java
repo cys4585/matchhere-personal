@@ -10,10 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -37,6 +34,7 @@ public class Education {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public Education(String institution, String degree, String major,
         LocalDateTime start_date, LocalDateTime end_date, State state, String description,
         Member member) {

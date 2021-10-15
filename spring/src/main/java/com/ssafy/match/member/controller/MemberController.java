@@ -2,6 +2,7 @@ package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
@@ -89,6 +90,15 @@ public class MemberController {
     @ApiOperation(value = "내 커리어 Get")
     public ResponseEntity<MemberCareerResponseDto> getMemberCareer() {
         return ResponseEntity.ok(memberService.getMemberCareer());
+    }
+
+    @PostMapping("/career")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
 
     @GetMapping("/portfolio")

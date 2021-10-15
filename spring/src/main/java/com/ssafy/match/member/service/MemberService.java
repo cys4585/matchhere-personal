@@ -11,6 +11,7 @@ import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
 import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
@@ -36,8 +37,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PreRemove;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -176,15 +175,22 @@ public class MemberService {
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
 
-        List<CareerDto> careers = careerRepository.findAllByMember(member);
-        List<EducationDto> educations = educationRepository.findAllByMember(member);
-        List<CertificationDto> certifications = certificationRepository.findAllByMember(member);
-//        List<CareerDto>
+        List<CareerInterface> careers = careerRepository.findAllByMember(member);
+        List<EducationInterface> educations = educationRepository.findAllByMember(member);
+        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
         memberCareerResponseDto.setCareerList(careers);
         memberCareerResponseDto.setEducationList(educations);
         memberCareerResponseDto.setCertificationList(certifications);
 
         return memberCareerResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Career career = memberCareerRequestDto.toCareer(member);
+        careerRepository.save(career);
+        return HttpStatus.OK;
     }
 
     @Transactional(readOnly = true)

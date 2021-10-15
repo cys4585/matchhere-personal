@@ -26,12 +26,12 @@ public class Career {
     private String company;
     @NotEmpty
     private String role;
-    @NotEmpty
+//    @NotEmpty
     private LocalDateTime start_date;
     private LocalDateTime end_date;
     private String description;
 
-    @NotEmpty
+//    @NotEmpty
     private Boolean is_incumbent;
 
     @ManyToOne(fetch = FetchType.LAZY)
