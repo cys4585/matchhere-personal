@@ -96,7 +96,7 @@ public class MemberService {
         }
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -131,7 +131,7 @@ public class MemberService {
         }
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -176,7 +176,7 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
 
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         memberSkillResponseDto.setDpositionList(dpositionList);
         memberSkillResponseDto.setTechList(techList);
@@ -372,9 +372,9 @@ public class MemberService {
 
     @Transactional
     public void updateDposition(Member member, List<String> dpositionList) {
-        List<DetailPositionInterface> detailPositions = detailPositionRepository.findAllByMember(member);
+        List<DetailPosition> detailPositions = detailPositionRepository.findAllByMember(member);
         if (!detailPositions.isEmpty()) {
-            detailPositionRepository.deleteAll();
+            detailPositionRepository.deleteAll(detailPositions);
         }
         if (dpositionList != null && !dpositionList.isEmpty()) {
             for (String dposition : dpositionList) {
@@ -392,7 +392,7 @@ public class MemberService {
     public void updateTechList(Member member, List<HashMap<String, String>> techList) throws Exception {
         List<MemberTechstack> memberTechstacks = memberTechstackRepository.findAllByCompositeMemberTechstack_Member(member);
         if (!memberTechstacks.isEmpty()) {
-            memberTechstackRepository.deleteAll();
+            memberTechstackRepository.deleteAll(memberTechstacks);
         }
 //        if (techList != null && !techList.isEmpty()) {
         if (!techList.isEmpty()) {
