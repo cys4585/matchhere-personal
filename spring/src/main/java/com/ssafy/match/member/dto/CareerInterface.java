@@ -1,7 +1,5 @@
 package com.ssafy.match.member.dto;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
 
