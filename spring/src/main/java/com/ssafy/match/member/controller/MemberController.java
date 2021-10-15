@@ -5,6 +5,7 @@ import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
 import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
@@ -82,6 +83,12 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
+    }
+
+    @GetMapping("/career")
+    @ApiOperation(value = "내 커리어 Get")
+    public ResponseEntity<MemberCareerResponseDto> getMemberCareer() {
+        return ResponseEntity.ok(memberService.getMemberCareer());
     }
 
     @GetMapping("/portfolio")

@@ -14,6 +14,7 @@ import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
 import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
 import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
 import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -24,9 +25,7 @@ import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
 import com.ssafy.match.common.repository.DetailPositionRepository;
-import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
-import com.ssafy.match.member.repository.MemberTechstackRepository;
+import com.ssafy.match.member.repository.*;
 import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -57,6 +56,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberStudyRepository memberStudyRepository;
     private final MemberTechstackRepository memberTechstackRepository;
+    private final CareerRepository careerRepository;
+    private final CertificationRepository certificationRepository;
+    private final EducationRepository educationRepository;
 
     @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {
@@ -166,6 +168,23 @@ public class MemberService {
         updateBasicinfo(member, memberBasicinfoRequestDto.getNickname(), memberBasicinfoRequestDto.getName(), memberBasicinfoRequestDto.getCity(), memberBasicinfoRequestDto.getBio());
         setCoverPic(member, memberBasicinfoRequestDto.getCoverpic_uuid());
         return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberCareerResponseDto getMemberCareer() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
+
+        List<CareerDto> careers = careerRepository.findAllByMember(member);
+        List<EducationDto> educations = educationRepository.findAllByMember(member);
+        List<CertificationDto> certifications = certificationRepository.findAllByMember(member);
+//        List<CareerDto>
+        memberCareerResponseDto.setCareerList(careers);
+        memberCareerResponseDto.setEducationList(educations);
+        memberCareerResponseDto.setCertificationList(certifications);
+
+        return memberCareerResponseDto;
     }
 
     @Transactional(readOnly = true)

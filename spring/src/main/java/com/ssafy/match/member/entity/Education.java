@@ -23,7 +23,7 @@ public class Education {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String institution;
     private String degree;

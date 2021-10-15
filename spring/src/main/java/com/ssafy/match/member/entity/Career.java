@@ -8,34 +8,37 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotEmpty;
 
 import com.ssafy.match.member.entity.Member;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity(name = "matching.career")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Career {
-
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
+    @NotEmpty
     private String company;
+    @NotEmpty
     private String role;
+    @NotEmpty
     private LocalDateTime start_date;
     private LocalDateTime end_date;
     private String description;
+
+    @NotEmpty
     private Boolean is_incumbent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public Career(String company, String role, LocalDateTime start_date,
         LocalDateTime end_date, String description, Boolean is_incumbent,
         Member member) {
