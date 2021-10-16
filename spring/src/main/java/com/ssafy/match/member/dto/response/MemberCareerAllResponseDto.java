@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class MemberCareerResponseDto {
+public class MemberCareerAllResponseDto {
     private List<CareerInterface> careerList = new ArrayList<>();
     private List<EducationInterface> educationList = new ArrayList<>();
     private List<CertificationInterface> certificationList = new ArrayList<>();

@@ -164,25 +164,25 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberCareerResponseDto getMemberCareerAll() {
+    public MemberCareerAllResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
+        MemberCareerAllResponseDto memberCareerAllResponseDto = new MemberCareerAllResponseDto();
 
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        memberCareerResponseDto.setCareerList(careers);
-        memberCareerResponseDto.setEducationList(educations);
-        memberCareerResponseDto.setCertificationList(certifications);
+        memberCareerAllResponseDto.setCareerList(careers);
+        memberCareerAllResponseDto.setEducationList(educations);
+        memberCareerAllResponseDto.setCertificationList(certifications);
 
-        return memberCareerResponseDto;
+        return memberCareerAllResponseDto;
     }
 
     @Transactional(readOnly = true)
-    public CertificationResponseDto getMemberCareer(Long id) {
-        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
-        return certificationResponseDto;
+    public CareerResponseDto getMemberCareer(Long id) {
+        CareerResponseDto careerResponseDto = careerRepository.findById(id).map(CareerResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return careerResponseDto;
     }
 
     @Transactional
@@ -203,7 +203,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public CertificationResponseDto getMemberCertification(Long id) {
-        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 자격증이 없습니다!"));
         return certificationResponseDto;
     }
 
