@@ -1,12 +1,8 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
-import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
-import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
-import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
+import com.ssafy.match.member.dto.request.*;
+import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -82,6 +78,75 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
+    }
+
+    @GetMapping("/careerall")
+    @ApiOperation(value = "내 커리어(경력,자격증,교육) Get")
+    public ResponseEntity<MemberCareerAllResponseDto> getMemberCareerList() {
+        return ResponseEntity.ok(memberService.getMemberCareerAll());
+    }
+
+    @GetMapping("/career/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 경력 Get")
+    public ResponseEntity<CareerResponseDto> getMemberCareer(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberCareer(id));
+    }
+
+    @PostMapping("/career")
+    @ApiOperation(value = "내 경력 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
+    }
+
+    @DeleteMapping("/career/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 경력 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberCareer(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberCareer(id));
+    }
+
+    @GetMapping("/certification/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 자격증 Get")
+    public ResponseEntity<CertificationResponseDto> getMemberCertification(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberCertification(id));
+    }
+
+    @DeleteMapping("/certification/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 자격증 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberCertification(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberCertification(id));
+    }
+
+    @PostMapping("/certification")
+    @ApiOperation(value = "내 자격증 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
+    }
+
+    @GetMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Get")
+    public ResponseEntity<EducationResponseDto> getMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberEducation(id));
+    }
+
+    @DeleteMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberEducation(id));
+    }
+
+    @PostMapping("/education")
+    @ApiOperation(value = "내 교육 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberEducationRequestDto memberEducationRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
     @GetMapping("/portfolio")

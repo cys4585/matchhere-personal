@@ -10,12 +10,8 @@ import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
-import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
-import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
-import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
+import com.ssafy.match.member.dto.request.*;
+import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
@@ -24,9 +20,7 @@ import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
 import com.ssafy.match.common.repository.DetailPositionRepository;
-import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
-import com.ssafy.match.member.repository.MemberTechstackRepository;
+import com.ssafy.match.member.repository.*;
 import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,8 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PreRemove;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +49,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberStudyRepository memberStudyRepository;
     private final MemberTechstackRepository memberTechstackRepository;
+    private final CareerRepository careerRepository;
+    private final CertificationRepository certificationRepository;
+    private final EducationRepository educationRepository;
 
     @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {
@@ -96,7 +91,7 @@ public class MemberService {
         }
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -131,7 +126,7 @@ public class MemberService {
         }
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
@@ -169,6 +164,88 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    public MemberCareerAllResponseDto getMemberCareerAll() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        MemberCareerAllResponseDto memberCareerAllResponseDto = new MemberCareerAllResponseDto();
+
+        List<CareerInterface> careers = careerRepository.findAllByMember(member);
+        List<EducationInterface> educations = educationRepository.findAllByMember(member);
+        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
+        memberCareerAllResponseDto.setCareerList(careers);
+        memberCareerAllResponseDto.setEducationList(educations);
+        memberCareerAllResponseDto.setCertificationList(certifications);
+
+        return memberCareerAllResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public CareerResponseDto getMemberCareer(Long id) {
+        CareerResponseDto careerResponseDto = careerRepository.findById(id).map(CareerResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return careerResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Career career = memberCareerRequestDto.toCareer(member);
+        careerRepository.save(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberCareer(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Career career = careerRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
+        careerRepository.delete(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public CertificationResponseDto getMemberCertification(Long id) {
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 자격증이 없습니다!"));
+        return certificationResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberCertification(MemberCertificationRequestDto memberCertificationRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = memberCertificationRequestDto.toCertification(member);
+        certificationRepository.save(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberCertification(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
+        certificationRepository.delete(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public EducationResponseDto getMemberEducation(Long id) {
+        EducationResponseDto educationResponseDto = educationRepository.findById(id).map(EducationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 교육이 없습니다!"));
+        return educationResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberEducation(MemberEducationRequestDto memberEducationRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = memberEducationRequestDto.toCareer(member);
+        educationRepository.save(education);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberEducation(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = educationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 교육입니다!"));
+        educationRepository.delete(education);
+        return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
     public MemberSkillResponseDto getMemberSkills() {
         MemberSkillResponseDto memberSkillResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .map(MemberSkillResponseDto::of)
@@ -176,7 +253,7 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
 
-        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMember(member);
+        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         memberSkillResponseDto.setDpositionList(dpositionList);
         memberSkillResponseDto.setTechList(techList);
@@ -372,9 +449,9 @@ public class MemberService {
 
     @Transactional
     public void updateDposition(Member member, List<String> dpositionList) {
-        List<DetailPositionInterface> detailPositions = detailPositionRepository.findAllByMember(member);
+        List<DetailPosition> detailPositions = detailPositionRepository.findAllByMember(member);
         if (!detailPositions.isEmpty()) {
-            detailPositionRepository.deleteAll();
+            detailPositionRepository.deleteAll(detailPositions);
         }
         if (dpositionList != null && !dpositionList.isEmpty()) {
             for (String dposition : dpositionList) {
@@ -392,7 +469,7 @@ public class MemberService {
     public void updateTechList(Member member, List<HashMap<String, String>> techList) throws Exception {
         List<MemberTechstack> memberTechstacks = memberTechstackRepository.findAllByCompositeMemberTechstack_Member(member);
         if (!memberTechstacks.isEmpty()) {
-            memberTechstackRepository.deleteAll();
+            memberTechstackRepository.deleteAll(memberTechstacks);
         }
 //        if (techList != null && !techList.isEmpty()) {
         if (!techList.isEmpty()) {
@@ -498,5 +575,4 @@ public class MemberService {
     public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
         member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     }
-
 }

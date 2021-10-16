@@ -10,10 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -23,22 +20,23 @@ public class Education {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String institution;
     private String degree;
     private String major;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
-    private State state;
+    private String state;
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public Education(String institution, String degree, String major,
-        LocalDateTime start_date, LocalDateTime end_date, State state, String description,
+        LocalDateTime start_date, LocalDateTime end_date, String state, String description,
         Member member) {
         this.institution = institution;
         this.degree = degree;
