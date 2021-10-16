@@ -14,8 +14,8 @@ public interface ProjectTechstackRepository extends JpaRepository<ProjectTechsta
         + "where pt.compositeProjectTechstack.project = :project")
     List<ProjectTechstack> findProjectTechstackByProject(@Param("project") Project project);
 
-    // 프로젝트의 기존 기술 스택 전체 제거
-    @Query("delete from matching.project_techstack pt where pt.compositeProjectTechstack.project = :project")
-    void deleteAllByProject(@Param("project") Project project);
+//    // 프로젝트의 기존 기술 스택 전체 제거 (아래 쿼리문은 안되는거 같음) 개선 고려
+//    @Query("delete from matching.project_techstack pt where pt.compositeProjectTechstack.project = :project")
+//    void deleteAllByProject(@Param("project") Project project);
 
 }

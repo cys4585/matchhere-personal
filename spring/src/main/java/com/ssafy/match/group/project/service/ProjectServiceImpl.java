@@ -164,7 +164,8 @@ public class ProjectServiceImpl implements ProjectService {
             mem.deactivation();
         }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
-        projectTechstackRepository.deleteAllByProject(project);
+//        projectTechstackRepository.deleteAllByProject(project);
+        projectTechstackRepository.deleteAll(projectTechstackRepository.findProjectTechstackByProject(project));
         // 프로젝트 비활성화
         project.setIsActive(Boolean.FALSE);
 
@@ -174,7 +175,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 모든 프로젝트 간단 조회 (List 변환말고 Page로 한번에 변환할 수 있는 방법 찾기) + (공개 범위 고려)
     public List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable) {
         Page<Project> projects = projectRepository.findAllProject(ProjectProgressState.FINISH,
-            RecruitmentState.RECRUITMENT, PublicScope.Public, pageable);
+            RecruitmentState.RECRUITMENT, PublicScope.PUBLIC, pageable);
         List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
         for (Project project : projects) {
             projectInfoResponseDtos.add(
@@ -244,7 +245,8 @@ public class ProjectServiceImpl implements ProjectService {
     // 기술 스택 추가
     @Transactional
     public void addTechstack(Project project, HashMap<String, String> techstacks) {
-        projectTechstackRepository.deleteAllByProject(project);
+        projectTechstackRepository.deleteAll(projectTechstackRepository.findProjectTechstackByProject(project));
+//        projectTechstackRepository.deleteAllByProject(project);
 
         for (String tech : techstacks.keySet()) {
             Techstack techstack = findTechstack(tech);

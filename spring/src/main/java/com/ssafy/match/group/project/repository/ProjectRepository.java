@@ -14,10 +14,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // 모든 프로젝트
     @Query("select p from matching.project p "
-        + "where p.projectProgressState = :projectProgressState and p.recruitmentState = :recruitmentState and p.publicScope = :publicScope")
+        + "where p.projectProgressState <> :projectProgressState and p.recruitmentState = :recruitmentState and p.publicScope = :publicScope and p.isActive = true")
     Page<Project> findAllProject(
         @Param("projectProgressState") ProjectProgressState projectProgressState,
-        @Param("recruitment") RecruitmentState recruitmentState,
+        @Param("recruitmentState") RecruitmentState recruitmentState,
         @Param("publicScope") PublicScope publicScope,
         Pageable pageable);
 

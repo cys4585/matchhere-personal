@@ -3,6 +3,8 @@ package com.ssafy.match.group.project.entity;
 import com.ssafy.match.common.entity.Level;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +20,7 @@ public class ProjectTechstack {
 
     @EmbeddedId
     private CompositeProjectTechstack compositeProjectTechstack;
-
+    @Enumerated(EnumType.STRING)
     private Level level;
 
     public static ProjectTechstack of(CompositeProjectTechstack compositeProjectTechstack, Level level) {

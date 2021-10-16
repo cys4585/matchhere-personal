@@ -24,7 +24,7 @@ public class ProjectInfoResponseDto {
 
     @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
     @ApiParam(value = "파일 다운로드 Uri")
-    private String fileDownloadUri;
+    private String coverPicUri;
 
     @ApiModelProperty(example = "알고리즘 프로젝트")
     @ApiParam(value = "프로젝트명")
@@ -67,8 +67,8 @@ public class ProjectInfoResponseDto {
     private int developerCount;
 
     @ApiModelProperty(example =
-        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
-            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
+        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
+            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
     @ApiParam(value = "해당 프로젝트에 속해있는 개발자 정보")
     private List<MemberSimpleInfoResponseDto> developers;
 
@@ -81,8 +81,8 @@ public class ProjectInfoResponseDto {
     private int designerCount;
 
     @ApiModelProperty(example =
-        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
-            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
+        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
+            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
     @ApiParam(value = "해당 프로젝트에 속해있는 디자이너 정보")
     private List<MemberSimpleInfoResponseDto> designers;
 
@@ -95,8 +95,8 @@ public class ProjectInfoResponseDto {
     private int plannerCount;
 
     @ApiModelProperty(example =
-        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
-            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"fileDownloadUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
+        "[{\"id\": 4, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/ac3e-aae8acee8a42\"},"
+            + " {\"id\": 5, \"name\": \"문일민\", \"nickname\": \"IMM\", \"email\": \"IMM@naver.com\", \"coverPicUri\": \"http://localhost:8080/api/downloadFile/97534f05-7e7f\"}]")
     @ApiParam(value = "해당 프로젝트에 속해있는 기획자 정보")
     private List<MemberSimpleInfoResponseDto> planners;
 
@@ -127,7 +127,7 @@ public class ProjectInfoResponseDto {
         return ProjectInfoResponseDto.builder()
             .id(project.getId())
             .projectProgressState(project.getProjectProgressState().getState())
-            .fileDownloadUri(
+            .coverPicUri(
                 (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
             .recruitmentState(project.getRecruitmentState().getState())
             .viewCount(project.getViewCount())
@@ -157,7 +157,7 @@ public class ProjectInfoResponseDto {
         return ProjectInfoResponseDto.builder()
             .id(project.getId())
             .projectProgressState(project.getProjectProgressState().getState())
-            .fileDownloadUri(
+            .coverPicUri(
                 (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
             .recruitmentState(project.getRecruitmentState().getState())
             .viewCount(project.getViewCount())

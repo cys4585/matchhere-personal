@@ -32,7 +32,7 @@ public class ProjectInfoForUpdateResponseDto {
 
     @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
     @ApiParam(value = "파일 다운로드 Uri")
-    private String fileDownloadUri;
+    private String coverPicUri;
 
     @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
     @ApiParam(value = "변경된 기술 스택 리스트")
@@ -88,7 +88,7 @@ public class ProjectInfoForUpdateResponseDto {
             .id(project.getId())
             .name(project.getName())
             .projectProgressState(project.getProjectProgressState().getState())
-            .fileDownloadUri(
+            .coverPicUri(
                 (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
             .techstacks(techstacks)
             .schedule(project.getSchedule())

@@ -1,16 +1,12 @@
 package com.ssafy.match.group.project.dto.response;
 
-import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.project.entity.Project;
-import com.ssafy.match.group.project.repository.ProjectTechstackRepository;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +22,7 @@ public class ProjectSimpleInfoResponseDto {
 
     @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
     @ApiParam(value = "파일 다운로드 Uri")
-    private String fileDownloadUri;
+    private String coverPicUri;
 
     @ApiModelProperty(example = "알고리즘 프로젝트")
     @ApiParam(value = "프로젝트명")
@@ -68,8 +64,9 @@ public class ProjectSimpleInfoResponseDto {
         List<ProjectTechstackResponseDto> techstacks) {
         return ProjectSimpleInfoResponseDto.builder()
             .id(project.getId())
+            .name(project.getName())
             .projectProgressState(project.getProjectProgressState().getState())
-            .fileDownloadUri(
+            .coverPicUri(
                 (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
             .recruitmentState(project.getRecruitmentState().getState())
             .viewCount(project.getViewCount())

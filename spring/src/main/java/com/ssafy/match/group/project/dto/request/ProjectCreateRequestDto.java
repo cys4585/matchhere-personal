@@ -16,7 +16,7 @@ public class ProjectCreateRequestDto {
     @ApiParam(value = "프로젝트명", required = true)
     private String name;
 
-    @ApiModelProperty(example = "진행예정, 진행중, 완료")
+    @ApiModelProperty(example = "프로젝트 진행 예정")
     @ApiParam(value = "프로젝트 진행 상태", required = true)
     private String projectProgressState;
 
@@ -24,7 +24,7 @@ public class ProjectCreateRequestDto {
     @ApiParam(value = "사진 고유 uuid")
     private String uuid;
 
-    @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(example = "{\"python\":\"중\", \"java\":\"상\"}")
     @ApiParam(value = "기술스택, 난이도")
     private HashMap<String, String> techstacks;
 

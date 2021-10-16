@@ -53,6 +53,7 @@ public enum ErrorCode {
     PROJECT_PROGRESS_STATE_NOT_FOUND(NOT_FOUND, "해당 프로젝트 진행 상태를 찾을 수 없습니다."),
     STUDY_PROGRESS_STATE_NOT_FOUND(NOT_FOUND, "해당 스터디 진행 상태를 찾을 수 없습니다."),
     RECRUITMENT_STATE_NOT_FOUND(NOT_FOUND, "해당 모집 상태를 찾을 수 없습니다."),
+    PUBLIC_SCOPE_NOT_FOUND(NOT_FOUND, "해당 공개 범위를 찾을 수 없습니다."),
     GROUP_AUTHORITY_NOT_FOUND(NOT_FOUND, "해당 권한을 찾을 수 없습니다."),
     LEVEL_NOT_FOUND(NOT_FOUND, "해당 레벨을 찾을 수 없습니다."),
     TECHSTACK_NOT_FOUND(NOT_FOUND, "해당 기술 스택을 찾을 수 없습니다."),
