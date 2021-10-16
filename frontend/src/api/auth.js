@@ -22,7 +22,13 @@ const signup = async (formData) => {
 }
 
 const login = async (formData) => {
-  await http.post(`/auth/login`, formData)
+  const res = await http.post(`/auth/login`, formData)
+  return res.data
+}
+
+const reissue = async (tokenData) => {
+  const res = await http.post(`/auth/reissue`, tokenData)
+  return res.data
 }
 
 export default {
@@ -31,4 +37,5 @@ export default {
   checkNickname,
   signup,
   login,
+  reissue,
 }

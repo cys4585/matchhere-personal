@@ -14,6 +14,12 @@ export default {
       dpositionList: [],
       techList: [],
     },
+    token: {
+      grantType: "",
+      accessToken: "",
+      accessTokenExpiresIn: 0,
+      refreshToken: "",
+    },
   },
   mutations: {
     SET_SIGNUP_FORMDATA(state, formData) {
@@ -42,6 +48,10 @@ export default {
     SET_SIGNUP_STEP(state, signupStep = "CheckEmail") {
       state.signupStep = signupStep
       localStorage.setItem("signupStep", signupStep)
+    },
+    SET_TOKEN(state, tokenData) {
+      state.token = tokenData
+      localStorage.setItem("token", JSON.stringify(tokenData))
     },
   },
   actions: {
@@ -79,6 +89,27 @@ export default {
         alert(error)
       }
     },
+    async login({ commit }, formData) {
+      try {
+        const tokenData = await AuthAPI.login(formData)
+        commit("SET_TOKEN", tokenData)
+      } catch (error) {
+        alert(error)
+      }
+    },
+    async reissue({ commit }, tokenData) {
+      try {
+        const { accessToken, refreshToken } = tokenData
+        const newTokenData = await AuthAPI.reissue({
+          accessToken,
+          refreshToken,
+        })
+        commit("SET_TOKEN", newTokenData)
+      } catch (error) {
+        alert(error)
+        console.log(error)
+      }
+    },
   },
   getters: {
     getEmail(state) {
@@ -96,6 +127,12 @@ export default {
     },
     getSignupStep(state) {
       return state.signupStep
+    },
+    getIsAuthenticated(state) {
+      return state.token.accessToken !== ""
+    },
+    getToken(state) {
+      return state.token
     },
   },
 }

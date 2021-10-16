@@ -14,4 +14,9 @@ if (localStorage.getItem("signupStep")) {
   store.commit("auth/SET_SIGNUP_STEP", localStorage.getItem("signupStep"))
 }
 
+if (localStorage.getItem("token")) {
+  // 토큰 업데이트
+  store.dispatch("auth/reissue", JSON.parse(localStorage.getItem("token")))
+}
+
 createApp(App).use(store).use(router).mount("#app")

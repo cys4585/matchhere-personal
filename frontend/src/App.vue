@@ -1,6 +1,23 @@
 <template>
+  <div>{{ isAuthenticated || "Unknown" }}</div>
   <router-view />
 </template>
+
+<script>
+import { computed } from "vue"
+import { useStore } from "vuex"
+export default {
+  setup() {
+    const store = useStore()
+    const isAuthenticated = computed(
+      () => store.getters["auth/getIsAuthenticated"]
+    )
+    return {
+      isAuthenticated,
+    }
+  },
+}
+</script>
 
 <style lang="scss">
 * {

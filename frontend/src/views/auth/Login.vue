@@ -16,7 +16,9 @@
             @update:errors="handleUpdateErrors"
           />
         </div>
-        <SubmitButton :disabled="!canSubmit">로그인</SubmitButton>
+        <SubmitButton @click="handleSubmit" :disabled="!canSubmit">
+          로그인
+        </SubmitButton>
       </div>
       <div class="links">
         <router-link :to="{ name: 'CheckEmail' }" class="link">
@@ -35,11 +37,13 @@ import InputFormField from "@/components/common/InputFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 
 import { emailValidator, passwordValidator } from "@/libs/validator"
+import { useStore } from "vuex"
 
 export default {
   name: "Login",
   components: { InputFormField, SubmitButton },
   setup() {
+    const store = useStore()
     const formFields = ref({
       email: {
         key: "email",
@@ -84,7 +88,16 @@ export default {
       }
     }
 
-    return { formFields, handleUpdateErrors, canSubmit }
+    const handleSubmit = () => {
+      const formData = {
+        email: formFields.value.email.value,
+        password: formFields.value.password.value,
+      }
+
+      store.dispatch("auth/login", formData)
+    }
+
+    return { formFields, handleUpdateErrors, canSubmit, handleSubmit }
   },
 }
 </script>
