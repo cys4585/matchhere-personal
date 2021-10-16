@@ -179,11 +179,25 @@ public class MemberService {
         return memberCareerResponseDto;
     }
 
+    @Transactional(readOnly = true)
+    public CertificationResponseDto getMemberCareer(Long id) {
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return certificationResponseDto;
+    }
+
     @Transactional
     public HttpStatus createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Career career = memberCareerRequestDto.toCareer(member);
         careerRepository.save(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberCareer(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Career career = careerRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
+        careerRepository.delete(career);
         return HttpStatus.OK;
     }
 

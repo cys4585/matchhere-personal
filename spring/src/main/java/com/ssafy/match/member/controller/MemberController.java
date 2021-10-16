@@ -80,8 +80,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
     }
 
-    @GetMapping("/career")
-    @ApiOperation(value = "내 커리어 Get")
+    @GetMapping("/careerall")
+    @ApiOperation(value = "내 커리어(경력,자격증,교육) Get")
     public ResponseEntity<MemberCareerResponseDto> getMemberCareerList() {
         return ResponseEntity.ok(memberService.getMemberCareerAll());
     }
@@ -93,6 +93,12 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
+    }
+
+    @DeleteMapping("/career/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 경력 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberCareer(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberCareer(id));
     }
 
     @GetMapping("/certification/{id}")
