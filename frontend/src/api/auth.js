@@ -2,12 +2,12 @@ import http from "@/api/http.js"
 import store from "@/store"
 
 const checkEmail = async (email) => {
-  await http.get(`/auth/check/email/${email}`)
+  await http.get(`/auth/cert/email/${email}`)
 }
 
 const authEmail = async (authCode) => {
   const email = store.getters["auth/getEmail"]
-  await http.post(`/auth/signup/authcode`, {
+  await http.post(`/auth/cert/authcode`, {
     authCode,
     email,
   })
@@ -21,9 +21,14 @@ const signup = async (formData) => {
   await http.post(`/auth/signup`, formData)
 }
 
+const login = async (formData) => {
+  await http.post(`/auth/login`, formData)
+}
+
 export default {
   checkEmail,
   authEmail,
   checkNickname,
   signup,
+  login,
 }

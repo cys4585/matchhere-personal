@@ -81,6 +81,13 @@ const routes = [
       component: ProjectList,
     },
   },
+  {
+    path: "/:notFound(.*)",
+    name: "NotFound",
+    redirect: () => {
+      return { name: "Home" }
+    },
+  },
 ]
 
 const router = createRouter({

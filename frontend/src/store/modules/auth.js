@@ -74,7 +74,7 @@ export default {
       try {
         await AuthAPI.signup(state.signupFormData)
         commit("RESET_SIGNUP_FORMDATA")
-        commit("SET_AUTHCODE")
+        commit("SET_SIGNUP_STEP")
       } catch (error) {
         alert(error)
       }

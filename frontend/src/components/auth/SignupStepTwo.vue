@@ -43,6 +43,7 @@ import TeckStackField from "@/components/auth/TeckStackField.vue"
 import TeckStackListItem from "@/components/auth/TeckStackListItem.vue"
 import { detailPositionList } from "@/libs/data"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 export default {
   name: "SignupStepTwo",
@@ -56,6 +57,7 @@ export default {
   emits: ["update:step"],
   setup() {
     const store = useStore()
+    const router = useRouter()
     const dpList = ref({ ...detailPositionList })
     const positionField = ref({
       label: "포지션",
@@ -136,6 +138,8 @@ export default {
 
       console.log(formData)
       store.commit("auth/SET_SIGNUP_FORMDATA", formData)
+      store.dispatch("auth/signup")
+      router.push({ name: "Login" })
     }
 
     return {
