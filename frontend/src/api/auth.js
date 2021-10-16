@@ -2,7 +2,8 @@ import http from "@/api/http.js"
 import store from "@/store"
 
 const checkEmail = async (email) => {
-  await http.get(`/auth/cert/email/${email}`)
+  const res = await http.get(`/auth/cert/email/${email}`)
+  return res.data
 }
 
 const authEmail = async (authCode) => {
@@ -14,7 +15,8 @@ const authEmail = async (authCode) => {
 }
 
 const checkNickname = async (nickname) => {
-  await http.get(`/auth/check/nickname/${nickname}`)
+  const res = await http.get(`/auth/check/nickname/${nickname}`)
+  return res.data
 }
 
 const signup = async (formData) => {
