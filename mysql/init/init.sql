@@ -5,18 +5,10 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
--- -----------------------------------------------------
 -- Schema matching
 -- -----------------------------------------------------
 -- edited by ilminmoon
 
--- -----------------------------------------------------
--- Schema matching
---
--- edited by ilminmoon
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `matching` ;
 
@@ -258,7 +250,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project` (
   `modify_date` DATETIME(6) NOT NULL,
   `host_id` BIGINT NOT NULL,
   `schedule` VARCHAR(45) NULL DEFAULT NULL,
-  `period` DATETIME(6) NULL DEFAULT NULL,
+  `period` DATE NULL DEFAULT NULL,
   `designer_count` INT NOT NULL,
   `designer_max_count` INT NOT NULL,
   `apply_designer` BIT(1) NOT NULL,
