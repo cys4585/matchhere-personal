@@ -49,7 +49,15 @@ export default {
       state.signupStep = signupStep
       localStorage.setItem("signupStep", signupStep)
     },
-    SET_TOKEN(state, tokenData) {
+    SET_TOKEN(
+      state,
+      tokenData = {
+        grantType: "",
+        accessToken: "",
+        accessTokenExpiresIn: 0,
+        refreshToken: "",
+      }
+    ) {
       state.token = tokenData
       localStorage.setItem("token", JSON.stringify(tokenData))
     },
