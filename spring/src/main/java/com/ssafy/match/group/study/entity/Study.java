@@ -1,6 +1,7 @@
 package com.ssafy.match.group.study.entity;
 
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.common.entity.ProjectProgressState;
@@ -46,7 +47,8 @@ public class Study {
     @Enumerated(EnumType.STRING)
     private City city;
     @Enumerated(EnumType.STRING)
-    private ProjectProgressState projectProgressState;
+    @Column(name = "study_progress_state")
+    private StudyProgressState studyProgressState;
     @Column(name = "create_Date")
     private LocalDateTime createDate;
     @Column(name = "modify_Date")
@@ -113,7 +115,7 @@ public class Study {
         setMaxCount(dto.getMaxCount());
         this.city = City.from(dto.getCity());
         this.modifyDate = LocalDateTime.now();
-        this.projectProgressState = ProjectProgressState.from(dto.getStatus());
+        this.studyProgressState = StudyProgressState.from(dto.getStatus());
         this.isPublic = dto.getIsPublic();
         this.isParticipate = dto.getIsParticipate();
     }

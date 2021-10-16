@@ -14,6 +14,6 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     @Query("select s from matching.study s where s.isActive = true and s.isPublic = true")
     List<Study> findAllStudy();
 
-    Page<Study> findByIsActiveAndIsPublicAndStatusIsNot(Boolean isActive, Boolean isPublic, Enum<ProjectProgressState> status, Pageable pageable);
+//    Page<Study> findByIsActiveAndIsPublicAndStatusIsNot(Boolean isActive, Boolean isPublic, Enum<ProjectProgressState> status, Pageable pageable);
 
 }

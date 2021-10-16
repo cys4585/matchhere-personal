@@ -93,7 +93,7 @@ public class StudyInfoResponseDto {
                 .isPublic(study.getIsPublic())
                 .isParticipate(study.getIsParticipate())
                 .city(study.getCity().name())
-                .status(study.getProjectProgressState().name())
+                .status(study.getStudyProgressState().name())
 //                .club((study.getClub() == null) ? null : new ClubSimpleInfoResponseDto(study.getClub()))
 //                .cover_pic((study.getDbFile() == null) ? null : study.getDbFile().getDownload_uri())
                 .modifiedDate(study.getModifyDate())

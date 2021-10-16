@@ -138,15 +138,15 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.PROGRESS, pageable)
-                .map(StudyInfoResponseDto::of);
-        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
-            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
+//    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
+//        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.PROGRESS, pageable)
+//                .map(StudyInfoResponseDto::of);
+//        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
+//            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
 //            studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
-        }
-        return studyInfoResponseDtos;
-    }
+//        }
+//        return studyInfoResponseDtos;
+//    }
 
     // 현재 스터디 정보 리턴
     public StudyInfoResponseDto getOneStudy(Long studyId) throws Exception {
