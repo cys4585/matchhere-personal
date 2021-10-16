@@ -108,10 +108,6 @@ export default {
       () => isAllfieldsFilled.value && isAllfieldsValid.value
     )
 
-    const handleChange = (e) => {
-      console.log(e.target.value)
-    }
-
     const handleUpdateErrors = (validateRes) => {
       const { fieldKey, status, type } = validateRes
       if (status) {
@@ -130,9 +126,14 @@ export default {
         city: cityField.value.value,
       }
       loading.value = true
-      await store.dispatch("auth/submitStepOne", formData)
+      // TODO: 에러 핸들링
+      const isDuplicated = await store.dispatch("auth/submitStepOne", formData)
+      if (!isDuplicated) {
+        emit("update:step", 2)
+      } else {
+        alert("중복되는 닉네임입니다")
+      }
       loading.value = false
-      emit("update:step", 2)
     }
 
     onMounted(() => {
@@ -152,7 +153,6 @@ export default {
       formFields,
       cityField,
       canSubmit,
-      handleChange,
       handleUpdateErrors,
       handleSubmit,
     }

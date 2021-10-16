@@ -78,8 +78,15 @@ export default {
     const handleSubmit = async () => {
       const email = formFields.value.email.value
       sendEmailLoading.value = true
-      await store.dispatch("auth/checkEmail", email)
-      router.push({ name: "AuthEmail" })
+
+      const isValidEmail = await store.dispatch("auth/checkEmail", email)
+      if (isValidEmail) {
+        router.push({ name: "AuthEmail" })
+      } else {
+        alert("이미 가입된 이메일입니다")
+      }
+
+      sendEmailLoading.value = false
     }
 
     return {
