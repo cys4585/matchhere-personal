@@ -1,11 +1,10 @@
 package com.ssafy.match.member.dto;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
 
 public interface CareerInterface {
+    Long getId();
     String getCompany();
     String getRole();
     LocalDateTime getStart_date();

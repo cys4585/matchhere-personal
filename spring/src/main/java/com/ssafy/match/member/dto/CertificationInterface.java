@@ -1,17 +1,15 @@
 package com.ssafy.match.member.dto;
 
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
-@Data
-public class CertificationInterface {
-    private String name;
-    private String organization;
-    private String code;
-    private String grade;
-    private LocalDateTime issued_date;
-    private LocalDateTime expired_date;
-    private Boolean is_expire;
+public interface CertificationInterface {
+    Long getId();
+    String getName();
+    String getOrganization();
+    String getCode();
+    String getGrade();
+    LocalDateTime getIssued_date();
+    LocalDateTime getExpired_date();
+    Boolean getIs_expire();
 }

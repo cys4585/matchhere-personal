@@ -10,14 +10,8 @@ import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
-import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
-import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
-import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
-import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
-import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
+import com.ssafy.match.member.dto.request.*;
+import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
@@ -170,7 +164,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberCareerResponseDto getMemberCareer() {
+    public MemberCareerResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
@@ -185,11 +179,47 @@ public class MemberService {
         return memberCareerResponseDto;
     }
 
+    @Transactional(readOnly = true)
+    public CertificationResponseDto getMemberCareer(Long id) {
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return certificationResponseDto;
+    }
+
     @Transactional
     public HttpStatus createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Career career = memberCareerRequestDto.toCareer(member);
         careerRepository.save(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberCareer(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Career career = careerRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
+        careerRepository.delete(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public CertificationResponseDto getMemberCertification(Long id) {
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return certificationResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberCertification(MemberCertificationRequestDto memberCertificationRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = memberCertificationRequestDto.toCertification(member);
+        certificationRepository.save(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberCertification(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
+        certificationRepository.delete(certification);
         return HttpStatus.OK;
     }
 
@@ -523,5 +553,4 @@ public class MemberService {
     public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
         member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     }
-
 }

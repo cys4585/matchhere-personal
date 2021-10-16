@@ -1,18 +1,14 @@
 package com.ssafy.match.member.dto;
 
-
-import com.ssafy.match.common.entity.State;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
-@Data
-public class EducationInterface {
-    private String institution;
-    private String degree;
-    private String major;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
-    private State state;
-    private String description;
+public interface EducationInterface {
+    Long getId();
+    String getInstitution();
+    String getDegree();
+    String getMajor();
+    LocalDateTime getStart_date();
+    LocalDateTime getEnd_date();
+    String getState();
+    String getDescription();
 }

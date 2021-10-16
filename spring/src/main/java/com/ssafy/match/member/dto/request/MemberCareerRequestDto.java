@@ -1,9 +1,6 @@
 package com.ssafy.match.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ssafy.match.common.annotation.Enum;
-import com.ssafy.match.common.entity.Authority;
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,11 +8,8 @@ import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 
