@@ -10,9 +10,12 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema matching
 -- -----------------------------------------------------
+-- edited by ilminmoon
 
 -- -----------------------------------------------------
 -- Schema matching
+--
+-- edited by ilminmoon
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `matching` ;
