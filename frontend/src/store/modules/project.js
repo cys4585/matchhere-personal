@@ -7,7 +7,7 @@ export default {
     projectInfo: {},
   },
   mutations: {
-    setProjectInfo(state, projectInfo) {
+    SET_PROJECT_INFO(state, projectInfo) {
       state.projectInfo = projectInfo
     },
   },
@@ -19,7 +19,7 @@ export default {
       // )
       // console.log(project)
       const projectInfo = res.data
-      commit("setProjectInfo", projectInfo)
+      commit("SET_PROJECT_INFO", projectInfo)
     },
     async applyForParticipation({ commit }, { position, introduce }) {
       console.log(position)
