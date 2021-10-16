@@ -55,7 +55,7 @@ public class ClubInfoResponseDto {
                 .city(club.getCity().name())
                 .cover_pic((club.getDbFile() == null) ? null : club.getDbFile().getDownload_uri())
                 .bio(club.getBio())
-                .host(new MemberSimpleInfoResponseDto(club.getMember()))
+                .host(MemberSimpleInfoResponseDto.from(club.getMember()))
                 .build();
     }
 

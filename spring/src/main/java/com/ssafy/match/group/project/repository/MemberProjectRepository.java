@@ -32,8 +32,5 @@ public interface MemberProjectRepository extends JpaRepository<MemberProject, Co
     @Query(value = "select mp.compositeMemberProject.project from matching.member_project mp "
         + "where mp.compositeMemberProject.member = :member and mp.isActive = true")
     List<Project> projectInMember(@Param("member") Member member);
-
-    @Query(value = "select mp.compositeMemberProject.project from matching.member_project mp "
-            + "where mp.compositeMemberProject.member = :member and mp.isActive = true and mp.compositeMemberProject.project.status <> :status")
-    List<Project> getProjectsByMemberAndStatus(@Param("member") Member member, @Param("status") Enum<ProjectProgressState> status);
+    
 }

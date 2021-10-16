@@ -173,9 +173,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 모든 프로젝트 간단 조회 (List 변환말고 Page로 한번에 변환할 수 있는 방법 찾기) + (공개 범위 고려)
     public List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable) {
-        Page<Project> projects = projectRepository.findAllProject(
-            ProjectProgressState.FINISH, RecruitmentState.RECRUITMENT, PublicScope.Public,
-            pageable);
+        Page<Project> projects = projectRepository.findAllProject(ProjectProgressState.FINISH,
+            RecruitmentState.RECRUITMENT, PublicScope.Public, pageable);
         List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
         for (Project project : projects) {
             projectInfoResponseDtos.add(
@@ -183,7 +182,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return projectInfoResponseDtos;
     }
-    // 추천 프로젝트 조회
+//    // 추천 프로젝트 조회
     public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
 //        Pageable limit = PageRequest.of(0, 10);
         Page<Project> projects = projectRepository.findRecommendationProject(pageable);

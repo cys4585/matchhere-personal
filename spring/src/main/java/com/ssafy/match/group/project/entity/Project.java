@@ -30,7 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity(name = "matching_project")
+@Entity(name = "matching.project")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Project {
 
