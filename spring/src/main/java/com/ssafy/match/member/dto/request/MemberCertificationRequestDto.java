@@ -48,7 +48,6 @@ public class MemberCertificationRequestDto {
 
     @ApiModelProperty(name = "is_expire", example = "false")
     @ApiParam(value = "만료여부", required = true)
-//    @NotEmpty
     private Boolean is_expire;
 
     public Certification toCertification(Member member) {

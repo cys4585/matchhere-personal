@@ -87,7 +87,7 @@ public class MemberController {
     }
 
     @PostMapping("/career")
-    @ApiOperation(value = "내 경력 Update")
+    @ApiOperation(value = "내 경력 Create")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
@@ -101,8 +101,14 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberCertification(id));
     }
 
+    @DeleteMapping("/certification/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 자격증 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberCertification(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberCertification(id));
+    }
+
     @PostMapping("/certification")
-    @ApiOperation(value = "내 경력 Update")
+    @ApiOperation(value = "내 자격증 Create")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
