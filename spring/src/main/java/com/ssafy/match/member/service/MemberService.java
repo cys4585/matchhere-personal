@@ -10,10 +10,7 @@ import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
-import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
-import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
@@ -194,6 +191,14 @@ public class MemberService {
     public CertificationResponseDto getMemberCertification(Long id) {
         CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
         return certificationResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberCertification(MemberCertificationRequestDto memberCertificationRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = memberCertificationRequestDto.toCertification(member);
+        certificationRepository.save(certification);
+        return HttpStatus.OK;
     }
 
     @Transactional(readOnly = true)

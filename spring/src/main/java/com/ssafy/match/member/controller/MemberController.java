@@ -1,10 +1,7 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
-import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
-import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
-import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
@@ -104,14 +101,14 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberCertification(id));
     }
 
-//    @PostMapping("/certification")
-//    @ApiOperation(value = "내 경력 Update")
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 200, message = "성공")
-//    })
-//    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
-//        return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
-//    }
+    @PostMapping("/certification")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
+    }
 
     @GetMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Get")
