@@ -11,18 +11,36 @@
           v-for="(form, name, index) in formFields"
           :key="form.id"
         >
-          <h3 v-if="name == 'project'">프로젝트</h3>
-          <h3 v-else-if="name == 'member'">구성원</h3>
+          <h3 v-if="name === 'project'">프로젝트</h3>
+          <h3 v-else-if="name === 'member'">구성원</h3>
           <div class="fields" v-for="field in form" :key="field.id">
             <InputFormField
-              v-if="field.type == 'string'"
+              v-if="field.type === 'string'"
               :field="field"
+              :formFields="form"
               v-model="field.value"
               @update:errors="handleUpdateErrors"
             />
+            <SelectFormField
+              v-else-if="field.type === 'select'"
+              :field="field"
+              v-model="field.value"
+            />
+            <div v-else-if="field.type === 'search'" class="grid gap-2">
+              <TechStackField @SelectTeckStack="handleSelectTechStack" />
+              <div class="flex flex-wrap gap-1">
+                <TechStackItem
+                  v-for="(item, idx) in field.value"
+                  :key="item.id"
+                  :techStack="item"
+                  :idx="idx"
+                  @remove="handleRemoveTeckStack"
+                />
+              </div>
+            </div>
             <div v-else class="form-field">
               <p class="label">{{ field.label }}</p>
-              <div v-if="field.type == 'radio'">
+              <div v-if="field.type === 'radio'">
                 <div v-for="(state, index, key) in field.stateList" :key="key">
                   <input
                     class="input-radio"
@@ -34,7 +52,7 @@
                   <label :for="field.idList[index]">{{ state }}</label>
                 </div>
               </div>
-              <div v-else-if="field.type == 'file'">
+              <div v-else-if="field.type === 'file'">
                 <!-- file 타입은 양방향 바인딩 할 수 없다. method로 구현 -->
                 <input
                   :type="field.type"
@@ -43,29 +61,24 @@
                 />
                 <p>{{ field.value }}</p>
               </div>
-              <div v-else-if="field.type == 'date'">
+              <div v-else-if="field.type === 'date'">
                 <input :type="field.type" v-model="field.value" />
               </div>
-              <div v-else-if="field.type == 'select'">
-                <select v-model="field.value">
-                  <option disabled value="">{{ field.description }}</option>
-                  <option
-                    v-for="value in field.valueList"
-                    :key="value.id"
-                    :value="value"
-                  >
-                    {{ value }}
-                  </option>
-                </select>
-              </div>
-              <div v-else-if="field.type == 'textarea'">
+              <div v-else-if="field.type === 'textarea'">
                 <textarea
                   :placeholder="field.placeholder"
                   v-model="field.value"
-                  class="w-full h-32 border-2"
+                  class="
+                    w-full
+                    h-32
+                    border-2
+                    rounded-md
+                    outline-none
+                    focus:ring-2 focus:ring-blue-500
+                  "
                 ></textarea>
               </div>
-              <div v-else-if="field.type == 'number'">
+              <div v-else-if="field.type === 'number'">
                 <input
                   :type="field.type"
                   min="0"
@@ -87,24 +100,29 @@
 
 <script>
 import InputFormField from "@/components/common/InputFormField.vue"
+import SelectFormField from "@/components/common/SelectFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
+import TechStackField from "@/components/common/TeckStackField.vue"
+import TechStackItem from "@/components/project/TechStackItem.vue"
 import { ref, computed } from "vue"
 import { requiredValidator } from "@/libs/validator"
+import { cityList } from "@/libs/data"
 
 export default {
   name: "ProjectForm",
   components: {
     InputFormField,
     SubmitButton,
+    SelectFormField,
+    TechStackField,
+    TechStackItem,
   },
   setup() {
     const formFields = ref({
       project: {
         pjtName: {
-          // handleValidate의 fieldKey에 들어가는 인자도 label
-          // 브라우저에 랜더링되는 데이터도 label
-          label: "pjtName",
-          // label: "프로젝트 이름",
+          key: "pjtName",
+          label: "프로젝트 이름",
           type: "string",
           value: "",
           notNull: true,
@@ -113,6 +131,7 @@ export default {
           validators: [requiredValidator],
         },
         pjtState: {
+          key: "pjtState",
           label: "프로젝트 상태",
           type: "radio",
           idList: ["will", "ing", "done"],
@@ -123,6 +142,7 @@ export default {
           validators: [],
         },
         ThumbnailImageFile: {
+          key: "ThumbnailImageFile",
           label: "썸네일 이미지",
           type: "file",
           value: "",
@@ -130,20 +150,19 @@ export default {
           errors: {},
           validators: [],
         },
-        // 자동완성, value 아마 리스트..? 일단 패스
         techStacks: {
-          label: "techStacks",
-          // label: "기술스택",
-          type: "string",
-          value: "",
+          key: "techStacks",
+          label: "기술스택",
+          type: "search",
+          value: [],
           notNull: false,
           placeholder: "ex) Vue, Spring, MySQL",
           errors: {},
           validators: [],
         },
         schedule: {
-          label: "schedule",
-          // label: "일정",
+          key: "schedule",
+          label: "일정",
           type: "string",
           value: "",
           notNull: false,
@@ -152,6 +171,7 @@ export default {
           validators: [],
         },
         dueDate: {
+          key: "dueDate",
           label: "프로젝트 마감 예정일",
           type: "date",
           value: "",
@@ -159,29 +179,31 @@ export default {
           errors: {},
           validators: [],
         },
-        region: {
+        city: {
+          key: "city",
           label: "지역",
           type: "select",
-          description: "지역을 선택하세요",
-          // 일단은!
-          valueList: ["온라인", "무관", "서울", "경기", "경남", "대구"],
+          placeholder: "지역을 선택하세요",
+          options: cityList,
           value: "",
           notNull: true,
           errors: {},
           validators: [],
         },
         club: {
+          key: "club",
           label: "소속 클럽",
           type: "select",
-          description: "클럽을 선택하세요",
+          placeholder: "클럽을 선택하세요",
           // 일단은!
-          valueList: ["최고의 클럽", "멋쟁이 클럽", "굇수모임"],
+          options: ["최고의 클럽", "멋쟁이 클럽", "굇수모임"],
           value: "",
           notNull: false,
           errors: {},
           validators: [],
         },
         introduction: {
+          key: "introduction",
           label: "소개",
           type: "textarea",
           value: "",
@@ -191,6 +213,7 @@ export default {
           validators: [],
         },
         openScope: {
+          key: "openScope",
           label: "공개 범위",
           type: "radio",
           idList: ["all", "club", "project"],
@@ -203,6 +226,7 @@ export default {
       },
       member: {
         recruitState: {
+          key: "recruitState",
           label: "모집 상태",
           type: "radio",
           idList: ["rec-ing", "rec-done"],
@@ -213,6 +237,7 @@ export default {
           validators: [],
         },
         developer: {
+          key: "developer",
           label: "개발자",
           type: "number",
           value: 0,
@@ -221,6 +246,7 @@ export default {
           validators: [],
         },
         designer: {
+          key: "designer",
           label: "디자이너",
           type: "number",
           value: 0,
@@ -229,6 +255,7 @@ export default {
           validators: [],
         },
         planner: {
+          key: "planner",
           label: "기획자",
           type: "number",
           value: 0,
@@ -293,6 +320,14 @@ export default {
       }
     }
 
+    const handleSelectTechStack = (techStack) => {
+      if (formFields.value.project.techStacks.value.includes(techStack)) return
+      formFields.value.project.techStacks.value.push(techStack)
+    }
+    const handleRemoveTeckStack = (idx) => {
+      formFields.value.project.techStacks.value.splice(idx)
+    }
+
     const createProject = () => {}
 
     return {
@@ -301,6 +336,8 @@ export default {
       handleUpdateErrors,
       canSubmit,
       createProject,
+      handleSelectTechStack,
+      handleRemoveTeckStack,
     }
   },
 }
@@ -308,7 +345,7 @@ export default {
 
 <style lang="scss" scoped>
 .project-form-section {
-  @apply py-10 px-4 grid gap-10;
+  @apply py-10 px-4 grid gap-4;
 
   header {
     @apply grid gap-4;
@@ -322,7 +359,7 @@ export default {
     @apply flex flex-col gap-6 items-center;
 
     .form {
-      @apply w-full grid gap-6;
+      @apply w-full grid gap-4;
 
       h3 {
         @apply font-bold text-xl;
@@ -339,7 +376,7 @@ export default {
           }
           input,
           select {
-            @apply border border-gray-400 rounded py-2 px-4 outline-none w-full;
+            @apply border border-gray-400 rounded py-2 px-4 outline-none w-full bg-white;
 
             &:focus {
               @apply ring-2 ring-blue-500;
