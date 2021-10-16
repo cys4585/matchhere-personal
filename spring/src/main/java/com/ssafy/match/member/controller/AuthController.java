@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,18 +35,24 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 
-    @GetMapping("/check/email/{email}")
-    @ApiOperation(value = "이메일 체크")
+    @GetMapping("/cert/email/{email}")
+    @ApiOperation(value = "authcode 이메일 발송")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<Boolean> checkEmail(@PathVariable("email") String email) {
+    public ResponseEntity<Boolean> certEmail(@PathVariable("email") String email) {
         return ResponseEntity.ok(authService.certEmail(email));
     }
 
-    @PostMapping("/signup/authcode")
-    public ResponseEntity<Boolean> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto){
-        return ResponseEntity.ok(authService.emailAuthCode(emailCertRequestDto));
+    @PostMapping("/cert/authcode")
+    public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
+        String response = authService.emailAuthCode(emailCertRequestDto);
+        if (response == "") {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
     }
 
     @GetMapping("/check/nickname/{nickname}")

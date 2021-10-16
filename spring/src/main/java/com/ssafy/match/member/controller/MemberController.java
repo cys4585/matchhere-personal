@@ -1,6 +1,14 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
+import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
+import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
+import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
+import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
+import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
+import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
+import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
+import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -37,7 +45,7 @@ public class MemberController {
     }
 
     @GetMapping("/mypage/{email}")
-    @ApiOperation(value = "마이 페이지")
+    @ApiOperation(value = "다른사람의 마이페이지")
     public ResponseEntity<MypageResponseDto> getMyPage(@PathVariable("email") String email) {
         return ResponseEntity.ok(memberService.getMyPage(email));
     }
@@ -46,6 +54,66 @@ public class MemberController {
     @ApiOperation(value = "마이 페이지")
     public ResponseEntity<MypageResponseDto> getMyPage() {
         return ResponseEntity.ok(memberService.getMyPage());
+    }
+
+    @GetMapping("/basicinfo")
+    @ApiOperation(value = "내 기본정보 Get")
+    public ResponseEntity<MemberBasicinfoResponseDto> getMemberBasicinfo() {
+        return ResponseEntity.ok(memberService.getMemberBasicinfo());
+    }
+
+    @PutMapping("/basicinfo")
+    @ApiOperation(value = "내 기본정보 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberBasicinfo(@RequestBody @Valid MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberBasicInfo(memberBasicinfoRequestDto));
+    }
+
+    @GetMapping("/skills")
+    @ApiOperation(value = "내 직무/기술스택 Get")
+    public ResponseEntity<MemberSkillResponseDto> getMemberSkills() {
+        return ResponseEntity.ok(memberService.getMemberSkills());
+    }
+
+    @PutMapping("/skills")
+    @ApiOperation(value = "내 직무/기술스택 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberSkills(@RequestBody @Valid MemberSkillRequestDto memberSkillRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberSkills(memberSkillRequestDto));
+    }
+
+    @GetMapping("/career")
+    @ApiOperation(value = "내 커리어 Get")
+    public ResponseEntity<MemberCareerResponseDto> getMemberCareer() {
+        return ResponseEntity.ok(memberService.getMemberCareer());
+    }
+
+    @PostMapping("/career")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
+    }
+
+    @GetMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Get")
+    public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberPortfolio());
+    }
+
+    @PutMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
     }
 
     @PutMapping
