@@ -139,7 +139,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.Progress, pageable)
+        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.PROGRESS, pageable)
                 .map(StudyInfoResponseDto::of);
         for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
             studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
@@ -173,7 +173,7 @@ public class StudyServiceImpl implements StudyService {
 //        dto.setStudyTechstack(studyTechstackName(study));
         dto.setClubList(makeClubDtos(memberClubRepository.findClubByMember(study.getMember())));
         dto.setMemberSimpleInfoResponseDtos(makeMemberDtos(findMemberInStudy(study)));
-        dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
+//        dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
 
         return dto;
     }
@@ -329,9 +329,9 @@ public class StudyServiceImpl implements StudyService {
     public List<ClubSimpleInfoResponseDto> makeClubDtos(List<Club> hostClub) {
         List<ClubSimpleInfoResponseDto> clubSimpleInfoResponseDtos = new ArrayList<>();
 
-        for (Club club : hostClub) {
-            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
-        }
+//        for (Club club : hostClub) {
+//            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
+//        }
 
         return clubSimpleInfoResponseDtos;
     }
@@ -340,9 +340,9 @@ public class StudyServiceImpl implements StudyService {
     public List<MemberSimpleInfoResponseDto> makeMemberDtos(List<Member> members) {
         List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
 
-        for (Member member : members) {
-            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
-        }
+//        for (Member member : members) {
+//            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
+//        }
 
         return memberSimpleInfoResponseDtos;
     }

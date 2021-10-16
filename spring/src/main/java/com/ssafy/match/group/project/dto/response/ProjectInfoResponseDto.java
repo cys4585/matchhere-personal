@@ -52,7 +52,7 @@ public class ProjectInfoResponseDto {
 
     @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
     @ApiParam(value = "기술 스택 리스트")
-    private HashMap<String, String> techstacks;
+    private List<ProjectTechstackResponseDto> techstacks;
 
     @ApiModelProperty(example = "매주 화, 수 6시")
     @ApiParam(value = "작업 시간")
@@ -120,7 +120,7 @@ public class ProjectInfoResponseDto {
     @ApiParam(value = "조회한 사람의 권한")
     private String authority;
 
-    public static ProjectInfoResponseDto of(Project project, HashMap<String, String> techstacks,
+    public static ProjectInfoResponseDto of(Project project, List<ProjectTechstackResponseDto> techstacks,
         List<MemberSimpleInfoResponseDto> developers,
         List<MemberSimpleInfoResponseDto> planners, List<MemberSimpleInfoResponseDto> designers,
         String authority) {
@@ -150,6 +150,31 @@ public class ProjectInfoResponseDto {
                 project.getClub()))
             .bio(project.getBio())
             .authority(authority)
+            .build();
+    }
+
+    public static ProjectInfoResponseDto of(Project project) {
+        return ProjectInfoResponseDto.builder()
+            .id(project.getId())
+            .projectProgressState(project.getProjectProgressState().getState())
+            .fileDownloadUri(
+                (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
+            .recruitmentState(project.getRecruitmentState().getState())
+            .viewCount(project.getViewCount())
+            .createDate(project.getCreateDate())
+            .host(MemberSimpleInfoResponseDto.from(project.getMember()))
+            .schedule(project.getSchedule())
+            .period(project.getPeriod())
+            .developerCount(project.getDeveloperCount())
+            .developerMaxCount(project.getDeveloperMaxCount())
+            .plannerCount(project.getPlannerCount())
+            .plannerMaxCount(project.getPlannerMaxCount())
+            .designerCount(project.getDesignerCount())
+            .designerMaxCount(project.getDesignerMaxCount())
+            .city(project.getCity().toString())
+            .currentClub((project.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+                project.getClub()))
+            .bio(project.getBio())
             .build();
     }
 

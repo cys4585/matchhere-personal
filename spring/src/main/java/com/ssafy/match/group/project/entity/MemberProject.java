@@ -1,9 +1,12 @@
 package com.ssafy.match.group.project.entity;
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +28,8 @@ public class MemberProject {
     private String role;
     @Column(name = "register_date")
     private LocalDateTime registerDate;
-    private String authority;
+    @Enumerated(EnumType.STRING)
+    private GroupAuthority authority;
     @Column(name = "is_active")
     private boolean isActive;
 
@@ -36,14 +40,14 @@ public class MemberProject {
         this.isActive = false;
     }
 
-    public static MemberProject of(CompositeMemberProject compositeMemberProject, String role,
-        String authority){
-        return MemberProject.builder()
-            .compositeMemberProject(compositeMemberProject)
-            .role(role)
-            .registerDate(LocalDateTime.now())
-            .authority(authority)
-            .isActive(true)
-            .build();
-    }
+//    public static MemberProject of(CompositeMemberProject compositeMemberProject, String role,
+//        String authority){
+//        return MemberProject.builder()
+//            .compositeMemberProject(compositeMemberProject)
+//            .role(role)
+//            .registerDate(LocalDateTime.now())
+//            .authority(GroupAuthority.from(authority))
+//            .isActive(true)
+//            .build();
+//    }
 }

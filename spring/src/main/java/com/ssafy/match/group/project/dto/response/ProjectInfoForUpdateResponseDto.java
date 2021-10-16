@@ -36,7 +36,7 @@ public class ProjectInfoForUpdateResponseDto {
 
     @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
     @ApiParam(value = "변경된 기술 스택 리스트")
-    private HashMap<String, String> techstacks;
+    private List<ProjectTechstackResponseDto> techstacks;
 
     @ApiModelProperty(example = "매주 화, 수 6시")
     @ApiParam(value = "작업 시간")
@@ -83,7 +83,7 @@ public class ProjectInfoForUpdateResponseDto {
     private int plannerMaxCount;
 
     public static ProjectInfoForUpdateResponseDto of(Project project,
-        HashMap<String, String> techstacks, List<ClubSimpleInfoResponseDto> clubs) {
+        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs) {
         return ProjectInfoForUpdateResponseDto.builder()
             .id(project.getId())
             .name(project.getName())

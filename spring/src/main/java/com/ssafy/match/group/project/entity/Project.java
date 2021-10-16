@@ -164,8 +164,33 @@ public class Project {
         this.designerMaxCount = count;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
+    public void addRole(String str){
+        if(str.equals("기획자")){
+            this.plusPlanner();
+        }else if(str.equals("개발자")){
+            this.plusDeveloper();
+        }else if(str.equals("디자이너")){
+            this.plusDesigner();
+        }else{
+            throw new CustomException(ErrorCode.ROLE_NOT_FOUND);
+        }
+
+    }
+
+    public void removeRole(String str){
+        if(str.equals("기획자")){
+            this.minusPlanner();
+        }else if(str.equals("개발자")){
+            this.minusDeveloper();
+        }else if(str.equals("디자이너")){
+            this.minusDesigner();
+        }else{
+            throw new CustomException(ErrorCode.ROLE_NOT_FOUND);
+        }
+    }
+
+    public void setIsActive(Boolean active){
+        this.isActive = active;
     }
 
     public void update(ProjectUpdateRequestDto dto, Club club, DBFile coverPic) {
