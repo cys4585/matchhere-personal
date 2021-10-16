@@ -128,6 +128,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
+    @DeleteMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 자격증 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberEducation(id));
+    }
+
     @PostMapping("/education")
     @ApiOperation(value = "내 교육 Create")
     @ApiResponses(value = {
