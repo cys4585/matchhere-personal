@@ -28,7 +28,6 @@ export default {
   emits: ["update:modelValue"],
   setup(_, { emit }) {
     const handleChange = (e) => {
-      console.log(e.target.value)
       emit("update:modelValue", e.target.value)
     }
     return {

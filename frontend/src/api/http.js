@@ -22,7 +22,7 @@ http.interceptors.request.use(async (config) => {
     } catch (error) {
       // refreshToken 유효기간 만료
       router.push({ name: "Login" })
-      store.commit("auth/SET_TOKEN")
+      store.commit("auth/RESET_TOKEN")
       return
     }
   }

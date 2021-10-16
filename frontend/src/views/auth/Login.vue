@@ -25,7 +25,9 @@
           회원가입
         </router-link>
         <div class="divider"></div>
-        <router-link to="/" class="link">비밀번호 찾기</router-link>
+        <router-link :to="{ name: 'FindPassword' }" class="link">
+          비밀번호 찾기
+        </router-link>
       </div>
     </div>
   </section>
@@ -96,8 +98,12 @@ export default {
         password: formFields.value.password.value,
       }
 
-      await store.dispatch("auth/login", formData)
-      router.push({ name: "Home" })
+      try {
+        await store.dispatch("auth/login", formData)
+        router.push({ name: "Home" })
+      } catch (error) {
+        alert("이메일 또는 비밀번호를 확인하세요")
+      }
     }
 
     return { formFields, handleUpdateErrors, canSubmit, handleSubmit }
