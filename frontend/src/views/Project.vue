@@ -1,6 +1,6 @@
 <template>
+  <div><img :src="coverPic" alt="" /></div>
   <div class="container">
-    <div><img :src="coverPic" alt="" /></div>
     <section class="project-section">
       <header>
         <h2>{{ projectInfo.name }}</h2>
@@ -159,7 +159,7 @@
           <p>{{ projectInfo.bio }}</p>
         </div>
       </div>
-      <div class="flex flex-col items-center gap-2">
+      <div class="flex flex-col items-center gap-2 px-7">
         <button
           class="w-full text-white py-4 rounded-full bg-blue-500"
           @click="isApplyModalActivation = true"
@@ -218,7 +218,7 @@ export default {
 
 <style lang="scss" scoped>
 .project-section {
-  @apply py-6 px-4 grid gap-10;
+  @apply pt-6 pb-10 grid gap-10;
 
   header {
     @apply grid gap-4;
