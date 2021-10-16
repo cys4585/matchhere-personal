@@ -128,8 +128,14 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
+    @GetMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Get")
+    public ResponseEntity<EducationResponseDto> getMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberEducation(id));
+    }
+
     @DeleteMapping("/education/{id}")
-    @ApiOperation(value = "id를 기반으로 해당 자격증 Delete")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Delete")
     public ResponseEntity<HttpStatus> deleteMemberEducation(@PathVariable("id") Long id) {
         return ResponseEntity.ok(memberService.deleteMemberEducation(id));
     }

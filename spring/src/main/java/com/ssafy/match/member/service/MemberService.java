@@ -224,6 +224,12 @@ public class MemberService {
     }
 
     @Transactional
+    public EducationResponseDto getMemberEducation(Long id) {
+        EducationResponseDto educationResponseDto = educationRepository.findById(id).map(EducationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 교육이 없습니다!"));
+        return educationResponseDto;
+    }
+
+    @Transactional
     public HttpStatus createMemberEducation(MemberEducationRequestDto memberEducationRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Education education = memberEducationRequestDto.toCareer(member);
