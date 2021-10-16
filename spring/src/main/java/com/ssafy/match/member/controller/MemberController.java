@@ -5,10 +5,7 @@ import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
-import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
-import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
-import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
+import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.service.MemberService;
 import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
@@ -88,8 +85,8 @@ public class MemberController {
 
     @GetMapping("/career")
     @ApiOperation(value = "내 커리어 Get")
-    public ResponseEntity<MemberCareerResponseDto> getMemberCareer() {
-        return ResponseEntity.ok(memberService.getMemberCareer());
+    public ResponseEntity<MemberCareerResponseDto> getMemberCareerList() {
+        return ResponseEntity.ok(memberService.getMemberCareerAll());
     }
 
     @PostMapping("/career")
@@ -100,6 +97,21 @@ public class MemberController {
     public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
+
+    @GetMapping("/certification/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 자격증 Get")
+    public ResponseEntity<CertificationResponseDto> getMemberCertification(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberCertification(id));
+    }
+
+//    @PostMapping("/certification")
+//    @ApiOperation(value = "내 경력 Update")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "성공")
+//    })
+//    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
+//        return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
+//    }
 
     @GetMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Get")

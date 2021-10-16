@@ -14,10 +14,7 @@ import com.ssafy.match.member.dto.request.MemberBasicInfoRequestDto;
 import com.ssafy.match.member.dto.request.MemberCareerRequestDto;
 import com.ssafy.match.member.dto.request.MemberPortfolioRequestDto;
 import com.ssafy.match.member.dto.request.MemberSkillRequestDto;
-import com.ssafy.match.member.dto.response.MemberBasicinfoResponseDto;
-import com.ssafy.match.member.dto.response.MemberCareerResponseDto;
-import com.ssafy.match.member.dto.response.MemberPortfolioResponseDto;
-import com.ssafy.match.member.dto.response.MemberSkillResponseDto;
+import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
@@ -170,7 +167,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberCareerResponseDto getMemberCareer() {
+    public MemberCareerResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
@@ -191,6 +188,12 @@ public class MemberService {
         Career career = memberCareerRequestDto.toCareer(member);
         careerRepository.save(career);
         return HttpStatus.OK;
+    }
+
+    @Transactional(readOnly = true)
+    public CertificationResponseDto getMemberCertification(Long id) {
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return certificationResponseDto;
     }
 
     @Transactional(readOnly = true)
@@ -523,5 +526,4 @@ public class MemberService {
     public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
         member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     }
-
 }
