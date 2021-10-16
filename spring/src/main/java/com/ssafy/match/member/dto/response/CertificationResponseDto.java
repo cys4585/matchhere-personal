@@ -1,17 +1,11 @@
 package com.ssafy.match.member.dto.response;
 
 
-import com.ssafy.match.common.dto.DetailPositionInterface;
-import com.ssafy.match.member.dto.MemberTechstackInterface;
 import com.ssafy.match.member.entity.Certification;
-import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class CertificationResponseDto {
