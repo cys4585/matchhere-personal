@@ -1,27 +1,31 @@
 <template>
-  <div>{{ isAuthenticated || "Unknown" }}</div>
-  <router-view />
+  <Header />
+  <main>
+    <router-view />
+  </main>
+  <BottomNav />
 </template>
 
 <script>
-import { computed } from "vue"
-import { useStore } from "vuex"
+import Header from "@/components/common/Header.vue"
+import BottomNav from "@/components/common/BottomNav.vue"
+
 export default {
-  setup() {
-    const store = useStore()
-    const isAuthenticated = computed(
-      () => store.getters["auth/getIsAuthenticated"]
-    )
-    return {
-      isAuthenticated,
-    }
-  },
+  components: { Header, BottomNav },
 }
 </script>
 
 <style lang="scss">
 * {
   @apply text-gray-900;
+}
+
+#app {
+  @apply min-h-screen relative flex flex-col;
+}
+
+main {
+  @apply flex-1;
 }
 
 .divider {

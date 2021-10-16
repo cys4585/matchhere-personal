@@ -38,12 +38,14 @@ import SubmitButton from "@/components/common/SubmitButton.vue"
 
 import { emailValidator, passwordValidator } from "@/libs/validator"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 export default {
   name: "Login",
   components: { InputFormField, SubmitButton },
   setup() {
     const store = useStore()
+    const router = useRouter()
     const formFields = ref({
       email: {
         key: "email",
@@ -88,13 +90,14 @@ export default {
       }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const formData = {
         email: formFields.value.email.value,
         password: formFields.value.password.value,
       }
 
-      store.dispatch("auth/login", formData)
+      await store.dispatch("auth/login", formData)
+      router.push({ name: "Home" })
     }
 
     return { formFields, handleUpdateErrors, canSubmit, handleSubmit }

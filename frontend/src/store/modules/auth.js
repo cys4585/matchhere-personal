@@ -105,6 +105,9 @@ export default {
         alert(error)
       }
     },
+    async logout({ commit }) {
+      commit("SET_TOKEN")
+    },
     async reissue({ commit }, tokenData) {
       try {
         const { accessToken, refreshToken } = tokenData
