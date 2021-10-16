@@ -34,10 +34,9 @@ const routes = [
           return
         }
       }
-      console.log(to)
-      console.log(from)
       next()
     },
+    meta: { requiresNoAuth: true },
     children: [
       {
         path: "login",
@@ -93,6 +92,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  // 로그인 상태에서 접근할 수 없는 페이지
+  if (to?.meta?.requiresNoAuth) {
+    console.log(store.getters["auth/getIsAuthenticated"])
+    console.log(store.state.auth.token.accessToken)
+    if (store.getters["auth/getIsAuthenticated"]) {
+      alert("여기는 오면 안돼")
+      next({ name: "Home" })
+      return
+    }
+  }
+  next()
 })
 
 export default router
