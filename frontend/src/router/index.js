@@ -9,7 +9,7 @@ import ProjectLayout from "@/layouts/Project.vue"
 import Profile from "@/views/Profile.vue"
 import ProjectList from "@/views/ProjectList.vue"
 import ProjectForm from "@/views/ProjectForm.vue"
-import Project from "@/views/Project.vue"
+import Project from "@/views/ProjectArticle.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"

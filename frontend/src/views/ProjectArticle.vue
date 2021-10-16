@@ -1,5 +1,5 @@
 <template>
-  <div><img :src="coverPic" alt="" /></div>
+  <div class="flex justify-center"><img :src="coverPic" alt="" /></div>
   <div class="container">
     <section class="project-section">
       <header>
