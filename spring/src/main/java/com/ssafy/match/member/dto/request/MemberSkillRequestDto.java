@@ -27,7 +27,7 @@ public class MemberSkillRequestDto {
     @ApiParam(value = "세부 포지션", required = false)
     private List<String> dpositionList;
 
-    @ApiModelProperty(name = "techList", example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(name = "techList", example = "{\"python\":\"중\", \"java\":\"상\"}")
     @ApiParam(value = "기술스택 리스트", required = false)
-    private List<HashMap<String,String>> techList;
+    private HashMap<String,String> techList;
 }

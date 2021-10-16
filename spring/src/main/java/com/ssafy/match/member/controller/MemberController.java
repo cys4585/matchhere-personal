@@ -162,7 +162,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
     }
 
-    @PutMapping("/portfolio/{id}")
+    @PutMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Update")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")

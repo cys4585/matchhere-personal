@@ -72,23 +72,16 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMyPage(String email) {
-        MypageResponseDto mypageResponseDto = memberRepository.findByEmail(email)
-                .map(MypageResponseDto::of)
-                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
-        for (Club club : memberClubRepository.findClubByMember(member)) {
-            myClubList.add(ClubInfoResponseDto.of(club));
-        }
-        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
-        for (Project project : memberProjectRepository.projectInMember(member)) {
-            myProjectList.add(ProjectInfoResponseDto.of(project));
-        }
-        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
-        for (Study study : memberStudyRepository.studyInMember(member)) {
-            myStudyList.add(StudyInfoResponseDto.of(study));
-        }
+        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
+        List<CareerInterface> careers = careerRepository.findAllByMember(member);
+        List<EducationInterface> educations = educationRepository.findAllByMember(member);
+        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
+        mypageResponseDto.setCareerList(careers);
+        mypageResponseDto.setEducationList(educations);
+        mypageResponseDto.setCertificationList(certifications);
+
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
@@ -96,9 +89,6 @@ public class MemberService {
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
 
-        mypageResponseDto.setMyStudyList(myStudyList);
-        mypageResponseDto.setMyProjectList(myProjectList);
-        mypageResponseDto.setMyClubList(myClubList);
         mypageResponseDto.setTechList(techList);
         mypageResponseDto.setSnsList(snsList);
         mypageResponseDto.setDpositionList(dpositionList);
@@ -107,33 +97,20 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MypageResponseDto getMyPage() {
-        MypageResponseDto mypageResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MypageResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        List<ClubInfoResponseDto> myClubList = new ArrayList<>();
-        for (Club club : memberClubRepository.findClubByMember(member)) {
-            myClubList.add(ClubInfoResponseDto.of(club));
-        }
-        List<ProjectInfoResponseDto> myProjectList = new ArrayList<>();
-        for (Project project : memberProjectRepository.projectInMember(member)) {
-            myProjectList.add(ProjectInfoResponseDto.of(project));
-        }
-        List<StudyInfoResponseDto> myStudyList = new ArrayList<>();
-        for (Study study : memberStudyRepository.studyInMember(member)) {
-            myStudyList.add(StudyInfoResponseDto.of(study));
-        }
+        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
+        List<CareerInterface> careers = careerRepository.findAllByMember(member);
+        List<EducationInterface> educations = educationRepository.findAllByMember(member);
+        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
+        mypageResponseDto.setCareerList(careers);
+        mypageResponseDto.setEducationList(educations);
+        mypageResponseDto.setCertificationList(certifications);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
-
         getCoverPic(mypageResponseDto, member.getCover_pic());
         getPortfolio(mypageResponseDto, member.getPortfolio());
-
-        mypageResponseDto.setMyStudyList(myStudyList);
-        mypageResponseDto.setMyProjectList(myProjectList);
-        mypageResponseDto.setMyClubList(myClubList);
         mypageResponseDto.setTechList(techList);
         mypageResponseDto.setSnsList(snsList);
         mypageResponseDto.setDpositionList(dpositionList);
@@ -302,7 +279,9 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
 //        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
-        member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
+            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+        }
         return HttpStatus.OK;
     }
 
@@ -421,26 +400,24 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateTechList(Member member, List<HashMap<String, String>> techList) throws Exception {
+    public void updateTechList(Member member, HashMap<String, String> techList) throws Exception {
         List<MemberTechstack> memberTechstacks = memberTechstackRepository.findAllByCompositeMemberTechstack_Member(member);
         if (!memberTechstacks.isEmpty()) {
             memberTechstackRepository.deleteAll(memberTechstacks);
         }
 //        if (techList != null && !techList.isEmpty()) {
         if (!techList.isEmpty()) {
-            for (HashMap<String,String> hashmap : techList) {
-                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
-                    Techstack techstack = techstackRepository.findByName(entry.getKey())
-                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                    validLevel(entry.getValue());
-                    CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
-                            .builder()
-                            .member(member)
-                            .techstack(techstack)
-                            .build();
-                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
-                    memberTechstackRepository.save(memberTechstack);
-                }
+            for (Map.Entry<String, String> entry : techList.entrySet()) {
+                Techstack techstack = techstackRepository.findByName(entry.getKey())
+                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+                validLevel(entry.getValue());
+                CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                        .builder()
+                        .member(member)
+                        .techstack(techstack)
+                        .build();
+                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
+                memberTechstackRepository.save(memberTechstack);
             }
         }
     }
