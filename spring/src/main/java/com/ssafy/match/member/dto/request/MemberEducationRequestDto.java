@@ -1,7 +1,12 @@
 package com.ssafy.match.member.dto.request;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ssafy.match.common.annotation.Enum;
+import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.State;
 import com.ssafy.match.member.entity.Career;
+import com.ssafy.match.member.entity.Education;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
@@ -12,25 +17,27 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberCareerRequestDto {
-    @ApiModelProperty(name = "company", example = "Google")
-    @ApiParam(value = "회사", required = true)
+public class MemberEducationRequestDto {
+    @ApiModelProperty(name = "institution", example = "서울대학교")
+    @ApiParam(value = "학교/소속", required = true)
     @NotEmpty
-    private String company;
+    private String institution;
 
-    @ApiModelProperty(name = "role", example = "개발자")
-    @ApiParam(value = "역할", required = true)
+    @ApiModelProperty(name = "degree", example = "개발자")
+    @ApiParam(value = "학위", required = true)
     @NotEmpty
-    private String role;
+    private String degree;
+
+    @ApiModelProperty(name = "major", example = "컴퓨터과학과")
+    @ApiParam(value = "전공", required = false)
+    private String major;
 
     @ApiModelProperty(name = "start_date", example = "2018-05-01 00:00:00")
     @ApiParam(value = "시작일", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-//    @NotEmpty
     private LocalDateTime start_date;
 
     @ApiModelProperty(name = "end_date", example = "2018-05-01 00:00:00")
@@ -38,22 +45,23 @@ public class MemberCareerRequestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime end_date;
 
-    @ApiModelProperty(name = "is_incumbent", example = "false")
-    @ApiParam(value = "재직중", required = true)
-//    @NotEmpty
-    private Boolean is_incumbent;
+    @ApiModelProperty(name = "state", example = "졸업")
+    @ApiParam(value = "상태", required = true)
+    @Enum(enumClass = State.class, ignoreCase = false)
+    private String state;
 
-    @ApiModelProperty(name = "description", example = "Google의 핵심 인재")
+    @ApiModelProperty(name = "description", example = "서울대학교가 배출한 최고의 인재 ooo")
     @ApiParam(value = "설명", required = false)
     private String description;
 
-    public Career toCareer(Member member) {
-        return Career.builder()
-                .company(company)
-                .role(role)
+    public Education toCareer(Member member) {
+        return Education.builder()
+                .institution(institution)
+                .degree(degree)
+                .major(major)
                 .start_date(start_date)
-                .end_date((is_incumbent == Boolean.TRUE) ? null : end_date)
-                .is_incumbent(is_incumbent)
+                .end_date(end_date)
+                .state(state)
                 .description(description)
                 .member(member)
                 .build();

@@ -82,15 +82,15 @@ public class MemberController {
 
     @GetMapping("/careerall")
     @ApiOperation(value = "내 커리어(경력,자격증,교육) Get")
-    public ResponseEntity<MemberCareerResponseDto> getMemberCareerList() {
+    public ResponseEntity<MemberCareerAllResponseDto> getMemberCareerList() {
         return ResponseEntity.ok(memberService.getMemberCareerAll());
     }
 
-//    @GetMapping("/career/{id}")
-//    @ApiOperation(value = "id를 기반으로 해당 경력 Get")
-//    public ResponseEntity<CertificationResponseDto> getMemberCareer(@PathVariable("id") Long id) {
-//        return ResponseEntity.ok(memberService.getMemberCareer(id));
-//    }
+    @GetMapping("/career/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 경력 Get")
+    public ResponseEntity<CareerResponseDto> getMemberCareer(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberCareer(id));
+    }
 
     @PostMapping("/career")
     @ApiOperation(value = "내 경력 Create")
@@ -126,6 +126,27 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
+    }
+
+    @GetMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Get")
+    public ResponseEntity<EducationResponseDto> getMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.getMemberEducation(id));
+    }
+
+    @DeleteMapping("/education/{id}")
+    @ApiOperation(value = "id를 기반으로 해당 교육 Delete")
+    public ResponseEntity<HttpStatus> deleteMemberEducation(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(memberService.deleteMemberEducation(id));
+    }
+
+    @PostMapping("/education")
+    @ApiOperation(value = "내 교육 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberEducationRequestDto memberEducationRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
     @GetMapping("/portfolio")

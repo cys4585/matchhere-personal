@@ -164,25 +164,25 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberCareerResponseDto getMemberCareerAll() {
+    public MemberCareerAllResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MemberCareerResponseDto memberCareerResponseDto = new MemberCareerResponseDto();
+        MemberCareerAllResponseDto memberCareerAllResponseDto = new MemberCareerAllResponseDto();
 
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        memberCareerResponseDto.setCareerList(careers);
-        memberCareerResponseDto.setEducationList(educations);
-        memberCareerResponseDto.setCertificationList(certifications);
+        memberCareerAllResponseDto.setCareerList(careers);
+        memberCareerAllResponseDto.setEducationList(educations);
+        memberCareerAllResponseDto.setCertificationList(certifications);
 
-        return memberCareerResponseDto;
+        return memberCareerAllResponseDto;
     }
 
     @Transactional(readOnly = true)
-    public CertificationResponseDto getMemberCareer(Long id) {
-        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
-        return certificationResponseDto;
+    public CareerResponseDto getMemberCareer(Long id) {
+        CareerResponseDto careerResponseDto = careerRepository.findById(id).map(CareerResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        return careerResponseDto;
     }
 
     @Transactional
@@ -203,7 +203,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public CertificationResponseDto getMemberCertification(Long id) {
-        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 경력이 없습니다!"));
+        CertificationResponseDto certificationResponseDto = certificationRepository.findById(id).map(CertificationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 자격증이 없습니다!"));
         return certificationResponseDto;
     }
 
@@ -220,6 +220,28 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
         certificationRepository.delete(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public EducationResponseDto getMemberEducation(Long id) {
+        EducationResponseDto educationResponseDto = educationRepository.findById(id).map(EducationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 교육이 없습니다!"));
+        return educationResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberEducation(MemberEducationRequestDto memberEducationRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = memberEducationRequestDto.toCareer(member);
+        educationRepository.save(education);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus deleteMemberEducation(Long id) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = educationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 교육입니다!"));
+        educationRepository.delete(education);
         return HttpStatus.OK;
     }
 
