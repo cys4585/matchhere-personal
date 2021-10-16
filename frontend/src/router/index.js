@@ -5,11 +5,10 @@ import Home from "@/views/Home.vue"
 import AuthLayout from "@/layouts/Auth.vue"
 import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
-import Login from "@/views/Login.vue"
-import ProjectList from "@/views/ProjectList.vue"
+
 import Profile from "@/views/Profile.vue"
-import ProjectForm from "@/views/ProjectForm.vue"
 import ProjectList from "@/views/ProjectList.vue"
+import ProjectForm from "@/views/ProjectForm.vue"
 import Project from "@/views/Project.vue"
 
 import Login from "@/views/auth/Login.vue"
