@@ -4,7 +4,7 @@
     <div class="input-wrapper">
       <input
         :id="field.key"
-        :class="{ error: isError }"
+        :class="{ error: isError, disabled: field.disabled }"
         :type="field.type"
         :placeholder="field.placeholder"
         :value="modelValue"
@@ -81,6 +81,10 @@ export default {
 
       &.error {
         @apply border-red-500 bg-red-50;
+      }
+
+      &.disabled {
+        @apply bg-gray-200 text-gray-400 cursor-not-allowed;
       }
     }
 
