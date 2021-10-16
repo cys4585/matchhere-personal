@@ -128,6 +128,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
+    @PostMapping("/education")
+    @ApiOperation(value = "내 교육 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberEducationRequestDto memberEducationRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
+    }
+
     @GetMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Get")
     public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {

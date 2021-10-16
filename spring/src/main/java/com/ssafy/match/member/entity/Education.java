@@ -27,7 +27,7 @@ public class Education {
     private String major;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
-    private State state;
+    private String state;
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,7 +36,7 @@ public class Education {
 
     @Builder
     public Education(String institution, String degree, String major,
-        LocalDateTime start_date, LocalDateTime end_date, State state, String description,
+        LocalDateTime start_date, LocalDateTime end_date, String state, String description,
         Member member) {
         this.institution = institution;
         this.degree = degree;
