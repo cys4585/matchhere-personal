@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -36,15 +37,15 @@ public class MemberCertificationRequestDto {
     @ApiParam(value = "등급", required = false)
     private String grade;
 
-    @ApiModelProperty(name = "issued_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "issued_date", example = "2018-05-01")
     @ApiParam(value = "취득일", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime issued_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate issued_date;
 
-    @ApiModelProperty(name = "expired_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "expired_date", example = "2018-05-01")
     @ApiParam(value = "만료일", required = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime expired_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate expired_date;
 
     @ApiModelProperty(name = "is_expire", example = "false")
     @ApiParam(value = "만료여부", required = true)

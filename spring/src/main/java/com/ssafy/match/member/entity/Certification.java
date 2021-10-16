@@ -1,5 +1,6 @@
 package com.ssafy.match.member.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,8 +28,8 @@ public class Certification {
     private String organization;
     private String code;
     private String grade;
-    private LocalDateTime issued_date;
-    private LocalDateTime expired_date;
+    private LocalDate issued_date;
+    private LocalDate expired_date;
     private Boolean is_expire;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,7 +38,7 @@ public class Certification {
 
     @Builder
     public Certification(String name, String organization, String code, String grade,
-        LocalDateTime issued_date, LocalDateTime expired_date, Boolean is_expire,
+        LocalDate issued_date, LocalDate expired_date, Boolean is_expire,
         Member member) {
         this.name = name;
         this.organization = organization;

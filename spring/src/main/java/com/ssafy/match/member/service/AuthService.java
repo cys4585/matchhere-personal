@@ -183,20 +183,18 @@ public class AuthService {
     }
 
     @Transactional
-    public void addTechList(List<HashMap<String, String>> techList, Member member) throws Exception {
-        for (HashMap<String, String> hashmap : techList) {
-            for (Map.Entry<String, String> entry : hashmap.entrySet()) {
-                Techstack techstack = techstackRepository.findByName(entry.getKey())
-                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                validLevel(entry.getValue());
-                CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
-                        .builder()
-                        .member(member)
-                        .techstack(techstack)
-                        .build();
-                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
-                memberTechstackRepository.save(memberTechstack);
-            }
+    public void addTechList(HashMap<String, String> techList, Member member) throws Exception {
+        for (Map.Entry<String, String> entry : techList.entrySet()) {
+            Techstack techstack = techstackRepository.findByName(entry.getKey())
+                    .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+            validLevel(entry.getValue());
+            CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                    .builder()
+                    .member(member)
+                    .techstack(techstack)
+                    .build();
+            MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
+            memberTechstackRepository.save(memberTechstack);
         }
     }
 

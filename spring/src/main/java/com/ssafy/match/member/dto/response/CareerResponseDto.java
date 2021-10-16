@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,11 +20,11 @@ public class CareerResponseDto {
     @ApiModelProperty(name = "role", example = "DevOps Engineer")
     private String role;
 
-    @ApiModelProperty(name = "start_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime start_date;
+    @ApiModelProperty(name = "start_date", example = "2020-12-31")
+    private LocalDate start_date;
 
-    @ApiModelProperty(name = "end_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime end_date;
+    @ApiModelProperty(name = "end_date", example = "2020-12-31")
+    private LocalDate end_date;
 
     @ApiModelProperty(name = "is_incumbent", example = "false")
     private Boolean is_incumbent;
@@ -44,7 +45,7 @@ public class CareerResponseDto {
     }
 
     @Builder
-    public CareerResponseDto(Long id, String company, String role, LocalDateTime start_date, LocalDateTime end_date, Boolean is_incumbent, String description) {
+    public CareerResponseDto(Long id, String company, String role, LocalDate start_date, LocalDate end_date, Boolean is_incumbent, String description) {
         this.id = id;
         this.company = company;
         this.role = role;
