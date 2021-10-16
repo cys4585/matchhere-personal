@@ -1,9 +1,11 @@
 package com.ssafy.match.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
 
 public enum PublicScope {
-    Public("전체 공개"), ClubOnly("클럽 멤버에게만 공개"), Private("비공개");
+    PUBLIC("전체 공개"), ClUBONLY("클럽 멤버에게만 공개"), PRIVATE("비공개");
 
     private final String state;
 
@@ -11,19 +13,21 @@ public enum PublicScope {
         this.state = state;
     }
 
-    public String getState(){
+    public String getState() {
         return this.state;
     }
 
     @JsonCreator
     public static PublicScope from(String s) {
         PublicScope publicScope;
-        if(s.equals(Public.state)){
-            publicScope = Public;
-        }else if(s.equals(ClubOnly.state)){
-            publicScope = ClubOnly;
-        }else {
-            publicScope = Private;
+        if (s.equals(PUBLIC.state)) {
+            publicScope = PUBLIC;
+        } else if (s.equals(ClUBONLY.state)) {
+            publicScope = ClUBONLY;
+        } else if (s.equals(PRIVATE.state)) {
+            publicScope = PRIVATE;
+        } else {
+            throw new CustomException(ErrorCode.PUBLIC_SCOPE_NOT_FOUND);
         }
         return publicScope;
     }
