@@ -5,6 +5,8 @@ import com.ssafy.match.member.entity.Certification;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -24,11 +26,11 @@ public class CertificationResponseDto {
     @ApiModelProperty(name = "grade", example = "level-6")
     private String grade;
 
-    @ApiModelProperty(name = "issued_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime issued_date;
+    @ApiModelProperty(name = "issued_date", example = "2020-12-31")
+    private LocalDate issued_date;
 
-    @ApiModelProperty(name = "expired_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime expired_date;
+    @ApiModelProperty(name = "expired_date", example = "2020-12-31")
+    private LocalDate expired_date;
 
     @ApiModelProperty(name = "is_expire", example = "true")
     private Boolean is_expire;
@@ -47,7 +49,7 @@ public class CertificationResponseDto {
     }
 
     @Builder
-    public CertificationResponseDto(Long id, String name, String organization, String code, String grade, LocalDateTime issued_date, LocalDateTime expired_date, Boolean is_expire) {
+    public CertificationResponseDto(Long id, String name, String organization, String code, String grade, LocalDate issued_date, LocalDate expired_date, Boolean is_expire) {
         this.id = id;
         this.name = name;
         this.organization = organization;

@@ -271,51 +271,50 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberPortfolioResponseDto getMemberPortfolio() {
-        MemberPortfolioResponseDto memberPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberPortfolioResponseDto::of)
+    public MemberSnsPortfolioResponseDto getMemberSnsPortfolio() {
+        MemberSnsPortfolioResponseDto memberSnsPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .map(MemberSnsPortfolioResponseDto::of)
                 .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         DBFile portfolio = member.getPortfolio();
         if (portfolio != null) {
-            memberPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
+            memberSnsPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
         }
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        memberPortfolioResponseDto.setSnsList(snsList);
+        memberSnsPortfolioResponseDto.setSnsList(snsList);
 
-        return memberPortfolioResponseDto;
+        return memberSnsPortfolioResponseDto;
+    }
+
+    @Transactional
+    public HttpStatus createMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
+        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
+            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+        }
+        return HttpStatus.OK;
     }
 
     @Transactional
     public HttpStatus updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
-        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
+//        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
         member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
         return HttpStatus.OK;
-    }
-
-    @Transactional
-    public MemberUpdateResponseDto updateMyInfo(MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
-
-        updateMember(member, memberUpdateRequestDto);
-        updateSns(member, memberUpdateRequestDto.getSnsHashMap());
-        addTechstack(member, memberUpdateRequestDto.getAddTechList());
-        delTechstack(member, memberUpdateRequestDto.getDelTechList());
-        addDposition(member, memberUpdateRequestDto.getAddDpositionList());
-        delDposition(member, memberUpdateRequestDto.getDelDpositionList());
-        setCoverPic(member, memberUpdateRequestDto.getCover_pic());
-        setPortfolioUuid(member, memberUpdateRequestDto.getPortfolio_uuid());
-
-        return MemberUpdateResponseDto.of(SecurityUtil.getCurrentMemberId());
     }
 
     @Transactional
     public void deleteMember() {
         Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
         deleteMem(member);
+    }
+
+    @Transactional
+    public void deleteMem(Member member) {
+        member.setIs_active(Boolean.FALSE);
     }
 
     @Transactional
@@ -338,7 +337,6 @@ public class MemberService {
         }
     }
 
-//    @PreRemove
     @Transactional
     public void setPortfolioUuid(Member member, String uuid) throws Exception{
         if (uuid == null || uuid.equals("")) {
@@ -357,32 +355,6 @@ public class MemberService {
                 member.setPortfolio(dbFile);
             }
         }
-    }
-
-    @Transactional
-    public void deleteMem(Member member) {
-        member.setIs_active(Boolean.FALSE);
-    }
-
-    @Transactional
-    public void updateMember(Member member, MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
-        member.setNickname(memberUpdateRequestDto.getNickname());
-        if (memberUpdateRequestDto.getNickname() == null) {
-            throw new Exception("nickname이 비어있습니다!");
-        } else {
-            if (!memberRepository.existsByNickname(memberUpdateRequestDto.getNickname())) {
-                member.setNickname(memberUpdateRequestDto.getNickname());
-            }
-        }
-        if (memberUpdateRequestDto.getName() == null) {
-            throw new Exception("name이 비어있습니다!");
-        } else {
-            member.setName(memberUpdateRequestDto.getName());
-        }
-        member.setBio(memberUpdateRequestDto.getBio());
-        member.setCity(memberUpdateRequestDto.getCity());
-        member.setPosition(memberUpdateRequestDto.getPosition());
-        member.setPortfolio_uri(memberUpdateRequestDto.getPortfolio_uri());
     }
 
     @Transactional
@@ -431,23 +403,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void addDposition(Member member, List<String> addDpositionList) {
-//        if (addDpositionList != null && addDpositionList != null) {
-        if (addDpositionList != null) {
-            for (String dposition : addDpositionList) {
-                if (!detailPositionRepository.existsByMemberAndName(member, dposition)) {
-                    DetailPosition innerDposition = DetailPosition
-                            .builder()
-                            .member(member)
-                            .name(dposition)
-                            .build();
-                    detailPositionRepository.save(innerDposition);
-                }
-            }
-        }
-    }
-
-    @Transactional
     public void updateDposition(Member member, List<String> dpositionList) {
         List<DetailPosition> detailPositions = detailPositionRepository.findAllByMember(member);
         if (!detailPositions.isEmpty()) {
@@ -485,56 +440,6 @@ public class MemberService {
                             .build();
                     MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
                     memberTechstackRepository.save(memberTechstack);
-                }
-            }
-        }
-    }
-
-    @Transactional
-    public void delDposition(Member member, List<String> delDpositionList) throws Exception {
-        if (delDpositionList != null) {
-            for (String dposition : delDpositionList) {
-                Optional<DetailPosition> detailPosition = detailPositionRepository.findByMemberAndName(member, dposition);
-                if (detailPosition.isEmpty()) {
-                    throw new Exception("잘못된 접근입니다. 세부포지션이 저장되어있지 않습니다!");
-                } else {
-                    detailPositionRepository.delete(detailPosition.get());
-                }
-            }
-        }
-    }
-
-    @Transactional
-    public void addTechstack(Member member, List<HashMap<String, String>> techList) throws Exception{
-        if (techList != null) {
-            for (HashMap<String,String> hashmap : techList) {
-                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
-                    Techstack techstack = techstackRepository.findByName(entry.getKey())
-                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                    validLevel(entry.getValue());
-                    CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
-                            .builder()
-                            .member(member)
-                            .techstack(techstack)
-                            .build();
-                    MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
-                    memberTechstackRepository.save(memberTechstack);
-                }
-            }
-        }
-    }
-
-    @Transactional
-    public void delTechstack(Member member, List<HashMap<String, String>> techList) {
-        if (techList != null) {
-            for (HashMap<String,String> hashmap : techList) {
-                for (Map.Entry<String, String> entry : hashmap.entrySet()) {
-                    Techstack techstack = techstackRepository.findByName(entry.getKey())
-                            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                    Optional<MemberTechstack> memberTechstack = memberTechstackRepository.findByCompositeMemberTechstack_MemberAndCompositeMemberTechstack_Techstack(member, techstack);
-                    if (memberTechstack.isPresent()) {
-                        memberTechstackRepository.delete(memberTechstack.get());
-                    }
                 }
             }
         }

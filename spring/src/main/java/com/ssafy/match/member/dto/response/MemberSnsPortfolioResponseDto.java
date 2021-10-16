@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class MemberPortfolioResponseDto {
+public class MemberSnsPortfolioResponseDto {
     @ApiModelProperty(name = "portfolio", example = "http://cdn.matchhere.me/path/portfolio.pdf")
     private String portfolio;
 
@@ -21,14 +21,14 @@ public class MemberPortfolioResponseDto {
     @ApiModelProperty(name = "snsList", example = "[{\"id\":1, \"snsName\":\"github\", \"snsAccount\":\"gitid\"},{\"id\":2, \"snsName\":\"twitter\", \"snsAccount\":\"twitterid\"}]")
     private List<MemberSns> snsList = new ArrayList<>();
 
-    public static MemberPortfolioResponseDto of(Member member) {
-        return MemberPortfolioResponseDto.builder()
+    public static MemberSnsPortfolioResponseDto of(Member member) {
+        return MemberSnsPortfolioResponseDto.builder()
                 .portfolio_uri(member.getPortfolio_uri())
                 .build();
     }
 
     @Builder
-    public MemberPortfolioResponseDto(String portfolio_uri) {
+    public MemberSnsPortfolioResponseDto(String portfolio_uri) {
         this.portfolio_uri = portfolio_uri;
     }
 }

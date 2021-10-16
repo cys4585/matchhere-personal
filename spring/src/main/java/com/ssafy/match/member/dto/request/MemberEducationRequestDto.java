@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -35,15 +36,15 @@ public class MemberEducationRequestDto {
     @ApiParam(value = "전공", required = false)
     private String major;
 
-    @ApiModelProperty(name = "start_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "start_date", example = "2018-05-01")
     @ApiParam(value = "시작일", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime start_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate start_date;
 
-    @ApiModelProperty(name = "end_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "end_date", example = "2018-05-01")
     @ApiParam(value = "종료일", required = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime end_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate end_date;
 
     @ApiModelProperty(name = "state", example = "졸업")
     @ApiParam(value = "상태", required = true)
