@@ -16,7 +16,6 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberBasicInfoRequestDto {
-
     @ApiModelProperty(name = "coverpic_uuid", example = "uuid")
     @ApiParam(value = "사용자 커버 사진 uuid", required = false)
     private String coverpic_uuid;
