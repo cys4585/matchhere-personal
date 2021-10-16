@@ -103,7 +103,6 @@ export default {
         router.push({ name: "Home" })
       } catch (error) {
         console.log(error)
-        alert(error.message)
       }
     }
 

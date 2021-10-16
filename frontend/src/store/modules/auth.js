@@ -61,14 +61,25 @@ export default {
     },
   },
   actions: {
-    async checkEmail({ commit }, email) {
+    async sendEmailForSignup({ commit }, email) {
       // return으로 Error를 보내주지 않아 trycatch를 사용할 수 없다.
       commit("SET_SIGNUP_STEP", "CheckEmail")
       commit("SET_SIGNUP_FORMDATA", { email })
       try {
-        const status = await AuthAPI.checkEmail(email)
+        const status = await AuthAPI.sendEmailForSignup(email)
         if (status) {
           commit("SET_SIGNUP_STEP", "AuthEmail")
+          commit(
+            "ADD_MESSAGES",
+            { text: "인증 메일을 전송했습니다" },
+            { root: true }
+          )
+        } else {
+          commit(
+            "ADD_MESSAGES",
+            { text: "이미 가입된 이메일입니다", type: "error" },
+            { root: true }
+          )
         }
         return status
       } catch (error) {
@@ -76,12 +87,18 @@ export default {
         return
       }
     },
-    async authEmail({ commit }, authCode) {
+    async confirmAuthCodeForSignup({ commit }, authCode) {
       try {
-        await AuthAPI.authEmail(authCode)
+        await AuthAPI.confirmAuthCodeForSignup(authCode)
         commit("SET_SIGNUP_STEP", "Signup")
+        commit("ADD_MESSAGES", { text: "이메일 인증 성공 😎" }, { root: true })
       } catch (error) {
-        throw Error("올바르지 않은 코드입니다")
+        commit(
+          "ADD_MESSAGES",
+          { text: "올바르지 않은 인증코드입니다", type: "error" },
+          { root: true }
+        )
+        throw Error()
       }
     },
     async submitStepOne({ commit }, formData) {
@@ -89,6 +106,12 @@ export default {
         const isDuplicated = await AuthAPI.checkNickname(formData.nickname)
         if (!isDuplicated) {
           commit("SET_SIGNUP_FORMDATA", formData)
+        } else {
+          commit(
+            "ADD_MESSAGES",
+            { text: "이미 존재하는 닉네임입니다 🥲", type: "error" },
+            { root: true }
+          )
         }
         return isDuplicated
       } catch (error) {
@@ -100,6 +123,7 @@ export default {
         await AuthAPI.signup(state.signupFormData)
         commit("RESET_SIGNUP_FORMDATA")
         commit("SET_SIGNUP_STEP")
+        commit("ADD_MESSAGES", { text: "회원가입 성공 😎" }, { root: true })
       } catch (error) {
         throw new Error(error.message)
       }
@@ -108,12 +132,28 @@ export default {
       try {
         const tokenData = await AuthAPI.login(formData)
         commit("SET_TOKEN", tokenData)
+        commit("ADD_MESSAGES", { text: "안녕하세요 👍" }, { root: true })
       } catch (error) {
-        throw new Error("이메일 또는 비밀번호를 확인하세요")
+        commit(
+          "ADD_MESSAGES",
+          { text: "이메일 또는 비밀번호를 확인하세요", type: "error" },
+          {
+            root: true,
+          }
+        )
+        throw new Error()
       }
     },
     async logout({ commit }) {
       commit("RESET_TOKEN")
+      commit(
+        "ADD_MESSAGES",
+        {
+          text: "로그아웃 성공",
+          type: "success",
+        },
+        { root: true }
+      )
     },
     async reissue({ commit }, tokenData) {
       try {

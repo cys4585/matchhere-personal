@@ -130,8 +130,6 @@ export default {
       const isDuplicated = await store.dispatch("auth/submitStepOne", formData)
       if (!isDuplicated) {
         emit("update:step", 2)
-      } else {
-        alert("중복되는 닉네임입니다")
       }
       loading.value = false
     }
