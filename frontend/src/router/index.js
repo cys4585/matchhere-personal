@@ -12,6 +12,7 @@ import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
 import CheckEmail from "@/views/auth/CheckEmail.vue"
 import AuthEmail from "@/views/auth/AuthEmail.vue"
+import FindPassword from "@/views/auth/FindPassword.vue"
 
 const routes = [
   {
@@ -58,6 +59,11 @@ const routes = [
         name: "AuthEmail",
         component: AuthEmail,
       },
+      {
+        path: "find-password",
+        name: "FindPassword",
+        component: FindPassword,
+      },
     ],
   },
   {
@@ -97,8 +103,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 로그인 상태에서 접근할 수 없는 페이지
   if (to?.meta?.requiresNoAuth) {
-    console.log(store.getters["auth/getIsAuthenticated"])
-    console.log(store.state.auth.token.accessToken)
     if (store.getters["auth/getIsAuthenticated"]) {
       alert("여기는 오면 안돼")
       next({ name: "Home" })

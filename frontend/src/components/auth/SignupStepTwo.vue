@@ -38,7 +38,7 @@
 import { computed, ref } from "vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
-import DetailPositionButton from "@/components/auth/DetailPositionButton.vue"
+import DetailPositionButton from "@/components/common/DetailPositionButton.vue"
 import TeckStackField from "@/components/common/TeckStackField.vue"
 import TeckStackListItem from "@/components/common/TeckStackListItem.vue"
 import { detailPositionList } from "@/libs/data"
@@ -112,6 +112,9 @@ export default {
     }
 
     const handleSelectTeckStack = (teckStackKey) => {
+      // TODO
+      // [{python: "하"}, {javascript: "상"}] 에서
+      // {python: "하", javascript: "상"} 으로 데이터 형태 변경
       if (selectedTeckStackList.value[teckStackKey]) return
       selectedTeckStackList.value[teckStackKey] = "하"
     }
@@ -121,11 +124,10 @@ export default {
     }
 
     const handleRemoveTeckStack = (key) => {
-      console.log(key)
       delete selectedTeckStackList.value[key]
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const formData = {
         position: positionField.value.value,
         dpositionList: [...detailPositionListField.value],
@@ -136,10 +138,14 @@ export default {
         ),
       }
 
-      console.log(formData)
       store.commit("auth/SET_SIGNUP_FORMDATA", formData)
-      store.dispatch("auth/signup")
-      router.push({ name: "Login" })
+      try {
+        await store.dispatch("auth/signup")
+        router.push({ name: "Login" })
+      } catch (error) {
+        // TODO: 에러 핸들링
+        alert("회원가입에 실패했습니다")
+      }
     }
 
     return {
