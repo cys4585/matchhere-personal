@@ -5,8 +5,11 @@ import Home from "@/views/Home.vue"
 import AuthLayout from "@/layouts/Auth.vue"
 import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
-import ProjectList from "@/views/ProjectList.vue"
+
 import Profile from "@/views/Profile.vue"
+import ProjectList from "@/views/ProjectList.vue"
+import ProjectForm from "@/views/ProjectForm.vue"
+import Project from "@/views/Project.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -62,7 +65,7 @@ const routes = [
   },
   {
     path: "/profile",
-    component: ProjectLayout,
+    component: ProfileLayout,
     children: [
       {
         path: ":userId",
@@ -73,12 +76,24 @@ const routes = [
   },
   {
     path: "/projects",
-    component: ProfileLayout,
-    children: {
-      path: "",
-      name: "ProjectList",
-      component: ProjectList,
-    },
+    component: ProjectLayout,
+    children: [
+      {
+        path: "form",
+        name: "ProjectForm",
+        component: ProjectForm,
+      },
+      {
+        path: "",
+        name: "ProjectList",
+        component: ProjectList,
+      },
+      {
+        path: ":projectId",
+        name: "Project",
+        component: Project,
+      },
+    ],
   },
   {
     path: "/:notFound(.*)",
