@@ -7,9 +7,10 @@ import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
 
 import Profile from "@/views/Profile.vue"
-import ProjectList from "@/views/ProjectList.vue"
-import ProjectForm from "@/views/ProjectForm.vue"
-import Project from "@/views/ProjectArticle.vue"
+
+import ProjectList from "@/views/project/ProjectList.vue"
+import ProjectForm from "@/views/project/ProjectForm.vue"
+import Project from "@/views/project/ProjectArticle.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
