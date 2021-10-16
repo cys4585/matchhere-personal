@@ -10,10 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.ssafy.match.member.entity.Member;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 @Getter
@@ -24,7 +21,7 @@ public class Certification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String name;
     private String organization;
@@ -38,6 +35,7 @@ public class Certification {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
     public Certification(String name, String organization, String code, String grade,
         LocalDateTime issued_date, LocalDateTime expired_date, Boolean is_expire,
         Member member) {
