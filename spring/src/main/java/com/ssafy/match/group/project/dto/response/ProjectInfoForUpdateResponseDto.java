@@ -34,7 +34,7 @@ public class ProjectInfoForUpdateResponseDto {
     @ApiParam(value = "파일 다운로드 Uri")
     private String coverPicUri;
 
-    @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(example = "[{\"name\":\"python\", \"level\":\"상\", \"imgUri\":\"null\"}, {\"name\":\"spring\", \"level\":\"하\", \"imgUri\":\"null\"}]")
     @ApiParam(value = "변경된 기술 스택 리스트")
     private List<ProjectTechstackResponseDto> techstacks;
 

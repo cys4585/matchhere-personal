@@ -50,7 +50,7 @@ public class ProjectInfoResponseDto {
     @ApiParam(value = "프로젝트장 정보(id, name, nickname)")
     private MemberSimpleInfoResponseDto host;
 
-    @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(example = "[{\"name\":\"python\", \"level\":\"상\", \"imgUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"}, {\"name\":\"spring\", \"level\":\"하\", \"imgUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"}]")
     @ApiParam(value = "기술 스택 리스트")
     private List<ProjectTechstackResponseDto> techstacks;
 
@@ -120,7 +120,8 @@ public class ProjectInfoResponseDto {
     @ApiParam(value = "조회한 사람의 권한")
     private String authority;
 
-    public static ProjectInfoResponseDto of(Project project, List<ProjectTechstackResponseDto> techstacks,
+    public static ProjectInfoResponseDto of(Project project,
+        List<ProjectTechstackResponseDto> techstacks,
         List<MemberSimpleInfoResponseDto> developers,
         List<MemberSimpleInfoResponseDto> planners, List<MemberSimpleInfoResponseDto> designers,
         String authority) {

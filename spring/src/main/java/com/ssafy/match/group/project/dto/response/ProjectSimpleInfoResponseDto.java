@@ -48,7 +48,7 @@ public class ProjectSimpleInfoResponseDto {
     @ApiParam(value = "프로젝트장 정보(id, name, nickname)")
     private MemberSimpleInfoResponseDto host;
 
-    @ApiModelProperty(example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(example = "[{\"name\":\"python\", \"level\":\"상\", \"imgUri\":\"null\"}, {\"name\":\"spring\", \"level\":\"하\", \"imgUri\":\"null\"}]")
     @ApiParam(value = "기술 스택 리스트")
     private List<ProjectTechstackResponseDto> techstacks;
 
