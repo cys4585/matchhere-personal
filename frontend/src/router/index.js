@@ -5,8 +5,9 @@ import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
 import Login from "@/views/Login.vue"
 import Profile from "@/views/Profile.vue"
-import ProjectList from "@/views/ProjectList.vue"
 import ProjectForm from "@/views/ProjectForm.vue"
+import ProjectList from "@/views/ProjectList.vue"
+import Project from "@/views/Project.vue"
 
 const routes = [
   {
@@ -40,14 +41,19 @@ const routes = [
     component: ProjectLayout,
     children: [
       {
+        path: "form",
+        name: "ProjectForm",
+        component: ProjectForm,
+      },
+      {
         path: "",
         name: "ProjectList",
         component: ProjectList,
       },
       {
-        path: "form",
-        name: "ProjectForm",
-        component: ProjectForm,
+        path: ":projectId",
+        name: "Project",
+        component: Project,
       },
     ],
   },

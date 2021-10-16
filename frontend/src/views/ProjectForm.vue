@@ -325,7 +325,7 @@ export default {
       @apply w-full grid gap-6;
 
       h3 {
-        @apply font-bold text-lg;
+        @apply font-bold text-xl;
       }
 
       .fields {
