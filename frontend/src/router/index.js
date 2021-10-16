@@ -27,7 +27,7 @@ const routes = [
     path: "/auth",
     component: AuthLayout,
     beforeEnter: (to, from, next) => {
-      if (to.name === "Login") {
+      if (to.name === "Login" || to.name === "FindPassword") {
         next()
         return
       }

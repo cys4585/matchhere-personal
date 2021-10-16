@@ -102,7 +102,8 @@ export default {
         await store.dispatch("auth/login", formData)
         router.push({ name: "Home" })
       } catch (error) {
-        alert("이메일 또는 비밀번호를 확인하세요")
+        console.log(error)
+        alert(error.message)
       }
     }
 

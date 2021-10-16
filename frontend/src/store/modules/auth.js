@@ -109,7 +109,7 @@ export default {
         const tokenData = await AuthAPI.login(formData)
         commit("SET_TOKEN", tokenData)
       } catch (error) {
-        throw new Error(error.message)
+        throw new Error("이메일 또는 비밀번호를 확인하세요")
       }
     },
     async logout({ commit }) {
@@ -127,6 +127,14 @@ export default {
         alert(error)
         console.log(error)
       }
+    },
+    async sendEmailForFindPassword(_, email) {
+      console.log(email)
+      return
+    },
+    async confirmAuthCodeForFindPassword(_, authCode) {
+      console.log(authCode)
+      return
     },
   },
   getters: {
