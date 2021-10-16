@@ -86,6 +86,12 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberCareerAll());
     }
 
+//    @GetMapping("/career/{id}")
+//    @ApiOperation(value = "id를 기반으로 해당 경력 Get")
+//    public ResponseEntity<CertificationResponseDto> getMemberCareer(@PathVariable("id") Long id) {
+//        return ResponseEntity.ok(memberService.getMemberCareer(id));
+//    }
+
     @PostMapping("/career")
     @ApiOperation(value = "내 경력 Create")
     @ApiResponses(value = {
