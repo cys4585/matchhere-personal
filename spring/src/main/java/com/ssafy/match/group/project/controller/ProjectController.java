@@ -208,4 +208,20 @@ public class ProjectController {
         @PathVariable("memberId") Long memberId, @PathVariable("role") String role) {
         return new ResponseEntity<>("역할이 변경되었습니다.", projectService.changeRole(projectId, memberId, role));
     }
+
+    @GetMapping("/authority/{projectId}/{memberId}/{authority}")
+    @ApiOperation(value = "권한 변경", notes = "<strong>받은 프로젝트 id와 변경 시킬 멤버의 id와 변경하고자하는 authority을 받아</strong>로 권한을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "GROUP_AUTHORITY_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> changeAuthority(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
+        return new ResponseEntity<>("권한이 변경되었습니다.", projectService.changeAuthority(projectId, memberId, authority));
+    }
 }

@@ -43,7 +43,7 @@ public interface ProjectService {
 
     HttpStatus changeRole(Long projectId, Long memberId, String role);
 
-    void changeAuthority(Long projectId, Long memberId, String authority);
+    HttpStatus changeAuthority(Long projectId, Long memberId, String authority);
 
     InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception;
 

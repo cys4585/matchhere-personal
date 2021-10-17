@@ -360,19 +360,30 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 권한 변경
     @Transactional
-    public void changeAuthority(Long projectId, Long memberId, String authority) {
+    public HttpStatus changeAuthority(Long projectId, Long memberId, String authority) {
         Project project = findProject(projectId);
+        Member changer = findMember(SecurityUtil.getCurrentMemberId());
         Member member = findMember(memberId);
 
         MemberProject mp = memberProjectRepository.findById(
                 new CompositeMemberProject(member, project))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
 
+        MemberProject mpChanger = memberProjectRepository.findById(
+                new CompositeMemberProject(changer, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
         // 권한 변경 권한에 관한 로직
-        // 소유자는 양도가 가능하다
         // 소유자만이 권한을 변경할 수 있다
-
+        if(!mpChanger.getAuthority().equals(GroupAuthority.소유자)){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+        // 소유자는 양도가 가능하다
+        if(authority.equals("소유자")){
+            project.setMember(member);
+            mpChanger.setAuthority(GroupAuthority.팀원);
+        }
         mp.setAuthority(GroupAuthority.from(authority));
+        return HttpStatus.OK;
     }
 
     // 프로젝트 찾기
