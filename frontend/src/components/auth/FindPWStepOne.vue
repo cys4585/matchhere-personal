@@ -13,9 +13,7 @@
           v-for="field in formFields"
           :key="field.key"
           :field="field"
-          :formFields="formFields"
           v-model="field.value"
-          @update:errors="handleUpdateErrors"
         />
       </div>
       <SubmitButton @click="handleSubmit" :disabled="!canSubmit">
@@ -36,9 +34,9 @@
 <script>
 import { computed, ref } from "vue"
 import { useStore } from "vuex"
-import { emailValidator, requiredValidator } from "@/libs/validator"
-import InputFormField from "@/components/common/InputFormField.vue"
+import InputFormField from "@/components/common/formField/InputFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
+import { InputFormFieldMaker } from "@/libs/func"
 
 export default {
   name: "FindPWStepOne",
@@ -49,15 +47,7 @@ export default {
     const loading = ref(false)
     const step = ref("sendEmail")
     const formFields = ref({
-      email: {
-        key: "email",
-        label: "이메일",
-        type: "email",
-        value: "",
-        placeholder: "이메일을 입력하세요",
-        errors: {},
-        validators: [emailValidator],
-      },
+      email: new InputFormFieldMaker("email"),
     })
 
     const canSubmit = computed(() =>
@@ -66,39 +56,23 @@ export default {
       )
     )
 
-    const handleUpdateErrors = (validateRes) => {
-      const { fieldKey, status, type } = validateRes
-      if (status) {
-        delete formFields.value[fieldKey].errors[type]
-      } else {
-        const { message } = validateRes
-        formFields.value[fieldKey].errors[type] = message
-      }
-    }
-
     const handleSendEmail = async () => {
       // TODO: 이메일 전송
       loading.value = true
       const email = formFields.value.email.value
-      await store.dispatch("auth/sendEmailForFindPassword", email)
-      formFields.value.email.disabled = true
-      formFields.value.authCode = {
-        key: "authCode",
-        label: "인증코드",
-        type: "string",
-        value: "",
-        placeholder: "인증코드를 입력하세요",
-        errors: {},
-        validators: [requiredValidator],
+      const isValid = await store.dispatch("auth/sendEmailForFindPW", email)
+      if (isValid) {
+        formFields.value.email.disabled = true
+        formFields.value.authCode = new InputFormFieldMaker("authCode")
+        step.value = "confirmAuthCode"
       }
-      step.value = "confirmAuthCode"
       loading.value = false
     }
 
     const handleSubmitAuthCode = async () => {
       loading.value = true
       const authCode = formFields.value.authCode.value
-      await store.dispatch("auth/confirmAuthCodeForFindPassword", authCode)
+      await store.dispatch("auth/confirmEmailAuthCode", authCode)
       emit("update:step")
       loading.value = false
     }
@@ -120,7 +94,6 @@ export default {
       step,
       formFields,
       canSubmit,
-      handleUpdateErrors,
       handleSubmit,
     }
   },

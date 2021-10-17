@@ -3,9 +3,12 @@ import AuthAPI from "@/api/auth"
 export default {
   namespaced: true,
   state: {
-    signupStep: "CheckEmail",
-    signupFormData: {
+    emailCertRequestDto: {
       email: "",
+      authCode: "",
+    },
+    signupFormData: {
+      id: 0,
       password: "",
       nickname: "",
       name: "",
@@ -22,16 +25,15 @@ export default {
     },
   },
   mutations: {
+    SET_EMAIL_CERT_DTO(state, payload) {
+      state.emailCertRequestDto = { ...state.emailCertRequestDto, ...payload }
+    },
     SET_SIGNUP_FORMDATA(state, formData) {
       state.signupFormData = { ...state.signupFormData, ...formData }
-      localStorage.setItem(
-        "signupFormData",
-        JSON.stringify(state.signupFormData)
-      )
     },
     RESET_SIGNUP_FORMDATA(state) {
       state.signupFormData = {
-        email: "",
+        id: 0,
         password: "",
         nickname: "",
         name: "",
@@ -41,10 +43,6 @@ export default {
         techList: [],
       }
       localStorage.removeItem("signupFormData")
-    },
-    SET_SIGNUP_STEP(state, signupStep = "CheckEmail") {
-      state.signupStep = signupStep
-      localStorage.setItem("signupStep", signupStep)
     },
     SET_TOKEN(state, tokenData) {
       state.token = tokenData
@@ -63,17 +61,15 @@ export default {
   actions: {
     async sendEmailForSignup({ commit }, email) {
       // return으로 Error를 보내주지 않아 trycatch를 사용할 수 없다.
-      commit("SET_SIGNUP_STEP", "CheckEmail")
-      commit("SET_SIGNUP_FORMDATA", { email })
       try {
         const status = await AuthAPI.sendEmailForSignup(email)
         if (status) {
-          commit("SET_SIGNUP_STEP", "AuthEmail")
           commit(
             "ADD_MESSAGES",
             { text: "인증 메일을 전송했습니다" },
             { root: true }
           )
+          commit("SET_EMAIL_CERT_DTO", { email })
         } else {
           commit(
             "ADD_MESSAGES",
@@ -87,11 +83,36 @@ export default {
         return
       }
     },
-    async confirmAuthCodeForSignup({ commit }, authCode) {
+    async sendEmailForFindPW({ commit }, email) {
+      // return으로 Error를 보내주지 않아 trycatch를 사용할 수 없다.
       try {
-        await AuthAPI.confirmAuthCodeForSignup(authCode)
-        commit("SET_SIGNUP_STEP", "Signup")
+        const status = await AuthAPI.sendEmailForFindPW(email)
+        if (status) {
+          commit(
+            "ADD_MESSAGES",
+            { text: "인증 메일을 전송했습니다" },
+            { root: true }
+          )
+          commit("SET_EMAIL_CERT_DTO", { email })
+        } else {
+          commit(
+            "ADD_MESSAGES",
+            { text: "가입하지 않은 이메일입니다", type: "error" },
+            { root: true }
+          )
+        }
+        return status
+      } catch (error) {
+        alert(error)
+        return
+      }
+    },
+    async confirmEmailAuthCode({ state, commit }, authCode) {
+      try {
+        commit("SET_EMAIL_CERT_DTO", { authCode })
+        const id = await AuthAPI.confirmEmailAuthCode(state.emailCertRequestDto)
         commit("ADD_MESSAGES", { text: "이메일 인증 성공 😎" }, { root: true })
+        commit("SET_SIGNUP_FORMDATA", { id })
       } catch (error) {
         commit(
           "ADD_MESSAGES",
@@ -118,11 +139,11 @@ export default {
         throw new Error(error)
       }
     },
-    async signup({ state, commit }) {
+    async signup({ state, commit }, formData) {
+      commit("SET_SIGNUP_FORMDATA", formData)
       try {
         await AuthAPI.signup(state.signupFormData)
         commit("RESET_SIGNUP_FORMDATA")
-        commit("SET_SIGNUP_STEP")
         commit("ADD_MESSAGES", { text: "회원가입 성공 😎" }, { root: true })
       } catch (error) {
         throw new Error(error.message)
@@ -168,14 +189,14 @@ export default {
         console.log(error)
       }
     },
-    async sendEmailForFindPassword(_, email) {
-      console.log(email)
-      return
-    },
-    async confirmAuthCodeForFindPassword(_, authCode) {
-      console.log(authCode)
-      return
-    },
+    // async sendEmailForFindPassword(_, email) {
+    //   console.log(email)
+    //   return
+    // },
+    // async confirmAuthCodeForFindPassword(_, authCode) {
+    //   console.log(authCode)
+    //   return
+    // },
   },
   getters: {
     getEmail(state) {
@@ -190,9 +211,6 @@ export default {
     },
     getSIgnupFormData(state) {
       return state.signupFormData
-    },
-    getSignupStep(state) {
-      return state.signupStep
     },
     getIsAuthenticated(state) {
       return state.token.accessToken !== ""

@@ -96,7 +96,7 @@ export default {
       const authCode = formFields.value.authCode.value
       loading.value = true
       try {
-        await store.dispatch("auth/confirmAuthCodeForSignup", authCode)
+        await store.dispatch("auth/confirmEmailAuthCode", authCode)
         router.push({ name: "Signup" })
       } catch (error) {
         loading.value = false

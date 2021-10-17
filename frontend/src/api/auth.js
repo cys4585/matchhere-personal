@@ -1,17 +1,18 @@
 import http from "@/api/http.js"
-import store from "@/store"
 
 const sendEmailForSignup = async (email) => {
-  const res = await http.get(`/auth/cert/email/${email}`)
+  const res = await http.get(`/auth/cert/signup/${email}`)
   return res.data
 }
 
-const confirmAuthCodeForSignup = async (authCode) => {
-  const email = store.getters["auth/getEmail"]
-  await http.post(`/auth/cert/authcode`, {
-    authCode,
-    email,
-  })
+const sendEmailForFindPW = async (email) => {
+  const res = await http.get(`/auth/cert/password/${email}`)
+  return res.data
+}
+
+const confirmEmailAuthCode = async (payload) => {
+  const res = await http.post(`/auth/cert/authcode}`, payload)
+  return res.data
 }
 
 const checkNickname = async (nickname) => {
@@ -35,7 +36,8 @@ const reissue = async (tokenData) => {
 
 export default {
   sendEmailForSignup,
-  confirmAuthCodeForSignup,
+  sendEmailForFindPW,
+  confirmEmailAuthCode,
   checkNickname,
   signup,
   login,

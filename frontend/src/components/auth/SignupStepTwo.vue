@@ -131,16 +131,10 @@ export default {
       const formData = {
         position: positionField.value.value,
         dpositionList: [...detailPositionListField.value],
-        techList: Object.entries(selectedTeckStackList.value).map(
-          ([key, value]) => ({
-            [key]: value,
-          })
-        ),
+        techList: selectedTeckStackList.value,
       }
-
-      store.commit("auth/SET_SIGNUP_FORMDATA", formData)
       try {
-        await store.dispatch("auth/signup")
+        await store.dispatch("auth/signup", formData)
         router.push({ name: "Login" })
       } catch (error) {
         // TODO: 에러 핸들링

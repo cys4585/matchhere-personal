@@ -1,87 +1,66 @@
 <template>
-  <form class="form" @submit.prevent="handleSubmit">
+  <div class="form">
     <div class="fields">
+      <EmailFormField
+        :field="emailField"
+        v-model="emailField.value"
+        @onShow:authCodeField="showAuthCodeField = true"
+      />
+      <AuthCodeFormField
+        :field="authCodeField"
+        v-model="authCodeField.value"
+        v-if="showAuthCodeField"
+        @onHide:AuthCodeField="handleHideAuthCodeField"
+      />
       <InputFormField
         v-for="field in formFields"
         :key="field.key"
         :field="field"
-        :formFields="formFields"
         v-model="field.value"
-        @update:errors="handleUpdateErrors"
       />
       <SelectFormField :field="cityField" v-model="cityField.value" />
     </div>
-    <SubmitButton :disabled="!canSubmit">다음 단계로</SubmitButton>
-  </form>
+    <SubmitButton :disabled="!canSubmit" @click="handleSubmit">
+      다음 단계로
+    </SubmitButton>
+  </div>
 </template>
 
 <script>
 import { computed, onMounted, ref } from "vue"
-import {
-  confirmPasswordValidator,
-  emailValidator,
-  nameValidator,
-  passwordValidator,
-  requiredValidator,
-} from "@/libs/validator"
 import { cityList } from "@/libs/data"
-import InputFormField from "@/components/common/InputFormField.vue"
+import InputFormField from "@/components/common/formField/InputFormField.vue"
+import EmailFormField from "@/components/common/formField/EmailFormField.vue"
+import AuthCodeFormField from "@/components/common/formField/AuthCodeFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
 import { useStore } from "vuex"
+import {
+  AuthCodeFormFieldMaker,
+  EmailFormFieldMaker,
+  InputFormFieldMaker,
+} from "@/libs/func"
 export default {
   name: "SignupStepOne",
-  components: { InputFormField, SubmitButton, SelectFormField },
+  components: {
+    InputFormField,
+    EmailFormField,
+    AuthCodeFormField,
+    SubmitButton,
+    SelectFormField,
+  },
   emits: ["update:step"],
   setup(_, { emit }) {
     const store = useStore()
+    const emailStep = ref(1)
+    const emailField = ref(new EmailFormFieldMaker())
+    const showAuthCodeField = ref(false)
+    const authCodeField = ref(new AuthCodeFormFieldMaker())
     const formFields = ref({
-      email: {
-        key: "email",
-        label: "이메일",
-        type: "string",
-        value: store.getters["auth/getEmail"],
-        placeholder: "이메일을 입력하세요",
-        errors: {},
-        validators: [emailValidator],
-        disabled: true,
-      },
-      password: {
-        key: "password",
-        label: "비밀번호",
-        type: "password",
-        value: "",
-        placeholder: "대소문자, 숫자, 특수문자 포함 8자 이상",
-        errors: {},
-        validators: [passwordValidator],
-      },
-      confirmPassword: {
-        key: "confirmPassword",
-        label: "비밀번호 확인",
-        type: "password",
-        value: "",
-        placeholder: "동일한 비밀번호를 입력하세요",
-        errors: {},
-        validators: [confirmPasswordValidator],
-      },
-      nickname: {
-        key: "nickname",
-        label: "닉네임",
-        type: "string",
-        value: "",
-        placeholder: "닉네임을 입력하세요",
-        errors: {},
-        validators: [requiredValidator],
-      },
-      name: {
-        key: "name",
-        label: "이름",
-        type: "string",
-        value: "",
-        placeholder: "이름을 입력하세요",
-        errors: {},
-        validators: [nameValidator],
-      },
+      password: new InputFormFieldMaker("password"),
+      confirmPassword: new InputFormFieldMaker("confirmPassword"),
+      nickname: new InputFormFieldMaker("nickname"),
+      name: new InputFormFieldMaker("name"),
     })
     const cityField = ref({
       label: "지역",
@@ -108,7 +87,7 @@ export default {
       () => isAllfieldsFilled.value && isAllfieldsValid.value
     )
 
-    const handleUpdateErrors = (validateRes) => {
+    const handleUpdateInputFormFieldsErrors = (validateRes) => {
       const { fieldKey, status, type } = validateRes
       if (status) {
         delete formFields.value[fieldKey].errors[type]
@@ -117,9 +96,29 @@ export default {
       }
     }
 
+    const handleHideAuthCodeField = () => {
+      showAuthCodeField.value = false
+      emailField.value.disabled = true
+      emailField.value.buttonLabel = "인증 완료"
+      emailField.value.buttonDisabled = true
+    }
+
+    const checkConfirmPassword = () => {
+      return (
+        formFields.value.password.value ===
+        formFields.value.confirmPassword.value
+      )
+    }
+
     const handleSubmit = async () => {
+      if (!checkConfirmPassword()) {
+        store.commit("ADD_MESSAGES", {
+          text: "비밀번호가 일치하지 않습니다",
+          type: "error",
+        })
+        return
+      }
       const formData = {
-        email: formFields.value.email.value,
         password: formFields.value.password.value,
         nickname: formFields.value.nickname.value,
         name: formFields.value.name.value,
@@ -136,9 +135,8 @@ export default {
 
     onMounted(() => {
       if (store.getters["auth/getStep"] === 2) {
-        const { email, password, nickname, name, city } =
+        const { password, nickname, name, city } =
           store.getters["auth/getSIgnupFormData"]
-        formFields.value.email.value = email
         formFields.value.password.value = password
         formFields.value.confirmPassword.value = password
         formFields.value.nickname.value = nickname
@@ -148,10 +146,15 @@ export default {
     })
 
     return {
+      emailStep,
+      emailField,
+      showAuthCodeField,
+      authCodeField,
       formFields,
       cityField,
       canSubmit,
-      handleUpdateErrors,
+      handleHideAuthCodeField,
+      handleUpdateInputFormFieldsErrors,
       handleSubmit,
     }
   },
