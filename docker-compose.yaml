@@ -32,7 +32,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes: 
       - ./mysql/conf.d:/etc/mysql/conf.d
-      - ./mysql/data:/var/lib/mysql
+      # - ./mysql/data:/var/lib/mysql
       - ./mysql/init/:/docker-entrypoint-initdb.d/
   # zookeeper:
   #   image: confluentinc/cp-zookeeper:latest

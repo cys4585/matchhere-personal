@@ -14,6 +14,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChangePasswordDto {
+
     @ApiModelProperty(name = "password", example = "mypassword")
     @ApiParam(value = "비밀번호", required = true)
     @Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,}$",

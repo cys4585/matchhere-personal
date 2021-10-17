@@ -1,11 +1,7 @@
 package com.ssafy.match.member.dto.request;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.match.common.annotation.Enum;
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.State;
-import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Education;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,8 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor
@@ -36,19 +31,19 @@ public class MemberEducationRequestDto {
     @ApiParam(value = "전공", required = false)
     private String major;
 
-    @ApiModelProperty(name = "start_date", example = "2018-05-01")
+    @ApiModelProperty(name = "start_date", example = "2018")
     @ApiParam(value = "시작일", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate start_date;
+    @NotNull
+    private Integer start_date;
 
-    @ApiModelProperty(name = "end_date", example = "2018-05-01")
+    @ApiModelProperty(name = "end_date", example = "2018")
     @ApiParam(value = "종료일", required = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDate end_date;
+    private Integer end_date;
 
     @ApiModelProperty(name = "state", example = "졸업")
     @ApiParam(value = "상태", required = true)
     @Enum(enumClass = State.class, ignoreCase = false)
+    @NotEmpty
     private String state;
 
     @ApiModelProperty(name = "description", example = "서울대학교가 배출한 최고의 인재 ooo")

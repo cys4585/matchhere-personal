@@ -99,6 +99,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
 
+    @PutMapping("/career/{id}")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberCareer(@PathVariable("id") Long id, @RequestBody @Valid MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberCareer(id, memberCareerUpdateRequestDto));
+    }
+
     @DeleteMapping("/career/{id}")
     @ApiOperation(value = "id를 기반으로 해당 경력 Delete")
     public ResponseEntity<HttpStatus> deleteMemberCareer(@PathVariable("id") Long id) {
@@ -126,6 +135,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
+    @PutMapping("/certification/{id}")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberCertification(@PathVariable("id") Long id, @RequestBody @Valid MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberCertification(id, memberCertificationUpdateRequestDto));
+    }
+
     @GetMapping("/education/{id}")
     @ApiOperation(value = "id를 기반으로 해당 교육 Get")
     public ResponseEntity<EducationResponseDto> getMemberEducation(@PathVariable("id") Long id) {
@@ -147,19 +165,34 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
+    @PutMapping("/education/{id}")
+    @ApiOperation(value = "내 교육 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberEducation(@PathVariable("id") Long id, @RequestBody @Valid MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberEducation(id, memberEducationUpdateRequestDto));
+    }
+
     @GetMapping("/snsportfolio")
     @ApiOperation(value = "내 포트폴리오 Get")
     public ResponseEntity<MemberSnsPortfolioResponseDto> getMemberSnsPortfolio() {
         return ResponseEntity.ok(memberService.getMemberSnsPortfolio());
     }
 
-    @PostMapping("/portfolio")
-    @ApiOperation(value = "내 포트폴리오 Create")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "성공")
-    })
-    public ResponseEntity<HttpStatus> createMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
-        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
+//    @PostMapping("/portfolio")
+//    @ApiOperation(value = "내 포트폴리오 Create")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "성공")
+//    })
+//    public ResponseEntity<HttpStatus> createMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+//        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
+//    }
+
+    @GetMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Get")
+    public ResponseEntity<PortfolioResponseDto> getMemberPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberPortfolio());
     }
 
     @PutMapping("/portfolio")
@@ -169,6 +202,21 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
+    }
+
+    @GetMapping("/sns")
+    @ApiOperation(value = "내 sns Get")
+    public ResponseEntity<MemberSnsResponseDto> getMemberSns() {
+        return ResponseEntity.ok(memberService.getMemberSns());
+    }
+
+    @PutMapping("/sns")
+    @ApiOperation(value = "내 SNS Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberSns(@RequestBody @Valid MemberSnsRequestDto memberSnsRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberSns(memberSnsRequestDto));
     }
 
     @DeleteMapping
