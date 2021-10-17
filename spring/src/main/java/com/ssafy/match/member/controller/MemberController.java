@@ -206,7 +206,7 @@ public class MemberController {
 
     @GetMapping("/sns")
     @ApiOperation(value = "내 sns Get")
-    public ResponseEntity<PortfolioResponseDto> getMemberSns() {
+    public ResponseEntity<MemberSnsResponseDto> getMemberSns() {
         return ResponseEntity.ok(memberService.getMemberSns());
     }
 

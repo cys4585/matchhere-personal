@@ -352,6 +352,16 @@ public class MemberService {
 //            });
 //        }
 //    }
+
+    @Transactional(readOnly = true)
+    public MemberSnsResponseDto getMemberSns() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
+        MemberSnsResponseDto memberSnsResponseDto = MemberSnsResponseDto.of(member,snsList);
+        return memberSnsResponseDto;
+    }
+
     @Transactional
     public void updateSns(Member member, HashMap<String, String> snsList) {
         List<MemberSns> memberSns = memberSnsRepository.findAllByMember(member);
