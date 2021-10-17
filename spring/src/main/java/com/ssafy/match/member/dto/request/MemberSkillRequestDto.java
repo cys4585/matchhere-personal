@@ -24,11 +24,11 @@ public class MemberSkillRequestDto {
     @NotEmpty
     private String position;
 
-    @ApiModelProperty(name = "dpositionList", example = "[{\"name\":\"프론트엔드\"}, {\"name\":\"데브옵스\"}]")
+    @ApiModelProperty(name = "dpositionList", example = "[\"프론트엔드\", \"데브옵스\"]")
     @ApiParam(value = "세부 포지션", required = false)
     private List<String> dpositionList;
 
-    @ApiModelProperty(name = "techList", example = "[{\"name\":\"python\", \"level\":\"상\", \"img_uri\":\"http://cdn.matchhere.me/path/python.png\"}, {\"name\":\"java\", \"level\":\"중\", \"img_uri\":\"http://cdn.matchhere.me/path/java.png\"}]")
+    @ApiModelProperty(name = "techList", example = "{\"python\":\"상\", \"java\":\"중\"}")
     @ApiParam(value = "기술스택 리스트", required = false)
     private HashMap<String,String> techList;
 }

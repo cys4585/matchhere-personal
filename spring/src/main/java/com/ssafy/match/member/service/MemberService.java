@@ -270,6 +270,13 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberSns(MemberSnsRequestDto memberSnsRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        updateSns(member, memberSnsRequestDto.getSnsList());
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public void deleteMember() {
         Member member = memberRepository.getById(SecurityUtil.getCurrentMemberId());
         deleteMem(member);
@@ -325,25 +332,42 @@ public class MemberService {
         member.setPosition(position);
     }
 
+//    @Transactional
+//    public void updateSns(Member member, HashMap<String, String> snsList) {
+//        if (!snsList.isEmpty()) {
+//            snsList.forEach((strKey, strValue) -> {
+//                Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
+//                if (memberSns.isEmpty()) {
+//                    MemberSns innerMemberSns = MemberSns.builder()
+//                            .member(member)
+//                            .snsAccount(strValue)
+//                            .snsName(strKey)
+//                            .build();
+//                    memberSnsRepository.save(innerMemberSns);
+//                } else {
+//                    MemberSns innerMemberSns = memberSns.get();
+//                    innerMemberSns.setSnsAccount(strValue);
+//                    innerMemberSns.setSnsName(strKey);
+//                }
+//            });
+//        }
+//    }
     @Transactional
     public void updateSns(Member member, HashMap<String, String> snsList) {
+        List<MemberSns> memberSns = memberSnsRepository.findAllByMember(member);
+        if (!memberSns.isEmpty()) {
+            memberSnsRepository.deleteAll(memberSns);
+        }
         if (!snsList.isEmpty()) {
-//        if (snsList != null && !snsList.isEmpty()) {
-            snsList.forEach((strKey, strValue) -> {
-                Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
-                if (memberSns.isEmpty()) {
-                    MemberSns innerMemberSns = MemberSns.builder()
-                            .member(member)
-                            .snsAccount(strValue)
-                            .snsName(strKey)
-                            .build();
-                    memberSnsRepository.save(innerMemberSns);
-                } else {
-                    MemberSns innerMemberSns = memberSns.get();
-                    innerMemberSns.setSnsAccount(strValue);
-                    innerMemberSns.setSnsName(strKey);
-                }
-            });
+            for (Map.Entry<String, String> entry : snsList.entrySet()) {
+                MemberSns inner_memberSns = MemberSns
+                        .builder()
+                        .member(member)
+                        .snsName(entry.getKey())
+                        .snsAccount(entry.getValue())
+                        .build();
+                memberSnsRepository.save(inner_memberSns);
+            }
         }
     }
 

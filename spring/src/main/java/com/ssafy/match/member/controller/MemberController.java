@@ -204,6 +204,21 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
     }
 
+    @GetMapping("/sns")
+    @ApiOperation(value = "내 sns Get")
+    public ResponseEntity<PortfolioResponseDto> getMemberSns() {
+        return ResponseEntity.ok(memberService.getMemberSns());
+    }
+
+    @PutMapping("/sns")
+    @ApiOperation(value = "내 SNS Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberSns(@RequestBody @Valid MemberSnsRequestDto memberSnsRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.updateMemberSns(memberSnsRequestDto));
+    }
+
     @DeleteMapping
     @ApiOperation(value = "회원 탈퇴")
     public ResponseEntity<?> deleteMember() {
