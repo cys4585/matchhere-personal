@@ -3,6 +3,7 @@ package com.ssafy.match.member.dto.request;
 
 import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -42,4 +43,10 @@ public class MemberBasicInfoRequestDto {
     @ApiParam(value = "자기소개", required = false)
     private String bio;
 
+    public void setMember(Member member) {
+        member.setNickname(nickname);
+        member.setName(name);
+        member.setCity(city);
+        member.setBio(bio);
+    }
 }

@@ -1,8 +1,6 @@
 package com.ssafy.match.member.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 
 public interface CareerInterface {
     Long getId();

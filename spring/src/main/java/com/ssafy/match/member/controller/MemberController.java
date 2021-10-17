@@ -99,6 +99,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
 
+    @PutMapping("/career/{id}")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberCareer(@PathVariable("id") Long id, @RequestBody @Valid MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberCareer(id, memberCareerUpdateRequestDto));
+    }
+
     @DeleteMapping("/career/{id}")
     @ApiOperation(value = "id를 기반으로 해당 경력 Delete")
     public ResponseEntity<HttpStatus> deleteMemberCareer(@PathVariable("id") Long id) {
