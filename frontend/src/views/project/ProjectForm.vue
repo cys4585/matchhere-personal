@@ -28,38 +28,71 @@
             />
             <div v-else-if="field.type === 'search'" class="grid gap-2">
               <TechStackField @SelectTeckStack="handleSelectTechStack" />
-              <div class="flex flex-wrap gap-1">
-                <TechStackItem
-                  v-for="(item, idx) in field.value"
-                  :key="item.id"
-                  :techStack="item"
-                  :idx="idx"
-                  @remove="handleRemoveTeckStack"
-                />
+              <div class="grid gap-2">
+                <ul v-for="(userLevel, key) in field.value" :key="key">
+                  <TechStackListItem
+                    :name="key"
+                    :userLevel="userLevel"
+                    @change:userLevel="handleChangeTechLevel"
+                    @remove:teckStack="handleRemoveTechStack"
+                  />
+                </ul>
               </div>
             </div>
             <div v-else class="form-field">
               <p class="label">{{ field.label }}</p>
               <div v-if="field.type === 'radio'">
                 <div v-for="(state, index, key) in field.stateList" :key="key">
-                  <input
+                  <!-- <input
                     class="input-radio"
                     :type="field.type"
                     :id="field.idList[index]"
                     :value="state"
                     v-model="field.value"
-                  />
-                  <label :for="field.idList[index]">{{ state }}</label>
+                    :disabled="
+                      state === '클럽 멤버에게만 공개' &&
+                      formFields.project.club.value === null
+                    "
+                  /> -->
+                  <div v-if="state === '클럽 멤버에게만 공개'">
+                    <input
+                      class="input-radio"
+                      :type="field.type"
+                      :id="field.idList[index]"
+                      :value="state"
+                      v-model="field.value"
+                      :disabled="!haveClub"
+                    />
+                    <label
+                      :for="field.idList[index]"
+                      :class="{ 'text-gray-400': !haveClub }"
+                      >{{ state }}</label
+                    >
+                  </div>
+                  <div v-else>
+                    <input
+                      class="input-radio"
+                      :type="field.type"
+                      :id="field.idList[index]"
+                      :value="state"
+                      v-model="field.value"
+                    />
+                    <label :for="field.idList[index]">{{ state }}</label>
+                  </div>
                 </div>
               </div>
               <div v-else-if="field.type === 'file'">
                 <!-- file 타입은 양방향 바인딩 할 수 없다. method로 구현 -->
+                <!-- <input
+                  :type="field.type"
+                  accept="image/png, image/jpeg"
+                  v-model="field.value"
+                /> -->
                 <input
                   :type="field.type"
                   accept="image/png, image/jpeg"
                   @change="selectThumbnailImage"
                 />
-                <p>{{ field.value }}</p>
               </div>
               <div v-else-if="field.type === 'date'">
                 <input :type="field.type" v-model="field.value" />
@@ -80,6 +113,14 @@
               </div>
               <div v-else-if="field.type === 'number'">
                 <input
+                  v-if="form.hostPosition.value === field.label"
+                  :type="field.type"
+                  min="1"
+                  max="10"
+                  v-model="field.value"
+                />
+                <input
+                  v-else
                   :type="field.type"
                   min="0"
                   max="10"
@@ -103,10 +144,13 @@ import InputFormField from "@/components/common/InputFormField.vue"
 import SelectFormField from "@/components/common/SelectFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import TechStackField from "@/components/common/TeckStackField.vue"
-import TechStackItem from "@/components/project/TechStackItem.vue"
-import { ref, computed } from "vue"
+import TechStackListItem from "@/components/common/TeckStackListItem.vue"
+
+// import TechStackItem from "@/components/project/TechStackItem.vue"
+import { ref, computed, onBeforeMount, watch } from "vue"
 import { requiredValidator } from "@/libs/validator"
 import { cityList } from "@/libs/data"
+import { useStore } from "vuex"
 
 export default {
   name: "ProjectForm",
@@ -115,13 +159,27 @@ export default {
     SubmitButton,
     SelectFormField,
     TechStackField,
-    TechStackItem,
+    TechStackListItem,
+    // TechStackItem,
   },
   setup() {
+    const store = useStore()
+
+    onBeforeMount(async () => {
+      await store.dispatch("project/getMyClubList")
+      formFields.value.project.club.clubList =
+        store.getters["project/getMyClubList"]
+      formFields.value.project.club.options = [
+        "선택 안함",
+        ...formFields.value.project.club.clubList.map((club) => club.name),
+      ]
+    })
+
     const formFields = ref({
       project: {
         pjtName: {
           key: "pjtName",
+          backendKey: "name",
           label: "프로젝트 이름",
           type: "string",
           value: "",
@@ -132,17 +190,20 @@ export default {
         },
         pjtState: {
           key: "pjtState",
+          backendKey: "projectProgressState",
           label: "프로젝트 상태",
           type: "radio",
           idList: ["will", "ing", "done"],
-          stateList: ["진행 예정", "진행 중", "완료"],
-          value: "진행 예정",
+          stateList: ["프로젝트 진행 예정", "진행 중", "완료"],
+          value: "프로젝트 진행 예정",
           notNull: true,
           errors: {},
           validators: [],
         },
         ThumbnailImageFile: {
+          // 일단 보류! 어떻게 하는건지 보자
           key: "ThumbnailImageFile",
+          backendKey: "uuid",
           label: "썸네일 이미지",
           type: "file",
           value: "",
@@ -152,9 +213,10 @@ export default {
         },
         techStacks: {
           key: "techStacks",
+          backendKey: "techstacks",
           label: "기술스택",
           type: "search",
-          value: [],
+          value: {},
           notNull: false,
           placeholder: "ex) Vue, Spring, MySQL",
           errors: {},
@@ -162,6 +224,7 @@ export default {
         },
         schedule: {
           key: "schedule",
+          backendKey: "schedule",
           label: "일정",
           type: "string",
           value: "",
@@ -172,6 +235,7 @@ export default {
         },
         dueDate: {
           key: "dueDate",
+          backendKey: "period",
           label: "프로젝트 마감 예정일",
           type: "date",
           value: "",
@@ -181,10 +245,11 @@ export default {
         },
         city: {
           key: "city",
+          backendKey: "city",
           label: "지역",
           type: "select",
           placeholder: "지역을 선택하세요",
-          options: cityList,
+          options: ["온라인", "무관", ...cityList],
           value: "",
           notNull: true,
           errors: {},
@@ -192,18 +257,20 @@ export default {
         },
         club: {
           key: "club",
+          backendKey: "clubId",
           label: "소속 클럽",
           type: "select",
           placeholder: "클럽을 선택하세요",
-          // 일단은!
-          options: ["최고의 클럽", "멋쟁이 클럽", "굇수모임"],
-          value: "",
+          options: [],
+          clubList: [],
+          value: null,
           notNull: false,
           errors: {},
           validators: [],
         },
         introduction: {
           key: "introduction",
+          backendKey: "bio",
           label: "소개",
           type: "textarea",
           value: "",
@@ -214,6 +281,7 @@ export default {
         },
         openScope: {
           key: "openScope",
+          backendKey: "publicScope",
           label: "공개 범위",
           type: "radio",
           idList: ["all", "club", "project"],
@@ -227,6 +295,7 @@ export default {
       member: {
         recruitState: {
           key: "recruitState",
+          backendKey: "recruitmentState",
           label: "모집 상태",
           type: "radio",
           idList: ["rec-ing", "rec-done"],
@@ -236,8 +305,21 @@ export default {
           errors: {},
           validators: [],
         },
+        hostPosition: {
+          key: "hostPosition",
+          backendKey: "hostPosition",
+          label: "팀장 포지션",
+          type: "select",
+          placeholder: "포지션을 선택하세요",
+          options: ["개발자", "디자이너", "기획자"],
+          value: "",
+          notNull: true,
+          errors: {},
+          validators: [],
+        },
         developer: {
           key: "developer",
+          backendKey: "developerMaxCount",
           label: "개발자",
           type: "number",
           value: 0,
@@ -247,6 +329,7 @@ export default {
         },
         designer: {
           key: "designer",
+          backendKey: "designerMaxCount",
           label: "디자이너",
           type: "number",
           value: 0,
@@ -256,6 +339,7 @@ export default {
         },
         planner: {
           key: "planner",
+          backendKey: "plannerMaxCount",
           label: "기획자",
           type: "number",
           value: 0,
@@ -265,6 +349,31 @@ export default {
         },
       },
     })
+
+    // 팀장 포지션 watch -> maxCount 수정
+    watch(
+      () => formFields.value.member.hostPosition.value,
+      (newVal, oldVal) => {
+        Object.values(formFields.value.member).find(
+          (obj) => obj.label === newVal
+        ).value += 1
+        if (oldVal) {
+          Object.values(formFields.value.member).find(
+            (obj) => obj.label === oldVal
+          ).value -= 1
+        }
+      }
+    )
+
+    // club 선택 안하면 -> 공개 범위에서 '클럽 멤버에게만 공개' disabled
+    const haveClub = ref(false)
+    watch(
+      () => formFields.value.project.club.value,
+      (newVal) => {
+        haveClub.value = newVal && newVal !== "선택 안함" ? true : false
+      }
+    )
+
     // 유효성 검사
     const isAllFieldsValid = computed(() => {
       const fields = [
@@ -285,7 +394,7 @@ export default {
       )
     })
     // 모집구성원 적어도 1명 이상
-    const totalMember = computed(() => {
+    const countTotalMember = computed(() => {
       const memberFields = formFields.value.member
       return (
         memberFields.developer.value +
@@ -297,15 +406,18 @@ export default {
     const canSubmit = computed(
       // 유효성 검사 + notNull인 데이터 필수입력 + 모집구성원 적어도 1명 이상
       () =>
-        isAllFieldsValid.value && notNullCheck.value && totalMember.value > 0
+        isAllFieldsValid.value &&
+        notNullCheck.value &&
+        countTotalMember.value > 1
     )
 
     // 취소 버튼 누르면 기존에 선택된 것도 사라짐.
     const selectThumbnailImage = (event) => {
       if (event.target.files.length) {
         const file = event.target.files[0]
-        formFields.value.project.ThumbnailImageFile.value =
-          window.URL.createObjectURL(file)
+        const formData = new FormData()
+        formData.append("file", file)
+        formFields.value.project.ThumbnailImageFile.value = formData
       } else {
         formFields.value.project.ThumbnailImageFile.value = ""
       }
@@ -320,24 +432,55 @@ export default {
       }
     }
 
-    const handleSelectTechStack = (techStack) => {
-      if (formFields.value.project.techStacks.value.includes(techStack)) return
-      formFields.value.project.techStacks.value.push(techStack)
+    const handleSelectTechStack = (techStackKey) => {
+      if (formFields.value.project.techStacks.value[techStackKey]) return
+      formFields.value.project.techStacks.value[techStackKey] = "하"
     }
-    const handleRemoveTeckStack = (idx) => {
-      formFields.value.project.techStacks.value.splice(idx)
+    const handleChangeTechLevel = ({ key, level }) => {
+      formFields.value.project.techStacks.value[key] = level
+    }
+    const handleRemoveTechStack = (key) => {
+      delete formFields.value.project.techStacks.value[key]
     }
 
-    const createProject = () => {}
+    const createProject = async () => {
+      const tmpFields = {
+        ...formFields.value.project,
+        ...formFields.value.member,
+      }
+      const formData = {}
+      for (const field in tmpFields) {
+        if (field === "ThumbnailImageFile") continue
+        if (field === "club" && tmpFields[field].value) {
+          // club name을 club id로 바꾸는 작업
+          formData[tmpFields[field].backendKey] = tmpFields[
+            field
+          ].clubList.find((club) => club.name === tmpFields[field].value).id
+        } else {
+          formData[tmpFields[field].backendKey] = tmpFields[field].value
+        }
+      }
+      if (tmpFields.ThumbnailImageFile.value) {
+        const uuid = await store.dispatch(
+          "file/uploadFile",
+          tmpFields.ThumbnailImageFile.value
+        )
+        formData["uuid"] = uuid
+      }
+      console.log(formData)
+      await store.dispatch("project/createProject", formData)
+    }
 
     return {
       formFields,
+      haveClub,
       selectThumbnailImage,
       handleUpdateErrors,
       canSubmit,
       createProject,
       handleSelectTechStack,
-      handleRemoveTeckStack,
+      handleChangeTechLevel,
+      handleRemoveTechStack,
     }
   },
 }
