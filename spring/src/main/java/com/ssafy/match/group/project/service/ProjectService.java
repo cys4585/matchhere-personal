@@ -35,9 +35,9 @@ public interface ProjectService {
 
     void addMember(Project project, Member member, String role);
 
-    void removeMe(Long projectId);
+    HttpStatus removeMe(Long projectId);
 
-    void removeMember(Long projectId, Long memberId);
+    HttpStatus removeMember(Long projectId, Long memberId);
 
     void changeRole(Long projectId, Long memberId, String role);
 
