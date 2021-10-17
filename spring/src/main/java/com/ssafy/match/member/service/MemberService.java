@@ -89,22 +89,6 @@ public class MemberService {
     public MypageResponseDto getMyPage() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-//        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
-//        List<CareerInterface> careers = careerRepository.findAllByMember(member);
-//        List<EducationInterface> educations = educationRepository.findAllByMember(member);
-//        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-//        mypageResponseDto.setCareerList(careers);
-//        mypageResponseDto.setEducationList(educations);
-//        mypageResponseDto.setCertificationList(certifications);
-//        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
-//        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-//        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
-//        getCoverPic(mypageResponseDto, member.getCover_pic());
-//        getPortfolio(mypageResponseDto, member.getPortfolio());
-//        mypageResponseDto.setTechList(techList);
-//        mypageResponseDto.setSnsList(snsList);
-//        mypageResponseDto.setDpositionList(dpositionList);
-
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
@@ -113,21 +97,22 @@ public class MemberService {
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
         MypageResponseDto mypageResponseDto = MypageResponseDto.of(member, careers, educations, certifications, techList, snsList, dpositionList);
-
         return mypageResponseDto;
     }
 
     @Transactional(readOnly = true)
     public MemberBasicinfoResponseDto getMemberBasicinfo() {
-        MemberBasicinfoResponseDto memberBasicinfoResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberBasicinfoResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        DBFile cover_pic = member.getCover_pic();
-        if (cover_pic != null) {
-            memberBasicinfoResponseDto.setCoverpic_uri(cover_pic.getDownload_uri());
-        }
+        MemberBasicinfoResponseDto memberBasicinfoResponseDto = MemberBasicinfoResponseDto.of(member);
+//        MemberBasicinfoResponseDto memberBasicinfoResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+//                .map(MemberBasicinfoResponseDto::of)
+//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+
+//        DBFile cover_pic = member.getCover_pic();
+//        if (cover_pic != null) {
+//            memberBasicinfoResponseDto.setCoverpic_uri(cover_pic.getDownload_uri());
+//        }
         return memberBasicinfoResponseDto;
     }
 
@@ -173,10 +158,7 @@ public class MemberService {
     @Transactional
     public HttpStatus updateMemberCareer(Long id, MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-        System.out.println("hereeeee");
         Career career = careerRepository.findByMemberAndId(member,id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
-        System.out.println("hereeeee22222");
-        System.out.println(career);
         memberCareerUpdateRequestDto.setCareer(career);
         return HttpStatus.OK;
     }
