@@ -204,7 +204,7 @@ public class ClubServiceImpl implements ClubService {
         List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
 
         for (Member member : members) {
-            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
+            memberSimpleInfoResponseDtos.add(MemberSimpleInfoResponseDto.from(member));
         }
 
         return memberSimpleInfoResponseDtos;

@@ -90,7 +90,7 @@ public class StudyInfoForUpdateResponseDto {
 
     public void setClub(Club club){
         if(club == null) return;
-        this.club = new ClubSimpleInfoResponseDto(club);
+        this.club = ClubSimpleInfoResponseDto.from(club);
     }
 
     public void setData(DBFile dbFile){
@@ -107,7 +107,7 @@ public class StudyInfoForUpdateResponseDto {
         this.isPublic = study.getIsPublic();
         this.isParticipate = study.getIsParticipate();
         this.city = study.getCity().name();
-        this.status = study.getStatus().name();
+        this.status = study.getStudyProgressState().name();
         setClub(study.getClub());
 //        setData(study.getDbFile());
         this.modifyDate = study.getModifyDate();

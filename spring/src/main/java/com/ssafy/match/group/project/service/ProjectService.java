@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.service;
 
+import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
 import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
@@ -18,27 +19,29 @@ import org.springframework.http.HttpStatus;
 
 public interface ProjectService {
 
-    ProjectInfoForCreateResponseDto getInfoForCreate() throws Exception;
+    ProjectInfoForCreateResponseDto getInfoForCreate();
 
-    Long create(ProjectCreateRequestDto dto) throws Exception;
+    Long create(ProjectCreateRequestDto dto);
 
-    HttpStatus update(Long projectId, ProjectUpdateRequestDto dto) throws Exception;
+    HttpStatus update(Long projectId, ProjectUpdateRequestDto dto);
 
-    HttpStatus delete(Long projectId) throws Exception;
+    HttpStatus delete(Long projectId);
 
-    Page<ProjectInfoResponseDto> getAllProject(Pageable pageable);
+    List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable);
 
-    ProjectInfoResponseDto getOneProject(Long projectId) throws Exception;
+    ProjectInfoResponseDto getOneProject(Long projectId);
 
-    ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId) throws Exception;
+    ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId);
 
-    List<ProjectInfoResponseDto> projectInMember(Long memberId) throws Exception;
+    void addMember(Project project, Member member, String role);
 
-    void addMember(Project project, Member member, String role) throws Exception;
+    void removeMe(Long projectId);
 
-    void removeMember(Long projectId) throws Exception;
+    void removeMember(Long projectId, Long memberId);
 
-    void changeRole(Project project, Member member, String role) throws Exception;
+    void changeRole(Long projectId, Long memberId, String role);
+
+    void changeAuthority(Long projectId, Long memberId, String authority);
 
     InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception;
 
