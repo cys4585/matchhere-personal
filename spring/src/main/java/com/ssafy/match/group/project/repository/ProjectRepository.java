@@ -4,6 +4,7 @@ import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.group.project.entity.Project;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
         Pageable pageable);
 
     // 추천 프로젝트
-    @Query("select p from matching.project p where p.isActive = true")
-    Page<Project> findRecommendationProject(Pageable pageable);
+//    List<Project> findAll();
 }

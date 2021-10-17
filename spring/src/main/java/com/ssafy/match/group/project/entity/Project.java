@@ -177,6 +177,10 @@ public class Project {
 
     }
 
+    public void setMember(Member member){
+        this.member = member;
+    }
+
     public void removeRole(String str){
         if(str.equals("기획자")){
             this.minusPlanner();
