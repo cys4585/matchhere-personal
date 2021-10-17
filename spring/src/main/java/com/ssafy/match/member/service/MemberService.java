@@ -235,18 +235,10 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberSnsPortfolioResponseDto getMemberSnsPortfolio() {
-        MemberSnsPortfolioResponseDto memberSnsPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberSnsPortfolioResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        DBFile portfolio = member.getPortfolio();
-        if (portfolio != null) {
-            memberSnsPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
-        }
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        memberSnsPortfolioResponseDto.setSnsList(snsList);
-
+        MemberSnsPortfolioResponseDto memberSnsPortfolioResponseDto = MemberSnsPortfolioResponseDto.of(member, snsList);
         return memberSnsPortfolioResponseDto;
     }
 
