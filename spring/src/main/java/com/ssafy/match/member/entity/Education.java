@@ -27,8 +27,8 @@ public class Education {
     private String institution;
     private String degree;
     private String major;
-    private LocalDate start_date;
-    private LocalDate end_date;
+    private Integer start_date;
+    private Integer end_date;
     private String state;
     private String description;
 
@@ -38,7 +38,7 @@ public class Education {
 
     @Builder
     public Education(String institution, String degree, String major,
-        LocalDate start_date, LocalDate end_date, String state, String description,
+        Integer start_date, Integer end_date, String state, String description,
         Member member) {
         this.institution = institution;
         this.degree = degree;

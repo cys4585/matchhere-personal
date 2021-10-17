@@ -4,6 +4,7 @@ package com.ssafy.match.member.dto.response;
 import com.ssafy.match.member.dto.CareerInterface;
 import com.ssafy.match.member.dto.CertificationInterface;
 import com.ssafy.match.member.dto.EducationInterface;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,4 +15,19 @@ public class MemberCareerAllResponseDto {
     private List<CareerInterface> careerList = new ArrayList<>();
     private List<EducationInterface> educationList = new ArrayList<>();
     private List<CertificationInterface> certificationList = new ArrayList<>();
+
+    public static MemberCareerAllResponseDto of(List<CareerInterface> careers, List<EducationInterface> educations, List<CertificationInterface> certifications) {
+        return MemberCareerAllResponseDto.builder()
+                .careerList(careers)
+                .educationList(educations)
+                .certificationList(certifications)
+                .build();
+    }
+
+    @Builder
+    public MemberCareerAllResponseDto(List<CareerInterface> careerList, List<EducationInterface> educationList, List<CertificationInterface> certificationList) {
+        this.careerList = careerList;
+        this.educationList = educationList;
+        this.certificationList = certificationList;
+    }
 }

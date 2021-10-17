@@ -70,15 +70,15 @@ public class AuthService {
     }
 
     @Transactional
-    public String emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
+    public Long emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
         Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
         if (emailCheck.isPresent()) {
             if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
                 emailCheck.get().updateIsCheck(Boolean.TRUE);
-                return emailCheck.get().getEmail();
+                return emailCheck.get().getId();
             }
         }
-        return "";
+        return -1L;
     }
 
     @Transactional(readOnly = true)
@@ -91,17 +91,18 @@ public class AuthService {
 
     @Transactional
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) throws Exception {
-        if (memberRepository.existsByEmail(signupRequestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        EmailCheck emailCheck = emailCheckRepository.findById(signupRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 인증 이메일 id입니다!"));
+        if (emailCheck.getIs_check() == Boolean.FALSE) {
+            throw new Exception("email인증이 완료되지 않았습니다!");
+        }
+        if (memberRepository.existsByEmail(emailCheck.getEmail())) {
+            throw new Exception("이미 가입되어 있는 유저입니다");
         }
         if (memberRepository.existsByNickname(signupRequestDto.getNickname())) {
             throw new Exception("중복된 닉네임 입니다");
         }
-        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(signupRequestDto.getEmail());
-        if (emailCheck.isEmpty() || emailCheck.get().getIs_check() == Boolean.FALSE) {
-            throw new Exception("email인증이 완료되지 않았습니다!");
-        }
-        Member member = signupRequestDto.toMember(passwordEncoder);
+
+        Member member = signupRequestDto.toMember(passwordEncoder, emailCheck.getEmail());
         Member ret = memberRepository.save(member);
 
         if (signupRequestDto.getDpositionList() != null) {

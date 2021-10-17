@@ -1,11 +1,6 @@
 package com.ssafy.match.member.service;
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
-import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
-import com.ssafy.match.group.club.entity.Club;
-import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
@@ -16,7 +11,6 @@ import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
 import com.ssafy.match.common.repository.DetailPositionRepository;
@@ -121,15 +115,11 @@ public class MemberService {
     public MemberCareerAllResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MemberCareerAllResponseDto memberCareerAllResponseDto = new MemberCareerAllResponseDto();
-
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        memberCareerAllResponseDto.setCareerList(careers);
-        memberCareerAllResponseDto.setEducationList(educations);
-        memberCareerAllResponseDto.setCertificationList(certifications);
 
+        MemberCareerAllResponseDto memberCareerAllResponseDto = MemberCareerAllResponseDto.of(careers, educations, certifications);
         return memberCareerAllResponseDto;
     }
 
@@ -178,6 +168,14 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberCertification(Long id, MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
+        memberCertificationUpdateRequestDto.setCertification(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public HttpStatus deleteMemberCertification(Long id) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
@@ -185,7 +183,7 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public EducationResponseDto getMemberEducation(Long id) {
         EducationResponseDto educationResponseDto = educationRepository.findById(id).map(EducationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 교육이 없습니다!"));
         return educationResponseDto;
@@ -207,19 +205,22 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
+    @Transactional
+    public HttpStatus updateMemberEducation(Long id, MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = educationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 교육입니다!"));
+        memberEducationUpdateRequestDto.setEducation(education);
+        return HttpStatus.OK;
+    }
+
     @Transactional(readOnly = true)
     public MemberSkillResponseDto getMemberSkills() {
-        MemberSkillResponseDto memberSkillResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberSkillResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
-        memberSkillResponseDto.setDpositionList(dpositionList);
-        memberSkillResponseDto.setTechList(techList);
 
+        MemberSkillResponseDto memberSkillResponseDto = MemberSkillResponseDto.of(member, dpositionList, techList);
         return memberSkillResponseDto;
     }
 
@@ -234,29 +235,29 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberSnsPortfolioResponseDto getMemberSnsPortfolio() {
-        MemberSnsPortfolioResponseDto memberSnsPortfolioResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberSnsPortfolioResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        DBFile portfolio = member.getPortfolio();
-        if (portfolio != null) {
-            memberSnsPortfolioResponseDto.setPortfolio(portfolio.getDownload_uri());
-        }
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
-        memberSnsPortfolioResponseDto.setSnsList(snsList);
-
+        MemberSnsPortfolioResponseDto memberSnsPortfolioResponseDto = MemberSnsPortfolioResponseDto.of(member, snsList);
         return memberSnsPortfolioResponseDto;
     }
 
-    @Transactional
-    public HttpStatus createMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
-        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
-            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
-        }
-        return HttpStatus.OK;
+//    @Transactional
+//    public HttpStatus createMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+//        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
+//        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
+//            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+//        }
+//        return HttpStatus.OK;
+//    }
+
+    @Transactional(readOnly = true)
+    public PortfolioResponseDto getMemberPortfolio() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        PortfolioResponseDto portfolioResponseDto = PortfolioResponseDto.of(member);
+        return portfolioResponseDto;
     }
 
     @Transactional
@@ -264,9 +265,14 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
 //        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
-        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
-            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
-        }
+        member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus updateMemberSns(MemberSnsRequestDto memberSnsRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        updateSns(member, memberSnsRequestDto.getSnsList());
         return HttpStatus.OK;
     }
 
@@ -326,25 +332,52 @@ public class MemberService {
         member.setPosition(position);
     }
 
+//    @Transactional
+//    public void updateSns(Member member, HashMap<String, String> snsList) {
+//        if (!snsList.isEmpty()) {
+//            snsList.forEach((strKey, strValue) -> {
+//                Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
+//                if (memberSns.isEmpty()) {
+//                    MemberSns innerMemberSns = MemberSns.builder()
+//                            .member(member)
+//                            .snsAccount(strValue)
+//                            .snsName(strKey)
+//                            .build();
+//                    memberSnsRepository.save(innerMemberSns);
+//                } else {
+//                    MemberSns innerMemberSns = memberSns.get();
+//                    innerMemberSns.setSnsAccount(strValue);
+//                    innerMemberSns.setSnsName(strKey);
+//                }
+//            });
+//        }
+//    }
+
+    @Transactional(readOnly = true)
+    public MemberSnsResponseDto getMemberSns() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
+        MemberSnsResponseDto memberSnsResponseDto = MemberSnsResponseDto.of(member,snsList);
+        return memberSnsResponseDto;
+    }
+
     @Transactional
     public void updateSns(Member member, HashMap<String, String> snsList) {
+        List<MemberSns> memberSns = memberSnsRepository.findAllByMember(member);
+        if (!memberSns.isEmpty()) {
+            memberSnsRepository.deleteAll(memberSns);
+        }
         if (!snsList.isEmpty()) {
-//        if (snsList != null && !snsList.isEmpty()) {
-            snsList.forEach((strKey, strValue) -> {
-                Optional<MemberSns> memberSns = memberSnsRepository.findByMemberAndSnsName(member, strKey);
-                if (memberSns.isEmpty()) {
-                    MemberSns innerMemberSns = MemberSns.builder()
-                            .member(member)
-                            .snsAccount(strValue)
-                            .snsName(strKey)
-                            .build();
-                    memberSnsRepository.save(innerMemberSns);
-                } else {
-                    MemberSns innerMemberSns = memberSns.get();
-                    innerMemberSns.setSnsAccount(strValue);
-                    innerMemberSns.setSnsName(strKey);
-                }
-            });
+            for (Map.Entry<String, String> entry : snsList.entrySet()) {
+                MemberSns inner_memberSns = MemberSns
+                        .builder()
+                        .member(member)
+                        .snsName(entry.getKey())
+                        .snsAccount(entry.getValue())
+                        .build();
+                memberSnsRepository.save(inner_memberSns);
+            }
         }
     }
 
@@ -403,20 +436,6 @@ public class MemberService {
             return;
         } else if (memberRepository.existsByNickname(nickname)) {
             throw new Exception("닉네임이 존재합니다!");
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public void getCoverPic(MypageResponseDto mypageResponseDto, DBFile cover_pic) {
-        if (cover_pic != null) {
-            mypageResponseDto.setCover_pic(cover_pic.getDownload_uri());
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public void getPortfolio(MypageResponseDto mypageResponseDto, DBFile portfolio) {
-        if (portfolio != null) {
-            mypageResponseDto.setPortfolio(portfolio.getDownload_uri());
         }
     }
 
