@@ -1,8 +1,8 @@
 package com.ssafy.match.member.dto.request;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.match.member.entity.Career;
-import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberCareerRequestDto {
+public class MemberCareerUpdateRequestDto {
     @ApiModelProperty(name = "company", example = "Google")
     @ApiParam(value = "회사", required = true)
     @NotEmpty
@@ -48,15 +48,12 @@ public class MemberCareerRequestDto {
     @ApiParam(value = "설명", required = false)
     private String description;
 
-    public Career toCareer(Member member) {
-        return Career.builder()
-                .company(company)
-                .role(role)
-                .start_date(start_date)
-                .end_date((is_incumbent == Boolean.TRUE) ? null : end_date)
-                .is_incumbent(is_incumbent)
-                .description(description)
-                .member(member)
-                .build();
+    public void setCareer(Career career) {
+        career.setCompany(company);
+        career.setRole(role);
+        career.setStart_date(start_date);
+        career.setEnd_date((is_incumbent == Boolean.TRUE) ? null : end_date);
+        career.setIs_incumbent(is_incumbent);
+        career.setDescription(description);
     }
 }

@@ -171,6 +171,17 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberCareer(Long id, MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        System.out.println("hereeeee");
+        Career career = careerRepository.findByMemberAndId(member,id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
+        System.out.println("hereeeee22222");
+        System.out.println(career);
+        memberCareerUpdateRequestDto.setCareer(career);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public HttpStatus deleteMemberCareer(Long id) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Career career = careerRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
