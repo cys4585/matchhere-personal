@@ -165,7 +165,8 @@ public class ProjectServiceImpl implements ProjectService {
         }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
 //        projectTechstackRepository.deleteAllByProject(project);
-        projectTechstackRepository.deleteAll(projectTechstackRepository.findProjectTechstackByProject(project));
+        projectTechstackRepository.deleteAll(
+            projectTechstackRepository.findProjectTechstackByProject(project));
         // 프로젝트 비활성화
         project.setIsActive(Boolean.FALSE);
 
@@ -183,7 +184,8 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return projectInfoResponseDtos;
     }
-//    // 추천 프로젝트 조회
+
+    // 추천 프로젝트 조회
     public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
 //        Pageable limit = PageRequest.of(0, 10);
         Page<Project> projects = projectRepository.findRecommendationProject(pageable);
@@ -245,8 +247,12 @@ public class ProjectServiceImpl implements ProjectService {
     // 기술 스택 추가
     @Transactional
     public void addTechstack(Project project, HashMap<String, String> techstacks) {
-        projectTechstackRepository.deleteAll(projectTechstackRepository.findProjectTechstackByProject(project));
+        projectTechstackRepository.deleteAll(
+            projectTechstackRepository.findProjectTechstackByProject(project));
 //        projectTechstackRepository.deleteAllByProject(project);
+        if (techstacks == null) {
+            return;
+        }
 
         for (String tech : techstacks.keySet()) {
             Techstack techstack = findTechstack(tech);
