@@ -20,7 +20,7 @@ public class UploadFileResponse {
     @ApiModelProperty(name = "Id", example = "97534f05-7e7f-425d-ac3e-aae8acee8a42")
     private String Id;
 
-    @ApiModelProperty(name = "fileName", example = "민수준성명선대연일민화이팅")
+    @ApiModelProperty(name = "fileName", example = "파일명")
     private String fileName;
 
     @ApiModelProperty(name = "fileDownloadUri", example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")

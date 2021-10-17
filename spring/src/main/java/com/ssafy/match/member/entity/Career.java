@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.ssafy.match.member.entity.Member;
 import lombok.*;
@@ -25,14 +26,16 @@ public class Career {
 
     @NotEmpty
     private String company;
+
     @NotEmpty
     private String role;
-//    @NotEmpty
+
+    @NotNull
     private LocalDate start_date;
     private LocalDate end_date;
     private String description;
 
-//    @NotEmpty
+    @NotNull
     private Boolean is_incumbent;
 
     @ManyToOne(fetch = FetchType.LAZY)

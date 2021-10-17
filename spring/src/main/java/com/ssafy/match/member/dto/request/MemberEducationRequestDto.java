@@ -3,9 +3,7 @@ package com.ssafy.match.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.match.common.annotation.Enum;
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.State;
-import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Education;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor

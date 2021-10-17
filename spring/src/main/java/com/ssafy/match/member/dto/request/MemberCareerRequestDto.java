@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 @Getter
@@ -31,7 +31,7 @@ public class MemberCareerRequestDto {
     @ApiModelProperty(name = "start_date", example = "2018-05-01")
     @ApiParam(value = "시작일", required = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-//    @NotEmpty
+    @NotNull
     private LocalDate start_date;
 
     @ApiModelProperty(name = "end_date", example = "2018-05-01")
@@ -41,7 +41,7 @@ public class MemberCareerRequestDto {
 
     @ApiModelProperty(name = "is_incumbent", example = "false")
     @ApiParam(value = "재직중", required = true)
-//    @NotEmpty
+    @NotNull
     private Boolean is_incumbent;
 
     @ApiModelProperty(name = "description", example = "Google의 핵심 인재")
