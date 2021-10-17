@@ -247,9 +247,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 기술 스택 추가
     @Transactional
     public void addTechstack(Project project, HashMap<String, String> techstacks) {
-        projectTechstackRepository.deleteAll(
-            projectTechstackRepository.findProjectTechstackByProject(project));
-//        projectTechstackRepository.deleteAllByProject(project);
+        projectTechstackRepository.deleteAllByProject(project);
         if (techstacks == null) {
             return;
         }
