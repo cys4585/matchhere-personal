@@ -1,23 +1,26 @@
 package com.ssafy.match.file.controller;
 
+import com.ssafy.match.file.dto.DeleteFileRequestDto;
 import com.ssafy.match.file.dto.UploadFileResponse;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.service.DBFileStorageService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.http.client.methods.HttpPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -67,6 +70,17 @@ public class FileController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFile_name() + "\"")
             .body(new ByteArrayResource(dbFile.getData()));
 
+    }
+
+    @DeleteMapping
+    @ApiOperation(value = "파일 삭제", notes = "<strong>받은 fileDownloadUri</strong>로 파일을 삭제한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "파일이 삭제되었습니다."),
+        @ApiResponse(code = 500, message = "파일이 없습니다."),
+        @ApiResponse(code = 500, message = "로직 문제")
+    })
+    public ResponseEntity<String> deleteFile(@RequestBody DeleteFileRequestDto dto){
+        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.deleteFile(dto.getFileDownloadUri()));
     }
 
 }
