@@ -36,6 +36,7 @@ public class FileController {
     private DBFileStorageService dbFileStorageService;
 
     @PostMapping(value = "/uploadFile")
+    @ApiOperation(value = "단일 파일 업로드")
     public UploadFileResponse uploadFile(@RequestPart("file") MultipartFile file) {
 
         DBFile dbFile = dbFileStorageService.storeFile(file);
@@ -53,6 +54,7 @@ public class FileController {
     }
 
     @PostMapping("/uploadMultipleFiles")
+    @ApiOperation(value = "다중 파일 업로드")
     public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
         return Arrays.asList(files)
             .stream()
@@ -61,6 +63,7 @@ public class FileController {
     }
 
     @GetMapping("/downloadFile/{fileId}")
+    @ApiOperation(value = "파일 다운로드", notes = "<strong>fileId로</strong>로 파일 정보를 다운로드 받는다.")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
         // Load file from database
         DBFile dbFile = dbFileStorageService.getFile(fileId);
