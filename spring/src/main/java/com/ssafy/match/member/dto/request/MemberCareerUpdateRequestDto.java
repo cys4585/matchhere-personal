@@ -52,7 +52,7 @@ public class MemberCareerUpdateRequestDto {
         career.setCompany(company);
         career.setRole(role);
         career.setStart_date(start_date);
-        career.setEnd_date((is_incumbent == Boolean.TRUE) ? null : end_date);
+        career.setEnd_date((is_incumbent.equals(Boolean.TRUE)) ? null : end_date);
         career.setIs_incumbent(is_incumbent);
         career.setDescription(description);
     }

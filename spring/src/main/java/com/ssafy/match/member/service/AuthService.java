@@ -2,6 +2,7 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
+import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
 import com.ssafy.match.member.entity.EmailCheck;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -13,8 +14,10 @@ import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
+import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -113,9 +116,25 @@ public class AuthService {
     }
 
     @Transactional
+    public HttpStatus changePassword(ForgetChangePasswordRequestDto forgetChangePasswordRequestDto) throws Exception {
+        EmailCheck emailCheck = emailCheckRepository.findById(forgetChangePasswordRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 이메일 인증 id입니다!"));
+        if (!forgetChangePasswordRequestDto.getEmail().equals(emailCheck.getEmail())) {
+            throw new Exception("잘못된 접근입니다! 요청한 email과 인증한 이메일이 다릅니다!");
+        }
+        if (emailCheck.getIs_check().equals(Boolean.FALSE)) {
+            throw new Exception("email인증이 완료되지 않았습니다!");
+        }
+        Member member = memberRepository.findByEmail(emailCheck.getEmail())
+                .orElseThrow(() -> new NullPointerException("가입되어있지 않은 이메일입니다."));
+        forgetChangePasswordRequestDto.setPassword(member, passwordEncoder);
+        emailCheckRepository.deleteById(forgetChangePasswordRequestDto.getId());
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) throws Exception {
-        EmailCheck emailCheck = emailCheckRepository.findById(signupRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 인증 이메일 id입니다!"));
-        if (emailCheck.getIs_check() == Boolean.FALSE) {
+        EmailCheck emailCheck = emailCheckRepository.findById(signupRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 이메일 인증 id입니다!"));
+        if (emailCheck.getIs_check().equals(Boolean.FALSE)) {
             throw new Exception("email인증이 완료되지 않았습니다!");
         }
         if (memberRepository.existsByEmail(emailCheck.getEmail())) {
@@ -134,6 +153,7 @@ public class AuthService {
         if (signupRequestDto.getTechList() != null) {
             addTechList(signupRequestDto.getTechList(), ret);
         }
+        emailCheckRepository.deleteById(signupRequestDto.getId());
         return MemberResponseDto.of(ret);
     }
 
