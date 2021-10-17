@@ -46,7 +46,7 @@ public class AuthService {
     private String from;
 
     @Transactional
-    public Boolean certEmail(String email) {
+    public Boolean certSignup(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
             return Boolean.FALSE;
@@ -58,25 +58,48 @@ public class AuthService {
             message.setSubject("이메일 인증");
             message.setText(key);
             javaMailSender.send(message);
-            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
-            if(emailCheck.isEmpty()) {
-                EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
-                emailCheckRepository.save(check);
-            } else {
-                emailCheck.get().updateKey(key);
-            }
+//            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
+//            if(emailCheck.isEmpty()) {
+            EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
+            emailCheckRepository.save(check);
+//            } else {
+//                emailCheck.get().updateKey(key);
+//            }
             return Boolean.TRUE;
         }
     }
 
     @Transactional
-    public Long emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
-        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
-        if (emailCheck.isPresent()) {
-            if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
-                emailCheck.get().updateIsCheck(Boolean.TRUE);
-                return emailCheck.get().getId();
-            }
+    public Boolean certPassword(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (!member.isPresent()) {
+            return Boolean.FALSE;
+        } else {
+            String key = certified_key();
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setFrom(from);
+            message.setSubject("이메일 인증");
+            message.setText(key);
+            javaMailSender.send(message);
+//            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
+//            if(emailCheck.isEmpty()) {
+            EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
+            emailCheckRepository.save(check);
+//            } else {
+//                emailCheck.get().updateKey(key);
+//            }
+            return Boolean.TRUE;
+        }
+    }
+
+    @Transactional
+    public Long emailAuthCode(Long id, EmailCertRequestDto emailCertRequestDto) throws Exception {
+//        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
+        EmailCheck emailCheck = emailCheckRepository.findById(id).orElseThrow(() -> new Exception("인증 id가 존재하지 않습니다!"));
+        if (emailCheck.getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
+            emailCheck.updateIsCheck(Boolean.TRUE);
+            return emailCheck.getId();
         }
         return -1L;
     }
@@ -223,5 +246,4 @@ public class AuthService {
         } while (sb.length() < 10);
         return sb.toString();
     }
-
 }

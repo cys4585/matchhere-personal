@@ -35,18 +35,18 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 
-    @GetMapping("/cert/email/{email}")
+    @GetMapping("/cert/signup/{email}")
     @ApiOperation(value = "authcode 이메일 발송")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
     public ResponseEntity<Boolean> certEmail(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.certEmail(email));
+        return ResponseEntity.ok(authService.certSignup(email));
     }
 
-    @PostMapping("/cert/authcode")
-    public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
-        Long response = authService.emailAuthCode(emailCertRequestDto);
+    @PostMapping("/cert/authcode/{id}")
+    public ResponseEntity<?> emailAuthCode(@PathVariable("id") Long id, @RequestBody EmailCertRequestDto emailCertRequestDto) throws Exception {
+        Long response = authService.emailAuthCode(id, emailCertRequestDto);
         if (response == -1L) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
@@ -54,14 +54,14 @@ public class AuthController {
         }
     }
 
-//    @GetMapping("/cert/findpassword/{email}")
-//    @ApiOperation(value = "비밀번호 찾기를 위한 authcode 이메일 발송")
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "성공"),
-//    })
-//    public ResponseEntity<Boolean> certEmail(@PathVariable("email") String email) {
-//        return ResponseEntity.ok(authService.certEmail(email));
-//    }
+    @GetMapping("/cert/password/{email}")
+    @ApiOperation(value = "비밀번호 찾기를 위한 authcode 이메일 발송")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "성공"),
+    })
+    public ResponseEntity<Boolean> passwordCertEmail(@PathVariable("email") String email) {
+        return ResponseEntity.ok(authService.certPassword(email));
+    }
 
     @GetMapping("/check/nickname/{nickname}")
     @ApiOperation(value = "닉네임 체크")
