@@ -1,11 +1,6 @@
 package com.ssafy.match.member.service;
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
-import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
-import com.ssafy.match.group.club.entity.Club;
-import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
@@ -16,7 +11,6 @@ import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
 import com.ssafy.match.common.repository.*;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.member.entity.*;
 import com.ssafy.match.common.repository.DetailPositionRepository;
@@ -121,15 +115,11 @@ public class MemberService {
     public MemberCareerAllResponseDto getMemberCareerAll() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MemberCareerAllResponseDto memberCareerAllResponseDto = new MemberCareerAllResponseDto();
-
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        memberCareerAllResponseDto.setCareerList(careers);
-        memberCareerAllResponseDto.setEducationList(educations);
-        memberCareerAllResponseDto.setCertificationList(certifications);
 
+        MemberCareerAllResponseDto memberCareerAllResponseDto = MemberCareerAllResponseDto.of(careers, educations, certifications);
         return memberCareerAllResponseDto;
     }
 
@@ -403,20 +393,6 @@ public class MemberService {
             return;
         } else if (memberRepository.existsByNickname(nickname)) {
             throw new Exception("닉네임이 존재합니다!");
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public void getCoverPic(MypageResponseDto mypageResponseDto, DBFile cover_pic) {
-        if (cover_pic != null) {
-            mypageResponseDto.setCover_pic(cover_pic.getDownload_uri());
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public void getPortfolio(MypageResponseDto mypageResponseDto, DBFile portfolio) {
-        if (portfolio != null) {
-            mypageResponseDto.setPortfolio(portfolio.getDownload_uri());
         }
     }
 
