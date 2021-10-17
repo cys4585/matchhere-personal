@@ -13,7 +13,6 @@ import java.util.List;
 
 @Data
 public class MemberSnsPortfolioResponseDto {
-    @ApiModelProperty(name = "portfolio", example = "http://cdn.matchhere.me/path/portfolio.pdf")
     private DBFileDto portfolio;
 
     @ApiModelProperty(name = "portfolio_uri", example = "https://naver.com")
@@ -36,8 +35,4 @@ public class MemberSnsPortfolioResponseDto {
         this.portfolio_uri = portfolio_uri;
         this.snsList = snsList;
     }
-//    @Builder
-//    public MemberSnsPortfolioResponseDto(String portfolio_uri) {
-//        this.portfolio_uri = portfolio_uri;
-//    }
 }

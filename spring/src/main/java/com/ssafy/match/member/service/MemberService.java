@@ -252,6 +252,14 @@ public class MemberService {
 //        return HttpStatus.OK;
 //    }
 
+    @Transactional(readOnly = true)
+    public PortfolioResponseDto getMemberPortfolio() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+                .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
+        PortfolioResponseDto portfolioResponseDto = PortfolioResponseDto.of(member);
+        return portfolioResponseDto;
+    }
+
     @Transactional
     public HttpStatus updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));

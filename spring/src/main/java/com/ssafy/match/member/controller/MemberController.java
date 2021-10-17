@@ -189,6 +189,12 @@ public class MemberController {
 //        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
 //    }
 
+    @GetMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Get")
+    public ResponseEntity<PortfolioResponseDto> getMemberPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberPortfolio());
+    }
+
     @PutMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Update")
     @ApiResponses(value = {
