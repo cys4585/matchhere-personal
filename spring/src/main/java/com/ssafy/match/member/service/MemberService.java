@@ -205,6 +205,14 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
+    @Transactional
+    public HttpStatus updateMemberEducation(Long id, MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Education education = educationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 교육입니다!"));
+        memberEducationUpdateRequestDto.setEducation(education);
+        return HttpStatus.OK;
+    }
+
     @Transactional(readOnly = true)
     public MemberSkillResponseDto getMemberSkills() {
         MemberSkillResponseDto memberSkillResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
@@ -408,5 +416,4 @@ public class MemberService {
     public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
         member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     }
-
 }

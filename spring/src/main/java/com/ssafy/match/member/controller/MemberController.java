@@ -165,6 +165,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
+    @PutMapping("/education/{id}")
+    @ApiOperation(value = "내 교육 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberEducation(@PathVariable("id") Long id, @RequestBody @Valid MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberEducation(id, memberEducationUpdateRequestDto));
+    }
+
     @GetMapping("/snsportfolio")
     @ApiOperation(value = "내 포트폴리오 Get")
     public ResponseEntity<MemberSnsPortfolioResponseDto> getMemberSnsPortfolio() {

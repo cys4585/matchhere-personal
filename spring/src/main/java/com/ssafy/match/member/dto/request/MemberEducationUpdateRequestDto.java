@@ -1,9 +1,9 @@
 package com.ssafy.match.member.dto.request;
 
+
 import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.State;
 import com.ssafy.match.member.entity.Education;
-import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEducationRequestDto {
+public class MemberEducationUpdateRequestDto {
     @ApiModelProperty(name = "institution", example = "서울대학교")
     @ApiParam(value = "학교/소속", required = true)
     @NotEmpty
@@ -50,16 +50,13 @@ public class MemberEducationRequestDto {
     @ApiParam(value = "설명", required = false)
     private String description;
 
-    public Education toCareer(Member member) {
-        return Education.builder()
-                .institution(institution)
-                .degree(degree)
-                .major(major)
-                .start_date(start_date)
-                .end_date(end_date)
-                .state(state)
-                .description(description)
-                .member(member)
-                .build();
+    public void setEducation(Education education) {
+        education.setInstitution(institution);
+        education.setDegree(degree);
+        education.setMajor(major);
+        education.setStart_date(start_date);
+        education.setEnd_date(end_date);
+        education.setState(state);
+        education.setDescription(description);
     }
 }

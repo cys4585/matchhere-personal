@@ -1,14 +1,9 @@
 package com.ssafy.match.member.dto.response;
 
-
-import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Education;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class EducationResponseDto {
