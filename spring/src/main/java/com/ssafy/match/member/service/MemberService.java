@@ -242,24 +242,22 @@ public class MemberService {
         return memberSnsPortfolioResponseDto;
     }
 
-    @Transactional
-    public HttpStatus createMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
-        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
-            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
-        }
-        return HttpStatus.OK;
-    }
+//    @Transactional
+//    public HttpStatus createMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+//        setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
+//        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
+//            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
+//        }
+//        return HttpStatus.OK;
+//    }
 
     @Transactional
     public HttpStatus updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
 //        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
-        if (!memberPortfolioRequestDto.getPortfolio_uri().isEmpty()) {
-            member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
-        }
+        member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
         return HttpStatus.OK;
     }
 

@@ -180,14 +180,14 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberSnsPortfolio());
     }
 
-    @PostMapping("/portfolio")
-    @ApiOperation(value = "내 포트폴리오 Create")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "성공")
-    })
-    public ResponseEntity<HttpStatus> createMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
-        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
-    }
+//    @PostMapping("/portfolio")
+//    @ApiOperation(value = "내 포트폴리오 Create")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 200, message = "성공")
+//    })
+//    public ResponseEntity<HttpStatus> createMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+//        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
+//    }
 
     @PutMapping("/portfolio")
     @ApiOperation(value = "내 포트폴리오 Update")
