@@ -135,6 +135,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
+    @PutMapping("/certification/{id}")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberCertification(@PathVariable("id") Long id, @RequestBody @Valid MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberCertification(id, memberCertificationUpdateRequestDto));
+    }
+
     @GetMapping("/education/{id}")
     @ApiOperation(value = "id를 기반으로 해당 교육 Get")
     public ResponseEntity<EducationResponseDto> getMemberEducation(@PathVariable("id") Long id) {

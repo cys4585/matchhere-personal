@@ -3,7 +3,6 @@ package com.ssafy.match.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.match.member.entity.Certification;
-import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberCertificationRequestDto {
+public class MemberCertificationUpdateRequestDto {
     @ApiModelProperty(name = "name", example = "Certification Kubernetes Administrator")
     @ApiParam(value = "자격증명", required = true)
     @NotEmpty
@@ -52,16 +51,13 @@ public class MemberCertificationRequestDto {
     @NotNull
     private Boolean is_expire;
 
-    public Certification toCertification(Member member) {
-        return Certification.builder()
-                .name(name)
-                .organization(organization)
-                .code(code)
-                .grade(grade)
-                .issued_date(issued_date)
-                .expired_date((is_expire == Boolean.FALSE) ? null : expired_date)
-                .is_expire(is_expire)
-                .member(member)
-                .build();
+    public void setCertification(Certification certification) {
+        certification.setName(name);
+        certification.setOrganization(organization);
+        certification.setCode(code);
+        certification.setGrade(grade);
+        certification.setIssued_date(issued_date);
+        certification.setExpired_date(expired_date);
+        certification.setIs_expire(is_expire);
     }
 }

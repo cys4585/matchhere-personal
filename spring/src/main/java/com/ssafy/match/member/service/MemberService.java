@@ -168,6 +168,14 @@ public class MemberService {
     }
 
     @Transactional
+    public HttpStatus updateMemberCertification(Long id, MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
+        Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
+        memberCertificationUpdateRequestDto.setCertification(certification);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public HttpStatus deleteMemberCertification(Long id) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
@@ -400,4 +408,5 @@ public class MemberService {
     public void changePassword(Member member, ChangePasswordDto changePasswordDto) {
         member.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     }
+
 }
