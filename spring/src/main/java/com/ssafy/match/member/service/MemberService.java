@@ -74,24 +74,14 @@ public class MemberService {
     public MypageResponseDto getMyPage(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        mypageResponseDto.setCareerList(careers);
-        mypageResponseDto.setEducationList(educations);
-        mypageResponseDto.setCertificationList(certifications);
-
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
 
-        getCoverPic(mypageResponseDto, member.getCover_pic());
-        getPortfolio(mypageResponseDto, member.getPortfolio());
-
-        mypageResponseDto.setTechList(techList);
-        mypageResponseDto.setSnsList(snsList);
-        mypageResponseDto.setDpositionList(dpositionList);
+        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member, careers, educations, certifications, techList, snsList, dpositionList);
         return mypageResponseDto;
     }
 
@@ -99,21 +89,31 @@ public class MemberService {
     public MypageResponseDto getMyPage() {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
+//        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member);
+//        List<CareerInterface> careers = careerRepository.findAllByMember(member);
+//        List<EducationInterface> educations = educationRepository.findAllByMember(member);
+//        List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
+//        mypageResponseDto.setCareerList(careers);
+//        mypageResponseDto.setEducationList(educations);
+//        mypageResponseDto.setCertificationList(certifications);
+//        List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
+//        List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
+//        List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
+//        getCoverPic(mypageResponseDto, member.getCover_pic());
+//        getPortfolio(mypageResponseDto, member.getPortfolio());
+//        mypageResponseDto.setTechList(techList);
+//        mypageResponseDto.setSnsList(snsList);
+//        mypageResponseDto.setDpositionList(dpositionList);
+
         List<CareerInterface> careers = careerRepository.findAllByMember(member);
         List<EducationInterface> educations = educationRepository.findAllByMember(member);
         List<CertificationInterface> certifications = certificationRepository.findAllByMember(member);
-        mypageResponseDto.setCareerList(careers);
-        mypageResponseDto.setEducationList(educations);
-        mypageResponseDto.setCertificationList(certifications);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
         List<MemberSns> snsList = memberSnsRepository.findAllByMember(member);
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
-        getCoverPic(mypageResponseDto, member.getCover_pic());
-        getPortfolio(mypageResponseDto, member.getPortfolio());
-        mypageResponseDto.setTechList(techList);
-        mypageResponseDto.setSnsList(snsList);
-        mypageResponseDto.setDpositionList(dpositionList);
+
+        MypageResponseDto mypageResponseDto = MypageResponseDto.of(member, careers, educations, certifications, techList, snsList, dpositionList);
+
         return mypageResponseDto;
     }
 
