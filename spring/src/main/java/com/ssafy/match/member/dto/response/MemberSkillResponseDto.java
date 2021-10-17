@@ -19,7 +19,7 @@ public class MemberSkillResponseDto {
     @ApiModelProperty(name = "techList", example = "[{\"name\":\"python\", \"level\":\"상\", \"img_uri\":\"http://cdn.matchhere.me/path/python.png\"}, {\"name\":\"java\", \"level\":\"중\", \"img_uri\":\"http://cdn.matchhere.me/path/java.png\"}]")
     private List<MemberTechstackInterface> techList = new ArrayList<>();
 
-    @ApiModelProperty(name = "dpositionList", example = "[\"프론트엔드\", \"데브옵스\"]")
+    @ApiModelProperty(name = "dpositionList", example = "[{\"name\":\"프론트엔드\"}, {\"name\":\"데브옵스\"}]")
     private List<DetailPositionInterface> dpositionList = new ArrayList<>();
 
     public static MemberSkillResponseDto of(Member member, List<DetailPositionInterface> dpositionList, List<MemberTechstackInterface> techList) {
