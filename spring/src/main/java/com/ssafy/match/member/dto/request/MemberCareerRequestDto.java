@@ -53,7 +53,7 @@ public class MemberCareerRequestDto {
                 .company(company)
                 .role(role)
                 .start_date(start_date)
-                .end_date((is_incumbent == Boolean.TRUE) ? null : end_date)
+                .end_date((is_incumbent.equals(Boolean.TRUE)) ? null : end_date)
                 .is_incumbent(is_incumbent)
                 .description(description)
                 .member(member)
