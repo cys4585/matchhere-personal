@@ -215,17 +215,12 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberSkillResponseDto getMemberSkills() {
-        MemberSkillResponseDto memberSkillResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-                .map(MemberSkillResponseDto::of)
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
-
         List<DetailPositionInterface> dpositionList = detailPositionRepository.findAllByMemberWithInterface(member);
         List<MemberTechstackInterface> techList = memberTechstackRepository.findTechstackByMember(member);
-        memberSkillResponseDto.setDpositionList(dpositionList);
-        memberSkillResponseDto.setTechList(techList);
 
+        MemberSkillResponseDto memberSkillResponseDto = MemberSkillResponseDto.of(member, dpositionList, techList);
         return memberSkillResponseDto;
     }
 

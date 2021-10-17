@@ -3,7 +3,6 @@ package com.ssafy.match.member.dto.response;
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
 import com.ssafy.match.member.dto.MemberTechstackInterface;
-import com.ssafy.match.member.dto.MypageResponseDto;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -23,14 +22,18 @@ public class MemberSkillResponseDto {
     @ApiModelProperty(name = "dpositionList", example = "[\"프론트엔드\", \"데브옵스\"]")
     private List<DetailPositionInterface> dpositionList = new ArrayList<>();
 
-    public static MemberSkillResponseDto of(Member member) {
+    public static MemberSkillResponseDto of(Member member, List<DetailPositionInterface> dpositionList, List<MemberTechstackInterface> techList) {
         return MemberSkillResponseDto.builder()
                 .position(member.getPosition())
+                .techList(techList)
+                .dpositionList(dpositionList)
                 .build();
     }
 
     @Builder
-    public MemberSkillResponseDto(String position) {
+    public MemberSkillResponseDto(String position, List<MemberTechstackInterface> techList, List<DetailPositionInterface> dpositionList) {
         this.position = position;
+        this.techList = techList;
+        this.dpositionList = dpositionList;
     }
 }
