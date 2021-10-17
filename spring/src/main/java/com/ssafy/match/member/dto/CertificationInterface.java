@@ -1,6 +1,7 @@
 package com.ssafy.match.member.dto;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface CertificationInterface {
@@ -9,7 +10,7 @@ public interface CertificationInterface {
     String getOrganization();
     String getCode();
     String getGrade();
-    LocalDateTime getIssued_date();
-    LocalDateTime getExpired_date();
+    LocalDate getIssued_date();
+    LocalDate getExpired_date();
     Boolean getIs_expire();
 }

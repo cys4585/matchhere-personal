@@ -1,5 +1,6 @@
 package com.ssafy.match.member.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.ssafy.match.member.entity.Member;
 import lombok.*;
@@ -24,14 +26,16 @@ public class Career {
 
     @NotEmpty
     private String company;
+
     @NotEmpty
     private String role;
-//    @NotEmpty
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
+
+    @NotNull
+    private LocalDate start_date;
+    private LocalDate end_date;
     private String description;
 
-//    @NotEmpty
+    @NotNull
     private Boolean is_incumbent;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,8 +43,8 @@ public class Career {
     private Member member;
 
     @Builder
-    public Career(String company, String role, LocalDateTime start_date,
-        LocalDateTime end_date, String description, Boolean is_incumbent,
+    public Career(String company, String role, LocalDate start_date,
+        LocalDate end_date, String description, Boolean is_incumbent,
         Member member) {
         this.company = company;
         this.role = role;

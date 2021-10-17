@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,11 +24,11 @@ public class EducationResponseDto {
     @ApiModelProperty(name = "major", example = "컴퓨터과학과")
     private String major;
 
-    @ApiModelProperty(name = "start_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime start_date;
+    @ApiModelProperty(name = "start_date", example = "2020-12-31")
+    private LocalDate start_date;
 
-    @ApiModelProperty(name = "end_date", example = "2020-12-31T00:00:00")
-    private LocalDateTime end_date;
+    @ApiModelProperty(name = "end_date", example = "2020-12-31")
+    private LocalDate end_date;
 
     @ApiModelProperty(name = "state", example = "졸업")
    private String state;
@@ -49,7 +50,7 @@ public class EducationResponseDto {
     }
 
     @Builder
-    public EducationResponseDto(Long id, String institution, String degree, String major, LocalDateTime start_date, LocalDateTime end_date, String state, String description) {
+    public EducationResponseDto(Long id, String institution, String degree, String major, LocalDate start_date, LocalDate end_date, String state, String description) {
         this.id = id;
         this.institution = institution;
         this.degree = degree;

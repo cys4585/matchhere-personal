@@ -4,7 +4,6 @@ import com.ssafy.match.member.dto.*;
 import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.service.MemberService;
-import com.ssafy.match.util.SecurityUtil;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
-//@CrossOrigin("*")
 @RestController
 @RequestMapping("/member")
 public class MemberController {
@@ -101,6 +99,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
 
+    @PutMapping("/career/{id}")
+    @ApiOperation(value = "내 경력 Update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> updateMemberCareer(@PathVariable("id") Long id, @RequestBody @Valid MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+        return ResponseEntity.ok(memberService.updateMemberCareer(id, memberCareerUpdateRequestDto));
+    }
+
     @DeleteMapping("/career/{id}")
     @ApiOperation(value = "id를 기반으로 해당 경력 Delete")
     public ResponseEntity<HttpStatus> deleteMemberCareer(@PathVariable("id") Long id) {
@@ -149,10 +156,19 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
-    @GetMapping("/portfolio")
+    @GetMapping("/snsportfolio")
     @ApiOperation(value = "내 포트폴리오 Get")
-    public ResponseEntity<MemberPortfolioResponseDto> getMemberPortfolio() {
-        return ResponseEntity.ok(memberService.getMemberPortfolio());
+    public ResponseEntity<MemberSnsPortfolioResponseDto> getMemberSnsPortfolio() {
+        return ResponseEntity.ok(memberService.getMemberSnsPortfolio());
+    }
+
+    @PostMapping("/portfolio")
+    @ApiOperation(value = "내 포트폴리오 Create")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "성공")
+    })
+    public ResponseEntity<HttpStatus> createMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+        return ResponseEntity.ok(memberService.createMemberPortfolio(memberPortfolioRequestDto));
     }
 
     @PutMapping("/portfolio")
@@ -162,21 +178,6 @@ public class MemberController {
     })
     public ResponseEntity<HttpStatus> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
-    }
-
-    @PutMapping
-    @ApiOperation(value = "내 계정 정보 Update")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200,
-                    message = "성공"),
-            @ApiResponse(code = 406, message = "데이터 에러"),
-    })
-    public ResponseEntity<?> updateMember(@RequestBody @Valid MemberUpdateRequestDto memberUpdateRequestDto) throws Exception {
-        MemberUpdateResponseDto memberUpdateResponseDto = memberService.updateMyInfo(memberUpdateRequestDto);
-        if (memberUpdateResponseDto.getId().equals(SecurityUtil.getCurrentMemberId())) {
-            return new ResponseEntity<String>("수정사항이 성공적으로 반영되었습니다.", HttpStatus.OK);
-        }
-        return new ResponseEntity<String>("수정이 실패했습니다!", HttpStatus.NOT_ACCEPTABLE);
     }
 
     @DeleteMapping

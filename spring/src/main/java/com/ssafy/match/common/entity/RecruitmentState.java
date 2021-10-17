@@ -1,7 +1,10 @@
 package com.ssafy.match.common.entity;
 
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
+
 public enum RecruitmentState {
-    Recruiting("모집 중"), Finish("모집 마감");
+    RECRUITMENT("모집 중"), FINISH("모집 마감");
 
     private final String state;
 
@@ -15,10 +18,12 @@ public enum RecruitmentState {
 
     public static RecruitmentState from(String s) {
         RecruitmentState recruitmentState;
-        if(s.equals(Recruiting.state)){
-            recruitmentState = Recruiting;
-        }else {
-            recruitmentState = Finish;
+        if(s.equals(RECRUITMENT.state)){
+            recruitmentState = RECRUITMENT;
+        }else if(s.equals(FINISH.state)){
+            recruitmentState = FINISH;
+        }else{
+            throw new CustomException(ErrorCode.RECRUITMENT_STATE_NOT_FOUND);
         }
         return recruitmentState;
     }

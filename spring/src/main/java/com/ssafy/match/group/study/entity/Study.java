@@ -1,9 +1,10 @@
 package com.ssafy.match.group.study.entity;
 
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
@@ -46,7 +47,8 @@ public class Study {
     @Enumerated(EnumType.STRING)
     private City city;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "study_progress_state")
+    private StudyProgressState studyProgressState;
     @Column(name = "create_Date")
     private LocalDateTime createDate;
     @Column(name = "modify_Date")
@@ -113,7 +115,7 @@ public class Study {
         setMaxCount(dto.getMaxCount());
         this.city = City.from(dto.getCity());
         this.modifyDate = LocalDateTime.now();
-        this.status = Status.from(dto.getStatus());
+        this.studyProgressState = StudyProgressState.from(dto.getStatus());
         this.isPublic = dto.getIsPublic();
         this.isParticipate = dto.getIsParticipate();
     }
@@ -128,7 +130,7 @@ public class Study {
         this.city = City.from(dto.getCity());
         this.createDate = LocalDateTime.now();
         this.modifyDate = LocalDateTime.now();
-        this.status = Status.모집;
+//        this.projectProgressState = ProjectProgressState.모집;
         this.isActive = true;
         this.isPublic = dto.getIsPublic();
         this.isParticipate = true;

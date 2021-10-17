@@ -17,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CompositeMemberProject implements Serializable {
 
+    private static final long serialVersionUID = 6608445969444294327L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
