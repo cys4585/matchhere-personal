@@ -183,7 +183,7 @@ public class MemberService {
         return HttpStatus.OK;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public EducationResponseDto getMemberEducation(Long id) {
         EducationResponseDto educationResponseDto = educationRepository.findById(id).map(EducationResponseDto::of).orElseThrow(() -> new RuntimeException("해당 교육이 없습니다!"));
         return educationResponseDto;

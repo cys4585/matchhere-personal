@@ -24,11 +24,11 @@ public class EducationResponseDto {
     @ApiModelProperty(name = "major", example = "컴퓨터과학과")
     private String major;
 
-    @ApiModelProperty(name = "start_date", example = "2020-12-31")
-    private LocalDate start_date;
+    @ApiModelProperty(name = "start_date", example = "2020")
+    private Integer start_date;
 
-    @ApiModelProperty(name = "end_date", example = "2020-12-31")
-    private LocalDate end_date;
+    @ApiModelProperty(name = "end_date", example = "2020")
+    private Integer end_date;
 
     @ApiModelProperty(name = "state", example = "졸업")
    private String state;
@@ -50,7 +50,7 @@ public class EducationResponseDto {
     }
 
     @Builder
-    public EducationResponseDto(Long id, String institution, String degree, String major, LocalDate start_date, LocalDate end_date, String state, String description) {
+    public EducationResponseDto(Long id, String institution, String degree, String major, Integer start_date, Integer end_date, String state, String description) {
         this.id = id;
         this.institution = institution;
         this.degree = degree;
