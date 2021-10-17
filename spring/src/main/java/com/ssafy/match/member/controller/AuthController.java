@@ -46,13 +46,12 @@ public class AuthController {
 
     @PostMapping("/cert/authcode")
     public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
-        String response = authService.emailAuthCode(emailCertRequestDto);
-        if (response == "") {
+        Long response = authService.emailAuthCode(emailCertRequestDto);
+        if (response == -1L) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-
     }
 
     @GetMapping("/check/nickname/{nickname}")
