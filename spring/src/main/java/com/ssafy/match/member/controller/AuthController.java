@@ -46,14 +46,22 @@ public class AuthController {
 
     @PostMapping("/cert/authcode")
     public ResponseEntity<?> emailAuthCode(@RequestBody EmailCertRequestDto emailCertRequestDto) {
-        String response = authService.emailAuthCode(emailCertRequestDto);
-        if (response == "") {
+        Long response = authService.emailAuthCode(emailCertRequestDto);
+        if (response == -1L) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-
     }
+
+//    @GetMapping("/cert/findpassword/{email}")
+//    @ApiOperation(value = "비밀번호 찾기를 위한 authcode 이메일 발송")
+//    @ApiResponses({
+//            @ApiResponse(code = 200, message = "성공"),
+//    })
+//    public ResponseEntity<Boolean> certEmail(@PathVariable("email") String email) {
+//        return ResponseEntity.ok(authService.certEmail(email));
+//    }
 
     @GetMapping("/check/nickname/{nickname}")
     @ApiOperation(value = "닉네임 체크")
