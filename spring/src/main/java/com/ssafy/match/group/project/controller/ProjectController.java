@@ -52,8 +52,7 @@ public class ProjectController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "정보 조회"),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND"),
     })
     public ResponseEntity<ProjectInfoForUpdateResponseDto> getInfoForUpdate(
         @PathVariable("projectId") Long projectId) {
@@ -65,19 +64,10 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 생성", notes = "<strong>받은 프로젝트 정보</strong>를 사용해서 프로젝트을 생성한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "프로젝트 id 3이 생성되었습니다."),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 404, message = "CITY_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "FILE_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "TECHSTACK_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "LEVEL_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"
+            + "\nDEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
+            + "TECHSTACK_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> createProject(@RequestBody ProjectCreateRequestDto dto) {
         return new ResponseEntity<>("프로젝트 id : " + projectService.create(dto) + "이 생성되었습니다",
@@ -88,21 +78,10 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 수정", notes = "<strong>받은 프로젝트 정보</strong>를 사용해서 프로젝트를 수정한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "수정되었습니다."),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 404, message = "CITY_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "FILE_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "TECHSTACK_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "LEVEL_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"
+            + "\nDEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
+            + "\nTECHSTACK_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> updateProject(@RequestBody ProjectUpdateRequestDto dto,
         @PathVariable("projectId") Long projectId) {
@@ -114,9 +93,7 @@ public class ProjectController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "삭제되었습니다."),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
     public ResponseEntity<String> deleteProject(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("삭제되었습니다.", projectService.delete(projectId));
@@ -126,14 +103,8 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 탈퇴", notes = "<strong>받은 프로젝트 id</strong>로 프로젝트에서 탈퇴한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "HOST_CANNOT_LEAVE"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO\nHOST_CANNOT_LEAVE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> removeMe(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("탈퇴되었습니다.", projectService.removeMe(projectId));
@@ -143,15 +114,9 @@ public class ProjectController {
     @ApiOperation(value = "프로젝트 추방", notes = "<strong>받은 프로젝트 id와 탈퇴시킬 멤버의 id</strong>로 프로젝트에서 탈퇴시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "ONLY_CAN_REMOVE_COMMON"),
-        @ApiResponse(code = 400, message = "COMMON_MEMBER_CANNOT_REMOVE"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"
+            + "\nONLY_CAN_REMOVE_COMMON\nCOMMON_MEMBER_CANNOT_REMOVE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> removeMember(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId) {
@@ -163,9 +128,7 @@ public class ProjectController {
         notes = "<strong>받은 프로젝트 Id</strong>로 해당 프로젝트를 조회 + 전체 기술스택, 역할별 인원 닉네임, 전체 지역 정보, 포함 인원 등")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
     public ResponseEntity<ProjectInfoResponseDto> getOneProject(
         @PathVariable("projectId") Long projectId) {
@@ -193,16 +156,9 @@ public class ProjectController {
     @ApiOperation(value = "역할 변경", notes = "<strong>받은 프로젝트 id와 변경 시킬 멤버의 id와 변경하고자하는 role을 받아</strong>로 역할을 변경시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_OVER"),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER\nDEVELOPER_COUNT_BELOW_ZERO"
+            + "\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> changeRole(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId, @PathVariable("role") String role) {
@@ -214,11 +170,7 @@ public class ProjectController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
-        @ApiResponse(code = 404, message = "GROUP_AUTHORITY_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
-        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "GROUP_AUTHORITY_NOT_FOUND\nMEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nROLE_NOT_FOUND"),
     })
     public ResponseEntity<String> changeAuthority(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
