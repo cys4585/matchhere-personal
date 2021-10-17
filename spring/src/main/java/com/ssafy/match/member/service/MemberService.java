@@ -105,14 +105,6 @@ public class MemberService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new NullPointerException("유저가 없습니다."));
         MemberBasicinfoResponseDto memberBasicinfoResponseDto = MemberBasicinfoResponseDto.of(member);
-//        MemberBasicinfoResponseDto memberBasicinfoResponseDto = memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .map(MemberBasicinfoResponseDto::of)
-//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-
-//        DBFile cover_pic = member.getCover_pic();
-//        if (cover_pic != null) {
-//            memberBasicinfoResponseDto.setCoverpic_uri(cover_pic.getDownload_uri());
-//        }
         return memberBasicinfoResponseDto;
     }
 
@@ -120,7 +112,7 @@ public class MemberService {
     public HttpStatus updateMemberBasicInfo(MemberBasicInfoRequestDto memberBasicinfoRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         validNickname(member, memberBasicinfoRequestDto.getNickname());
-        updateBasicinfo(member, memberBasicinfoRequestDto.getNickname(), memberBasicinfoRequestDto.getName(), memberBasicinfoRequestDto.getCity(), memberBasicinfoRequestDto.getBio());
+        memberBasicinfoRequestDto.setMember(member);
         setCoverPic(member, memberBasicinfoRequestDto.getCoverpic_uuid());
         return HttpStatus.OK;
     }
@@ -327,24 +319,6 @@ public class MemberService {
                 member.setPortfolio(dbFile);
             }
         }
-    }
-
-    @Transactional
-    public void updateBasicinfo(Member member, String nickname, String name, String city, String bio) throws Exception {
-        if (nickname == null) {
-            throw new Exception("nickname이 비어있습니다!");
-        } else {
-            if (!memberRepository.existsByNickname(nickname)) {
-                member.setNickname(nickname);
-            }
-        }
-        if (name == null) {
-            throw new Exception("name이 비어있습니다!");
-        } else {
-            member.setName(name);
-        }
-        member.setCity(city);
-        member.setBio(bio);
     }
 
     @Transactional
