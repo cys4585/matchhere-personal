@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.service;
 
+import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 
 public interface ProjectService {
@@ -49,11 +51,9 @@ public interface ProjectService {
 
     HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto);
 
-    List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception;
+    Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId, Pageable pageable);
 
-    List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId, String nickname) throws Exception;
-
-    ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId) throws Exception;
+    ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId);
 
     HttpStatus approval(Long projectId, Long memberId) throws Exception;
 

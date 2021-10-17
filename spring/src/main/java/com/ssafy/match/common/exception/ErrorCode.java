@@ -38,6 +38,7 @@ public enum ErrorCode {
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "권한 정보가 없는 토큰입니다"),
     UNAUTHORIZED_MEMBER(UNAUTHORIZED, "현재 내 계정 정보가 존재하지 않습니다"),
     UNAUTHORIZED_CHANGE(UNAUTHORIZED, "변경 권한을 가지고 있지 않습니다."),
+    UNAUTHORIZED_SELECT(UNAUTHORIZED, "조회 권한을 가지고 있지 않습니다."),
 
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
@@ -61,6 +62,7 @@ public enum ErrorCode {
     LEVEL_NOT_FOUND(NOT_FOUND, "해당 레벨을 찾을 수 없습니다."),
     TECHSTACK_NOT_FOUND(NOT_FOUND, "해당 기술 스택을 찾을 수 없습니다."),
     ROLE_NOT_FOUND(NOT_FOUND, "해당 역할을 찾을 수 없습니다."),
+    APPLIY_FORM_NOT_FOUND(NOT_FOUND, "해당 신청서를 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),

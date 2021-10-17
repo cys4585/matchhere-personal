@@ -20,6 +20,7 @@ import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
@@ -52,6 +53,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -445,6 +447,7 @@ public class ProjectServiceImpl implements ProjectService {
             .map(MemberSimpleInfoResponseDto::from)
             .collect(Collectors.toList());
     }
+
     // 기본 게시판 생성
     @Transactional
     public void makeBasicBoards(Project project) {
@@ -490,72 +493,28 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
-    public List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception {
+    public Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId, Pageable pageable) {
         Project project = findProject(projectId);
-
-        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
-            throw new Exception("조회 권한이 없습니다.");
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        // 조회 권한 확인 로직
+        MemberProject mp = memberProjectRepository.findById(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+        if(mp.getAuthority().equals(GroupAuthority.팀원)){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
-
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
-            project);
-        List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
-
-        for (ProjectApplicationForm form : forms) {
-            projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
-                .form(form)
-//                .strong(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//                .knowledgeable(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .build());
-        }
-
-        return projectFormInfoResponseDtos;
-    }
-
-    // 닉네임으로 신청서 검색
-    public List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId,
-        String nickname) throws Exception {
-        Project project = findProject(projectId);
-
-        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
-            throw new Exception("조회 권한이 없습니다.");
-        }
-
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
-            project);
-        List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
-
-        for (ProjectApplicationForm form : forms) {
-            projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
-                .form(form)
-//                .strong(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//                .knowledgeable(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .build());
-        }
-
-        return projectFormInfoResponseDtos;
+        return projectApplicationFormRepository.formByProjectId(project, pageable);
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회 (프론트 방식에 따라 불필요할 수 있음)
-    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId)
-        throws Exception {
+    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId) {
         CompositeMemberProject cmp = new CompositeMemberProject(findMember(memberId),
             findProject(projectId));
 
         ProjectApplicationForm form = projectApplicationFormRepository.oneFormById(cmp)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다"));
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
 
-        return ProjectFormInfoResponseDto.builder()
-            .form(form)
-//            .strong(memberExperiencedTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//            .knowledgeable(memberBeginnerTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-            .build();
+        return ProjectFormInfoResponseDto.from(form);
     }
 
     // 가입 승인
