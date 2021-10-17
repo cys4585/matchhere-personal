@@ -163,10 +163,12 @@ public class ProjectServiceImpl implements ProjectService {
         for (MemberProject mem : memberProjects) {
             mem.deactivation();
         }
+        // 프로젝트 Cover 제거
+        if(project.getCoverPic().getId() != null){
+            dbFileRepository.delete(project.getCoverPic());
+        }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
-//        projectTechstackRepository.deleteAllByProject(project);
-        projectTechstackRepository.deleteAll(
-            projectTechstackRepository.findProjectTechstackByProject(project));
+        projectTechstackRepository.deleteAllByProject(project);
         // 프로젝트 비활성화
         project.setIsActive(Boolean.FALSE);
 
@@ -284,7 +286,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 멤버 탈퇴
     @Transactional
-    public void removeMe(Long projectId) {
+    public HttpStatus removeMe(Long projectId) {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
 
@@ -297,17 +299,18 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
-        // DB에 해당 멤버 기록이 없다면 새로 생성
+        // DB에 해당 멤버 기록이 없다면 예외 발생
         MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         project.removeRole(memberProject.getRole());
         memberProject.deactivation();
+        return HttpStatus.OK;
     }
 
     // 멤버 추방
     @Transactional
-    public void removeMember(Long projectId, Long memberId) {
+    public HttpStatus removeMember(Long projectId, Long memberId) {
         Project project = findProject(projectId);
         Member remover = findMember(SecurityUtil.getCurrentMemberId());
         Member removed = findMember(memberId);
@@ -330,6 +333,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.removeRole(removedmp.getRole()); // 추방되는 사람의 역할 수 감소
         removedmp.deactivation(); // 비활성화
+        return HttpStatus.OK;
     }
 
     // 역할 변경
