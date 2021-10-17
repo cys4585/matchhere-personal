@@ -445,7 +445,7 @@ public class ProjectServiceImpl implements ProjectService {
             .map(MemberSimpleInfoResponseDto::from)
             .collect(Collectors.toList());
     }
-
+    // 기본 게시판 생성
     @Transactional
     public void makeBasicBoards(Project project) {
         projectBoardRepository.save(new ProjectBoard("공지사항", project));
@@ -473,8 +473,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto)
-        throws Exception {
+    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
 
@@ -482,13 +481,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         Optional<ProjectApplicationForm> form = projectApplicationFormRepository.findById(cmp);
         if (form.isPresent()) {
-            throw new Exception("신청한 내역이 존재합니다.");
+            throw new CustomException(ErrorCode.ALREADY_APPLY);
         }
 
-        ProjectApplicationForm projectApplicationForm = new ProjectApplicationForm(cmp, dto);
-
-        projectApplicationForm.setDbFile(findDBFile(dto.getUuid()));
-
+        ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp, member.getName());
         projectApplicationFormRepository.save(projectApplicationForm);
         return HttpStatus.OK;
     }

@@ -32,6 +32,7 @@ public enum ErrorCode {
     ONLY_CAN_REMOVE_COMMON(BAD_REQUEST, "팀원만 퇴장 시킬 수 있습니다."),
     CANNOT_APPLY(BAD_REQUEST, "신청할 수 없습니다."),
     ALREADY_JOIN(BAD_REQUEST, "이미 가입되어있습니다."),
+    ALREADY_APPLY(BAD_REQUEST, "이미 신청되어있습니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "권한 정보가 없는 토큰입니다"),

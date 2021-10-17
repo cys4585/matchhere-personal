@@ -29,21 +29,23 @@ public class ProjectApplicationController {
     @GetMapping("/check/{projectId}")
     @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 프로젝트에 신청 가능한지 여부")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청 가능합니다."),
         @ApiResponse(code = 401, message = "CANNOT_APPLY\nALREADY_JOIN"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<String> checkForRegister(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<String> checkForApply(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("신청 가능합니다", projectService.checkCanApply(projectId));
     }
 
     @PostMapping("/{projectId}")
     @ApiOperation(value = "프로젝트 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 프로젝트에 신청을 한다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청되었습니다."),
+        @ApiResponse(code = 401, message = "ALREADY_APPLY"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> createForm(@PathVariable("projectId") Long projectId, @RequestBody ProjectApplicationRequestDto dto) throws Exception {
-        return ResponseEntity.ok(projectService.applyProject(projectId, dto));
+    public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId, @RequestBody ProjectApplicationRequestDto dto) {
+        return new ResponseEntity<>("신청되었습니다", projectService.applyProject(projectId, dto));
     }
 
     @PostMapping("/approval/{projectId}/{memberId}")

@@ -47,7 +47,7 @@ public interface ProjectService {
 
     HttpStatus checkCanApply(Long projectId);
 
-    HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) throws Exception;
+    HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto);
 
     List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception;
 
