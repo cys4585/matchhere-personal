@@ -29,6 +29,8 @@ public interface ProjectService {
 
     List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable);
 
+//    List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable);
+
     ProjectInfoResponseDto getOneProject(Long projectId);
 
     ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId);
@@ -39,7 +41,7 @@ public interface ProjectService {
 
     HttpStatus removeMember(Long projectId, Long memberId);
 
-    void changeRole(Long projectId, Long memberId, String role);
+    HttpStatus changeRole(Long projectId, Long memberId, String role);
 
     void changeAuthority(Long projectId, Long memberId, String authority);
 

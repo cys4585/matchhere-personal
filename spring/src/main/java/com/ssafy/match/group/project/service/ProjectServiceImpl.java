@@ -188,16 +188,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 추천 프로젝트 조회
-    public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
-//        Pageable limit = PageRequest.of(0, 10);
-        Page<Project> projects = projectRepository.findRecommendationProject(pageable);
-        List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
-        for (Project project : projects) {
-            projectInfoResponseDtos.add(
-                ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project)));
-        }
-        return projectInfoResponseDtos;
-    }
+//    public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
+////        Pageable limit = PageRequest.of(0, 10);
+//        List<Project> projects = projectRepository.findTop10OrderByCreateDateDesc(pageable);
+//
+//        List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
+//        for (Project project : projects) {
+//            projectInfoResponseDtos.add(
+//                ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project)));
+//        }
+//        return projectInfoResponseDtos;
+//    }
 
     // 현재 프로젝트 정보 리턴
     public ProjectInfoResponseDto getOneProject(Long projectId) {
@@ -338,7 +339,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 역할 변경
     @Transactional
-    public void changeRole(Long projectId, Long memberId, String role) {
+    public HttpStatus changeRole(Long projectId, Long memberId, String role) {
         Project project = findProject(projectId);
         Member member = findMember(memberId);
 
@@ -347,11 +348,14 @@ public class ProjectServiceImpl implements ProjectService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
 
         // 역할 변경 권한에 관한 로직
-        // 본인 권한 이하? 미만? 의 인원 역할 변경이 가능하다
-        // 본인의 역할 변경이 가능하다?
+        // 소유자는 본인 이하의 권한을 가진 사람의 역할 변경 가능
+        // 관리자는 본인 이하의 권한을 가진 사람의 역할 변경 가능
+        // 팀원은 역할을 변경할 수 없다
 
         project.removeRole(mp.getRole());
+        mp.setRole(role);
         project.addRole((role));
+        return HttpStatus.OK;
     }
 
     // 권한 변경
@@ -365,6 +369,8 @@ public class ProjectServiceImpl implements ProjectService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
 
         // 권한 변경 권한에 관한 로직
+        // 소유자는 양도가 가능하다
+        // 소유자만이 권한을 변경할 수 있다
 
         mp.setAuthority(GroupAuthority.from(authority));
     }

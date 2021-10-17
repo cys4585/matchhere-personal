@@ -55,8 +55,10 @@ public class ProjectController {
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<ProjectInfoForUpdateResponseDto> getInfoForUpdate(@PathVariable("projectId") Long projectId) {
-        return new ResponseEntity<>(projectService.getInfoForUpdateProject(projectId), HttpStatus.OK);
+    public ResponseEntity<ProjectInfoForUpdateResponseDto> getInfoForUpdate(
+        @PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.getInfoForUpdateProject(projectId),
+            HttpStatus.OK);
     }
 
     @PostMapping
@@ -138,7 +140,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/{projectId}/{memberId}")
-    @ApiOperation(value = "프로젝트 탈퇴", notes = "<strong>받은 프로젝트 id와 탈퇴시킬 멤버의 id</strong>로 프로젝트에서 탈퇴시킨다.")
+    @ApiOperation(value = "프로젝트 추방", notes = "<strong>받은 프로젝트 id와 탈퇴시킬 멤버의 id</strong>로 프로젝트에서 탈퇴시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
         @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
@@ -151,7 +153,8 @@ public class ProjectController {
         @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
         @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> removeMember(@PathVariable("projectId") Long projectId, @PathVariable("memberId") Long memberId) {
+    public ResponseEntity<String> removeMember(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId) {
         return new ResponseEntity<>("처리되었습니다.", projectService.removeMember(projectId, memberId));
     }
 
@@ -169,20 +172,40 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.getOneProject(projectId), HttpStatus.OK);
     }
 
-    @GetMapping("/recommendation")
-    @ApiOperation(value = "추천 프로젝트 조회", notes = "<strong>받은 프로젝트 Id</strong>로 해당 멤버가 속한 프로젝트 정보 조회")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
-    })
-    public ResponseEntity<List<ProjectInfoResponseDto>> projectInMember(
-        @PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok(projectService.projectInMember(memberId));
-    }
+//    @GetMapping("/recommendation")
+//    @ApiOperation(value = "추천 프로젝트 조회", notes = "<strong>받은 프로젝트 Id</strong>로 해당 멤버가 속한 프로젝트 정보 조회")
+//    @ApiResponses({
+//        @ApiResponse(code = 200, message = "성공"),
+//    })
+//    public ResponseEntity<List<ProjectSimpleInfoResponseDto>> projectInMember(
+//        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+//        return ResponseEntity.ok(projectService.getRecommendationProject(pageable));
+//    }
 
     @GetMapping
     @ApiOperation(value = "모든 프로젝트 조회", notes = "프로젝트 종료가 아닌 // 모집 중 // 전체 공개 // 를 만족하는 프로젝트들을 작성일 기준 내림차순으로 받는다")
     public ResponseEntity<List<ProjectSimpleInfoResponseDto>> getAllProject(
         @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(projectService.getAllProject(pageable));
+    }
+
+    @GetMapping("/role/{projectId}/{memberId}/{role}")
+    @ApiOperation(value = "역할 변경", notes = "<strong>받은 프로젝트 id와 변경 시킬 멤버의 id와 변경하고자하는 role을 받아</strong>로 역할을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER"),
+        @ApiResponse(code = 400, message = "PLANNER_COUNT_OVER"),
+        @ApiResponse(code = 400, message = "DESIGNER_COUNT_OVER"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 400, message = "PLANNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 400, message = "DESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "MEMBER_PROJECT_NOT_FOUND"),
+        @ApiResponse(code = 404, message = "ROLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> changeRole(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId, @PathVariable("role") String role) {
+        return new ResponseEntity<>("역할이 변경되었습니다.", projectService.changeRole(projectId, memberId, role));
     }
 }
