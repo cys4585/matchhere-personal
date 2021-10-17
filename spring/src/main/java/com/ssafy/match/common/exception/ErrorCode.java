@@ -30,6 +30,8 @@ public enum ErrorCode {
     HOST_CANNOT_LEAVE(BAD_REQUEST, "소유자는 탈퇴할 수 없습니다."),
     COMMON_MEMBER_CANNOT_REMOVE(BAD_REQUEST, "팀원은 강퇴 기능을 가지고 있지 않습니다."),
     ONLY_CAN_REMOVE_COMMON(BAD_REQUEST, "팀원만 퇴장 시킬 수 있습니다."),
+    CANNOT_APPLY(BAD_REQUEST, "신청할 수 없습니다."),
+    ALREADY_JOIN(BAD_REQUEST, "이미 가입되어있습니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_TOKEN(UNAUTHORIZED, "권한 정보가 없는 토큰입니다"),

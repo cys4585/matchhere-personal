@@ -3,48 +3,44 @@ package com.ssafy.match.group.project.service;
 import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.Level;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
+import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
-import com.ssafy.match.group.club.entity.Club;
-import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
-import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
-import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
-import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
-import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.ProjectProgressState;
-import com.ssafy.match.common.entity.Techstack;
-import com.ssafy.match.group.club.repository.MemberClubRepository;
-import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.common.repository.TechstackRepository;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.club.repository.ClubRepository;
+import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
-import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
 import com.ssafy.match.group.project.entity.CompositeMemberProject;
 import com.ssafy.match.group.project.entity.CompositeProjectTechstack;
 import com.ssafy.match.group.project.entity.MemberProject;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.entity.ProjectApplicationForm;
 import com.ssafy.match.group.project.entity.ProjectTechstack;
-import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.group.project.repository.ProjectApplicationFormRepository;
 import com.ssafy.match.group.project.repository.ProjectRepository;
 import com.ssafy.match.group.project.repository.ProjectTechstackRepository;
+import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
+import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
+import com.ssafy.match.member.entity.Member;
+import com.ssafy.match.member.repository.MemberRepository;
+import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,10 +51,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -164,7 +158,7 @@ public class ProjectServiceImpl implements ProjectService {
             mem.deactivation();
         }
         // 프로젝트 Cover 제거
-        if(project.getCoverPic().getId() != null){
+        if (project.getCoverPic().getId() != null) {
             dbFileRepository.delete(project.getCoverPic());
         }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
@@ -374,11 +368,11 @@ public class ProjectServiceImpl implements ProjectService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
         // 권한 변경 권한에 관한 로직
         // 소유자만이 권한을 변경할 수 있다
-        if(!mpChanger.getAuthority().equals(GroupAuthority.소유자)){
+        if (!mpChanger.getAuthority().equals(GroupAuthority.소유자)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
         // 소유자는 양도가 가능하다
-        if(authority.equals("소유자")){
+        if (authority.equals("소유자")) {
             project.setMember(member);
             mpChanger.setAuthority(GroupAuthority.팀원);
         }
@@ -459,49 +453,23 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 신청 버튼 클릭시 관련 정보 및 권한 체크
-    public InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception {
+    public HttpStatus checkCanApply(Long projectId) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
-
-        List<Member> memberList = memberInProject(project);
-        for (Member mem : memberList) {
-            if (SecurityUtil.getCurrentMemberId() == mem.getId()) {
-                throw new Exception("이미 가입한 멤버입니다.");
-            }
+        // 신청 가능 확인 로직
+        if (project.getProjectProgressState().equals(ProjectProgressState.FINISH)
+            || project.getIsActive().equals(Boolean.FALSE) || project.getRecruitmentState()
+            .equals(RecruitmentState.FINISH)) {
+            throw new CustomException(ErrorCode.CANNOT_APPLY);
         }
-//
-//        if (!project.getIsParticipate()) {
-//            throw new Exception("참여 불가능한 프로젝트입니다.");
-//        }
-
-        InfoForApplyProjectFormResponseDto dto = InfoForApplyProjectFormResponseDto.builder()
-            .nickname(member.getNickname())
-            .position(member.getPosition()) // 역할도 받아와야할수도
-//            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-//            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
-            .build();
-
-        Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
-        Optional<MemberSns> twitter = memberSnsRepository.findByMemberAndSnsName(member, "twitter");
-        Optional<MemberSns> facebook = memberSnsRepository
-            .findByMemberAndSnsName(member, "facebook");
-        Optional<MemberSns> backjoon = memberSnsRepository
-            .findByMemberAndSnsName(member, "backjoon");
-
-        if (git.isPresent()) {
-            dto.setGit(git.get().getSnsAccount());
-        }
-        if (twitter.isPresent()) {
-            dto.setTwitter(twitter.get().getSnsAccount());
-        }
-        if (facebook.isPresent()) {
-            dto.setFacebook(facebook.get().getSnsAccount());
-        }
-        if (backjoon.isPresent()) {
-            dto.setBackjoon(backjoon.get().getSnsAccount());
+        // 프로젝트 가입 여부 확인 로직
+        Optional<MemberProject> mp = memberProjectRepository.findMemberProjectByCompositeMemberProject(
+            new CompositeMemberProject(member, project));
+        if(mp.isPresent()){
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
         }
 
-        return dto;
+        return HttpStatus.OK;
     }
 
     @Transactional

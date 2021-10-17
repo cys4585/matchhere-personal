@@ -26,13 +26,15 @@ public class ProjectApplicationController {
 
     private final ProjectService projectService;
 
-    @GetMapping("/forcreate/{projectId}")
-    @ApiOperation(value = "신청서 생성을 위한 정보", notes = "<strong>프로젝트를에 가입하기 위한</strong>신청서를 작성하기 위한 정보(전체 기술, 선택할 수 있는 지역 리스트)를 받는다")
+    @GetMapping("/check/{projectId}")
+    @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 프로젝트에 신청 가능한지 여부")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 401, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<InfoForApplyProjectFormResponseDto> checkForRegister(@PathVariable("projectId") Long projectId) throws Exception {
-        return ResponseEntity.ok(projectService.getInfoForApply(projectId));
+    public ResponseEntity<String> checkForRegister(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>("신청 가능합니다", projectService.checkCanApply(projectId));
     }
 
     @PostMapping("/{projectId}")

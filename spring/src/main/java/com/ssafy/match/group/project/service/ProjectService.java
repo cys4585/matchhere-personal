@@ -45,7 +45,7 @@ public interface ProjectService {
 
     HttpStatus changeAuthority(Long projectId, Long memberId, String authority);
 
-    InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception;
+    HttpStatus checkCanApply(Long projectId);
 
     HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) throws Exception;
 
