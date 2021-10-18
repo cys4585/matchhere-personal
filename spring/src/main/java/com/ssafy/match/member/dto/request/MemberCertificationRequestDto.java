@@ -59,7 +59,7 @@ public class MemberCertificationRequestDto {
                 .code(code)
                 .grade(grade)
                 .issued_date(issued_date)
-                .expired_date((is_expire == Boolean.FALSE) ? null : expired_date)
+                .expired_date((is_expire.equals(Boolean.FALSE)) ? null : expired_date)
                 .is_expire(is_expire)
                 .member(member)
                 .build();

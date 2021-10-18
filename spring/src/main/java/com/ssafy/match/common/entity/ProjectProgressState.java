@@ -4,7 +4,7 @@ import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
 
 public enum ProjectProgressState {
-    READY("프로젝트 진행 예정"), PROGRESS("프로젝트 진행 중"), FINISH("프로젝트 종료");
+    READY("프로젝트 준비 중"), PROGRESS("프로젝트 진행 중"), FINISH("프로젝트 종료");
 
     private final String state;
 

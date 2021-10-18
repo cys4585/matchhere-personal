@@ -6,6 +6,7 @@ import com.ssafy.match.group.project.entity.CompositeMemberProject;
 import com.ssafy.match.group.project.entity.MemberProject;
 import com.ssafy.match.group.project.entity.Project;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,9 @@ public interface MemberProjectRepository extends JpaRepository<MemberProject, Co
     @Query(value = "select mp from matching.member_project mp "
         + "where mp.compositeMemberProject.project = :project and mp.isActive = true")
     List<MemberProject> findMemberRelationInProject(@Param("project") Project project);
+
+    // 특정 프로젝트에 속한 특정 멤버의 정보
+    Optional<MemberProject> findMemberProjectByCompositeMemberProject(CompositeMemberProject compositeMemberProject);
 
     // 특정 프로젝트에 속한 멤버의 정보
     @Query(value = "select mp.compositeMemberProject.member from matching.member_project mp "
