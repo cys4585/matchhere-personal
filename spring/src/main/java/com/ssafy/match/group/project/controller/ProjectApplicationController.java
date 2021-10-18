@@ -79,16 +79,14 @@ public class ProjectApplicationController {
     }
 
     @GetMapping("/all/{projectId}")
-    @ApiOperation(value = "특정 프로젝트 신청서 페이징 조회", notes = "특정 프로젝트의 신청서 리스트를 작성일 기준 내림차순으로 페이징해서 받는다")
+    @ApiOperation(value = "특정 프로젝트 신청서  조회", notes = "특정 프로젝트의 신청서 리스트를 작성일 기준 내림차순으로 받는다")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청되었습니다."),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<Slice<ProjectFormSimpleInfoResponseDto>> allProjectForm(
-        @PathVariable("projectId") Long projectId,
-        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return new ResponseEntity<>(projectService.allProjectForm(projectId, pageable), HttpStatus.OK);
+    public ResponseEntity<List<ProjectFormSimpleInfoResponseDto>> allProjectForm(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.allProjectForm(projectId), HttpStatus.OK);
     }
 
     @GetMapping("/one/{projectId}/{memberId}")
