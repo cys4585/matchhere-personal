@@ -1,66 +1,44 @@
 package com.ssafy.match.group.project.dto.response;
 
-import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.project.entity.ProjectApplicationForm;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
+import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-// 신청서 정보 조회
+@Builder
+@AllArgsConstructor
 public class ProjectFormInfoResponseDto {
 
+    @ApiModelProperty(example = "4")
+    @ApiParam(value = "프로젝트 id")
     private Long projectId;
-
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "멤버 id")
     private Long memberId;
-    private String nickname;
-
-    private String city;
-
+    @ApiModelProperty(example = "박범진")
+    @ApiParam(value = "신청자 이름")
+    private String name;
+    @ApiModelProperty(example = "qjafd@naver.com")
+    @ApiParam(value = "신청자 이메일")
+    private String email;
+    @ApiModelProperty(example = "개발자")
+    @ApiParam(value = "신청 역할")
     private String role;
-
-    private String position;
-
-    private String git;
-
-    private String twitter;
-
-    private String facebook;
-
-    private String backjoon;
-
-    private List<String> strong;
-
-    private List<String> knowledgeable;
-
+    @ApiModelProperty(example = "설명란")
+    @ApiParam(value = "자기 소개")
     private String bio;
 
-    @ApiModelProperty(name = "fileDownloadUri", example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
-    private String fileDownloadUri;
-
-    public void setFileDownloadUri(DBFile dbFile){
-        if(dbFile == null) return;
-        this.fileDownloadUri = dbFile.getDownload_uri();
-    }
-
-    @Builder
-    public ProjectFormInfoResponseDto(ProjectApplicationForm form, List<String> strong, List<String> knowledgeable){
-        this.projectId = form.getCompositeMemberProject().getProject().getId();
-        this.memberId = form.getCompositeMemberProject().getMember().getId();
-        this.nickname = form.getNickname();
-        this.city = form.getCity().toString();
-        this.role = form.getRole();
-        this.git = form.getGit();
-        this.position = form.getPosition();
-        this.twitter = form.getTwitter();
-        this.facebook = form.getFacebook();
-        this.backjoon = form.getBackjoon();
-        this.strong = strong;
-        this.knowledgeable = knowledgeable;
-        this.bio = form.getBio();
-        setFileDownloadUri(form.getDbFile());
+    public static ProjectFormInfoResponseDto from(ProjectApplicationForm form){
+        return ProjectFormInfoResponseDto.builder()
+            .projectId(form.getCompositeMemberProject().getProject().getId())
+            .memberId(form.getCompositeMemberProject().getMember().getId())
+            .name(form.getName())
+            .email(form.getCompositeMemberProject().getMember().getEmail())
+            .role(form.getRole())
+            .bio(form.getBio())
+            .build();
     }
 }

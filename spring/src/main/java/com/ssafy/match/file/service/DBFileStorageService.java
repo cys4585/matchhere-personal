@@ -6,6 +6,7 @@ import com.ssafy.match.file.exception.MyFileNotFoundException;
 import com.ssafy.match.file.repository.DBFileRepository;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
+@Transactional(readOnly = true)
 public class DBFileStorageService {
 
     @Autowired
@@ -52,5 +54,11 @@ public class DBFileStorageService {
     public DBFile getFile(String fileId) {
         return dbFileRepository.findById(fileId)
             .orElseThrow(() -> new MyFileNotFoundException("File not found with id " + fileId));
+    }
+
+    @Transactional
+    public HttpStatus deleteFile(String fileDownloadUri){
+        dbFileRepository.deleteByFileDownloadUri(fileDownloadUri);
+        return HttpStatus.OK;
     }
 }

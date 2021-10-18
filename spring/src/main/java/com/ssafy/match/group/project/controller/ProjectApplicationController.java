@@ -3,12 +3,18 @@ package com.ssafy.match.group.project.controller;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
 import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.service.ProjectService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,22 +32,27 @@ public class ProjectApplicationController {
 
     private final ProjectService projectService;
 
-    @GetMapping("/forcreate/{projectId}")
-    @ApiOperation(value = "신청서 생성을 위한 정보", notes = "<strong>프로젝트를에 가입하기 위한</strong>신청서를 작성하기 위한 정보(전체 기술, 선택할 수 있는 지역 리스트)를 받는다")
+    @GetMapping("/check/{projectId}")
+    @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 프로젝트에 신청 가능한지 여부")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청 가능합니다."),
+        @ApiResponse(code = 401, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<InfoForApplyProjectFormResponseDto> checkForRegister(@PathVariable("projectId") Long projectId) throws Exception {
-        return ResponseEntity.ok(projectService.getInfoForApply(projectId));
+    public ResponseEntity<String> checkForApply(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>("신청 가능합니다", projectService.checkCanApply(projectId));
     }
 
     @PostMapping("/{projectId}")
     @ApiOperation(value = "프로젝트 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 프로젝트에 신청을 한다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청되었습니다."),
+        @ApiResponse(code = 401, message = "ALREADY_APPLY"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> createForm(@PathVariable("projectId") Long projectId, @RequestBody ProjectApplicationRequestDto dto) throws Exception {
-        return ResponseEntity.ok(projectService.applyProject(projectId, dto));
+    public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId,
+        @RequestBody ProjectApplicationRequestDto dto) {
+        return new ResponseEntity<>("신청되었습니다", projectService.applyProject(projectId, dto));
     }
 
     @PostMapping("/approval/{projectId}/{memberId}")
@@ -49,45 +60,43 @@ public class ProjectApplicationController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<HttpStatus> approval(@PathVariable("projectId") Long projectId, @PathVariable("memberId") Long memberId) throws Exception {
+    public ResponseEntity<HttpStatus> approval(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId) throws Exception {
         return ResponseEntity.ok(projectService.approval(projectId, memberId));
     }
 
     @DeleteMapping("{projectId}/{memberId}")
-    @ApiOperation(value = "신청서 삭제", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
+    @ApiOperation(value = "가입 거절", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<HttpStatus> reject(@PathVariable("projectId") Long projectId, @PathVariable("memberId") Long memberId) throws Exception{
+    public ResponseEntity<HttpStatus> reject(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId) throws Exception {
         return ResponseEntity.ok(projectService.reject(projectId, memberId));
     }
 
-    @GetMapping("/all/{projectId}/{nickname}")
-    @ApiOperation(value = "특정 프로젝트 닉네임 포함 모든 신청서 조회", notes = "특정 프로젝트의 닉네임 포함 모든 신청서 리스트를 작성일 기준 내림차순으로 받는다")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
-    })
-    public ResponseEntity<List<ProjectFormInfoResponseDto>> allFormByProjectNickname(@PathVariable("projectId") Long projectId,
-        @PathVariable("nickname") String nickname) throws Exception {
-        return ResponseEntity.ok(projectService.allFormByProjectNickname(projectId, nickname));
-    }
-
     @GetMapping("/all/{projectId}")
-    @ApiOperation(value = "특정 프로젝트 모든 신청서 조회", notes = "특정 프로젝트의 모든 신청서 리스트를 작성일 기준 내림차순으로 받는다")
+    @ApiOperation(value = "특정 프로젝트 신청서 페이징 조회", notes = "특정 프로젝트의 신청서 리스트를 작성일 기준 내림차순으로 페이징해서 받는다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청되었습니다."),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<List<ProjectFormInfoResponseDto>> allProjectForm(@PathVariable("projectId") Long projectId) throws Exception {
-        return ResponseEntity.ok(projectService.allProjectForm(projectId));
+    public ResponseEntity<Slice<ProjectFormSimpleInfoResponseDto>> allProjectForm(
+        @PathVariable("projectId") Long projectId,
+        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return new ResponseEntity<>(projectService.allProjectForm(projectId, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/one/{projectId}/{memberId}")
     @ApiOperation(value = "특정 신청서 조회", notes = "특정 신청서를 상세 조회한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<ProjectFormInfoResponseDto> oneProjectForm(@PathVariable("projectId") Long projectId, @PathVariable("memberId") Long memberId) throws Exception {
-        return ResponseEntity.ok(projectService.oneProjectForm(projectId, memberId));
+    public ResponseEntity<ProjectFormInfoResponseDto> oneProjectForm(
+        @PathVariable("projectId") Long projectId, @PathVariable("memberId") Long memberId) {
+        return new ResponseEntity<>(projectService.oneProjectForm(projectId, memberId), HttpStatus.OK);
     }
 
 }
