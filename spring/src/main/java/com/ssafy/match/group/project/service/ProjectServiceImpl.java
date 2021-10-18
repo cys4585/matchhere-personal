@@ -2,6 +2,7 @@ package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
+import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
 import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
@@ -429,7 +430,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public void validCity(String city) {
-        if (!Stream.of(City.values()).map(Enum::name)
+        if (!Stream.of(GroupCity.values()).map(Enum::name)
             .collect(Collectors.toList()).contains(city)) {
             throw new CustomException(ErrorCode.CITY_NOT_FOUND);
         }
