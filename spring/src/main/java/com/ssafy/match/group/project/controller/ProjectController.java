@@ -6,6 +6,7 @@ import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.project.service.ProjectService;
 import io.swagger.annotations.ApiOperation;
@@ -145,6 +146,16 @@ public class ProjectController {
     public ResponseEntity<ProjectSimpleInfoResponseDto> getOneSimpleProject(
         @PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>(projectService.getOneSimpleProject(projectId), HttpStatus.OK);
+    }
+
+    @GetMapping("/member/{projectId}")
+    @ApiOperation(value = "프로젝트 구성원", notes = "<strong>받은 프로젝트 Id</strong>로 프로젝트 관리의 구성원 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<List<ProjectMemberResponseDto>> getMemberInProject(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.memberInProject(projectId), HttpStatus.OK);
     }
 
 //    @GetMapping("/recommendation")

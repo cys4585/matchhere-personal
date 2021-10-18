@@ -25,6 +25,7 @@ import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseD
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
 import com.ssafy.match.group.project.entity.CompositeMemberProject;
@@ -237,12 +238,15 @@ public class ProjectServiceImpl implements ProjectService {
             .collect(Collectors.toList());
     }
 
-    // 현재 프로젝트에 어떤 멤버가 속해있는지 멤버 리스트 리턴
-    public List<Member> memberInProject(Project project) {
-        return memberProjectRepository.findMemberInProject(project);
+    // 현재 프로젝트 구성원 리스트 리턴
+    public List<ProjectMemberResponseDto> memberInProject(Long projectId) {
+        return memberProjectRepository.findMemberRelationInProject(findProject(projectId))
+            .stream()
+            .map(ProjectMemberResponseDto::from)
+            .collect(Collectors.toList());
     }
 
-    // 특정 프로젝트의 특정 역할인 멤버의 닉네임 리스트
+    // 특정 프로젝트의 특정 역할인 멤버 간편 정보 리스트
     public List<MemberSimpleInfoResponseDto> memberRole(Project project, String role) {
         return memberProjectRepository.findMemberRole(project, role)
             .stream()
@@ -505,8 +509,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
-    public Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId,
-        Pageable pageable) {
+    public List<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId) {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         // 조회 권한 확인 로직
@@ -516,7 +519,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (mp.getAuthority().equals(GroupAuthority.팀원)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
-        return projectApplicationFormRepository.formByProjectId(project, pageable);
+        return projectApplicationFormRepository.formByProjectId(project);
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회 (프론트 방식에 따라 불필요할 수 있음)
