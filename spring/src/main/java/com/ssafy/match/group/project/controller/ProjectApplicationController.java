@@ -36,7 +36,7 @@ public class ProjectApplicationController {
     @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 프로젝트에 신청 가능한지 여부")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청 가능합니다."),
-        @ApiResponse(code = 401, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 400, message = "CANNOT_APPLY\nALREADY_JOIN"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<String> checkForApply(@PathVariable("projectId") Long projectId) {
@@ -47,7 +47,7 @@ public class ProjectApplicationController {
     @ApiOperation(value = "프로젝트 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 프로젝트에 신청을 한다")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청되었습니다."),
-        @ApiResponse(code = 401, message = "ALREADY_APPLY"),
+        @ApiResponse(code = 400, message = "ALREADY_APPLY"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId,
@@ -59,9 +59,11 @@ public class ProjectApplicationController {
     @ApiOperation(value = "프로젝트 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
     public ResponseEntity<HttpStatus> approval(@PathVariable("projectId") Long projectId,
-        @PathVariable("memberId") Long memberId) throws Exception {
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(projectService.approval(projectId, memberId));
     }
 
@@ -69,9 +71,10 @@ public class ProjectApplicationController {
     @ApiOperation(value = "가입 거절", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
     public ResponseEntity<HttpStatus> reject(@PathVariable("projectId") Long projectId,
-        @PathVariable("memberId") Long memberId) throws Exception {
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(projectService.reject(projectId, memberId));
     }
 

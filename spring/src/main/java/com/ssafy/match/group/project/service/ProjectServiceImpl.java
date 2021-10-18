@@ -466,14 +466,18 @@ public class ProjectServiceImpl implements ProjectService {
             .equals(RecruitmentState.FINISH)) {
             throw new CustomException(ErrorCode.CANNOT_APPLY);
         }
-        // 프로젝트 가입 여부 확인 로직
-        Optional<MemberProject> mp = memberProjectRepository.findMemberProjectByCompositeMemberProject(
-            new CompositeMemberProject(member, project));
-        if(mp.isPresent()){
-            throw new CustomException(ErrorCode.ALREADY_JOIN);
-        }
+        checkAlreadyJoin(project, member);
 
         return HttpStatus.OK;
+    }
+
+    // 프로젝트 가입 여부 확인 로직
+    public void checkAlreadyJoin(Project project, Member member) {
+        Optional<MemberProject> mp = memberProjectRepository.findMemberProjectByCompositeMemberProject(
+            new CompositeMemberProject(member, project));
+        if (mp.isPresent()) {
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
+        }
     }
 
     @Transactional
@@ -488,20 +492,22 @@ public class ProjectServiceImpl implements ProjectService {
             throw new CustomException(ErrorCode.ALREADY_APPLY);
         }
 
-        ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp, member.getName());
+        ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp,
+            member.getName());
         projectApplicationFormRepository.save(projectApplicationForm);
         return HttpStatus.OK;
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
-    public Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId, Pageable pageable) {
+    public Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId,
+        Pageable pageable) {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         // 조회 권한 확인 로직
         MemberProject mp = memberProjectRepository.findById(
                 new CompositeMemberProject(member, project))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
-        if(mp.getAuthority().equals(GroupAuthority.팀원)){
+        if (mp.getAuthority().equals(GroupAuthority.팀원)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
         return projectApplicationFormRepository.formByProjectId(project, pageable);
@@ -520,34 +526,29 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 가입 승인
     @Transactional
-    public HttpStatus approval(Long projectId, Long memberId) throws Exception {
+    public HttpStatus approval(Long projectId, Long memberId) {
         Project project = findProject(projectId);
-        List<Member> members = memberInProject(project);
         Member member = findMember(memberId);
 
-        for (Member mem : members) {
-            if (mem.equals(member)) {
-                throw new Exception("이미 가입되어있는 회원입니다.");
-            }
-        }
-
-        ProjectApplicationForm form = projectApplicationFormRepository
-            .findById(new CompositeMemberProject(findMember(memberId), findProject(projectId)))
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다."));
+        checkAlreadyJoin(project, member);
+        ProjectApplicationForm form = validProjectApplicationForm(member, project);
 
         addMember(project, member, form.getRole());
         reject(projectId, memberId);
-
         return HttpStatus.OK;
     }
 
     // 신청서 제거
     @Transactional
-    public HttpStatus reject(Long projectId, Long memberId) throws Exception {
-        projectApplicationFormRepository.delete(projectApplicationFormRepository
-            .findById(new CompositeMemberProject(findMember(memberId), findProject(projectId)))
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다.")));
-
+    public HttpStatus reject(Long projectId, Long memberId) {
+        projectApplicationFormRepository.delete(
+            validProjectApplicationForm(findMember(memberId), findProject(projectId)));
         return HttpStatus.OK;
+    }
+
+    public ProjectApplicationForm validProjectApplicationForm(Member member, Project project) {
+        return projectApplicationFormRepository
+            .findById(new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
     }
 }

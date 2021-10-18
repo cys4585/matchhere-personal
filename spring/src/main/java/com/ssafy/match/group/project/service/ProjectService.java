@@ -55,7 +55,7 @@ public interface ProjectService {
 
     ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId);
 
-    HttpStatus approval(Long projectId, Long memberId) throws Exception;
+    HttpStatus approval(Long projectId, Long memberId);
 
-    HttpStatus reject(Long projectId, Long memberId) throws Exception;
+    HttpStatus reject(Long projectId, Long memberId);
 }
