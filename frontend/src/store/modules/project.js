@@ -1,5 +1,4 @@
 // import axios from "axios"
-import res from "@/assets/test-ys.json"
 import ProjectAPI from "@/api/project"
 
 export default {
@@ -37,12 +36,10 @@ export default {
     },
     async getProject({ commit }, projectId) {
       console.log("projectId:", projectId)
-      // const res = await axios.get(
-      //   `http://127.0.0.1:8080/api/project/${projectId}`
-      // )
-      // console.log(project)
-      const projectInfo = res.data
+      const projectInfo = await ProjectAPI.getProject(projectId)
+      console.log(projectInfo)
       commit("SET_PROJECT_INFO", projectInfo)
+      return projectInfo
     },
     async applyForParticipation({ commit }, { position, introduce }) {
       console.log(position)

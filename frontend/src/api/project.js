@@ -11,7 +11,13 @@ const createProject = async (formData) => {
   return res.data
 }
 
+const getProject = async (projectId) => {
+  const res = await http.get(`/project/${projectId}`)
+  return res.data
+}
+
 export default {
   getMyClubList,
   createProject,
+  getProject,
 }
