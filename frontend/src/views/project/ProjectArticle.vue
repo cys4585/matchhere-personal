@@ -192,7 +192,7 @@ export default {
     const store = useStore()
 
     onBeforeMount(() => {
-      store.dispatch("getProject", route.params.projectId)
+      store.dispatch("project/getProject", route.params.projectId)
     })
 
     const projectInfo = computed(() => store.state.project.projectInfo)

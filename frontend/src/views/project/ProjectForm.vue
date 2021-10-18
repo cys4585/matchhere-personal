@@ -151,6 +151,7 @@ import { ref, computed, onBeforeMount, watch } from "vue"
 import { requiredValidator } from "@/libs/validator"
 import { cityList } from "@/libs/data"
 import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 export default {
   name: "ProjectForm",
@@ -164,6 +165,7 @@ export default {
   },
   setup() {
     const store = useStore()
+    const router = useRouter()
 
     onBeforeMount(async () => {
       await store.dispatch("project/getMyClubList")
@@ -451,15 +453,18 @@ export default {
       const formData = {}
       for (const field in tmpFields) {
         if (field === "ThumbnailImageFile") continue
-        if (field === "club" && tmpFields[field].value) {
+        else if (field === "club") {
+          const clubValue = tmpFields[field].value
+          if (clubValue === "선택 안함" || clubValue === null) continue
           // club name을 club id로 바꾸는 작업
           formData[tmpFields[field].backendKey] = tmpFields[
             field
-          ].clubList.find((club) => club.name === tmpFields[field].value).id
+          ].clubList.find((club) => club.name === clubValue).id
         } else {
           formData[tmpFields[field].backendKey] = tmpFields[field].value
         }
       }
+
       if (tmpFields.ThumbnailImageFile.value) {
         const uuid = await store.dispatch(
           "file/uploadFile",
@@ -467,8 +472,19 @@ export default {
         )
         formData["uuid"] = uuid
       }
+
       console.log(formData)
-      await store.dispatch("project/createProject", formData)
+
+      try {
+        const projectId = await store.dispatch(
+          "project/createProject",
+          formData
+        )
+        alert(`임시: ${projectId}번 글 생성 성공`)
+        router.push({ name: "ProjectArticle", params: { projectId } })
+      } catch (error) {
+        alert(error.message)
+      }
     }
 
     return {

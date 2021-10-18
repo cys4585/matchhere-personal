@@ -3,12 +3,12 @@ import http from "@/api/http.js"
 
 const getMyClubList = async () => {
   const res = await http.get(`/project/myclublist`)
-  return res
+  return res.data
 }
 
 const createProject = async (formData) => {
   const res = await http.post(`/project`, formData)
-  return res
+  return res.data
 }
 
 export default {
