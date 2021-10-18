@@ -82,8 +82,12 @@ public class ProjectInfoForUpdateResponseDto {
     @ApiParam(value = "기획자 모집 인원")
     private int plannerMaxCount;
 
+    @ApiModelProperty(example = "개발자")
+    @ApiParam(value = "호스트 역할")
+    private String hostPosition;
+
     public static ProjectInfoForUpdateResponseDto of(Project project,
-        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs) {
+        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs, String hostPosition) {
         return ProjectInfoForUpdateResponseDto.builder()
             .id(project.getId())
             .name(project.getName())
@@ -103,6 +107,7 @@ public class ProjectInfoForUpdateResponseDto {
             .developerMaxCount(project.getDeveloperMaxCount())
             .plannerMaxCount(project.getPlannerMaxCount())
             .designerMaxCount(project.getDesignerMaxCount())
+            .hostPosition(hostPosition)
             .build();
     }
 

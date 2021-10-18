@@ -74,7 +74,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final TechstackRepository techstackRepository;
     private final ProjectTechstackRepository projectTechstackRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberSnsRepository memberSnsRepository;
     private final ProjectBoardRepository projectBoardRepository;
 
     // 프로젝트 생성을 위한 정보(회원의 클럽 리스트)
@@ -113,6 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 업데이트를 위한 정보
     public ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId) {
         Project project = findProject(projectId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
         if (!SecurityUtil.getCurrentMemberId().equals(project.getMember().getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
@@ -120,7 +120,14 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectInfoForUpdateResponseDto.of(project,
             projectTechstackSimple(project), makeClubSimpleInfoResponseDtos(
                 memberClubRepository.findClubByMember(
-                    findMember(SecurityUtil.getCurrentMemberId()))));
+                    findMember(SecurityUtil.getCurrentMemberId())))
+            , findMemberProject(member, project).getRole());
+    }
+
+    public MemberProject findMemberProject(Member member, Project project) {
+        return memberProjectRepository.findMemberProjectByCompositeMemberProject(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
     }
 
     // 프로젝트 업데이트
@@ -136,7 +143,9 @@ public class ProjectServiceImpl implements ProjectService {
         if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
-
+        project.removeRole(mp.getRole());
+        mp.setRole(dto.getHostPosition());
+        project.addRole(dto.getHostPosition());
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
