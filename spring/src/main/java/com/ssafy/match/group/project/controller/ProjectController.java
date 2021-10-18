@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.controller;
 
+import com.ssafy.match.common.dto.BasicResponseDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
@@ -63,15 +64,14 @@ public class ProjectController {
     @PostMapping
     @ApiOperation(value = "프로젝트 생성", notes = "<strong>받은 프로젝트 정보</strong>를 사용해서 프로젝트을 생성한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "프로젝트 id 3이 생성되었습니다."),
+        @ApiResponse(code = 200, message = "{\"id\": 3}"),
         @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"
             + "\nDEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
             + "TECHSTACK_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> createProject(@RequestBody ProjectCreateRequestDto dto) {
-        return new ResponseEntity<>("프로젝트 id : " + projectService.create(dto) + "이 생성되었습니다",
-            HttpStatus.OK);
+    public ResponseEntity<BasicResponseDto> createProject(@RequestBody ProjectCreateRequestDto dto) {
+        return new ResponseEntity<>(BasicResponseDto.from(projectService.create(dto)), HttpStatus.OK);
     }
 
     @PutMapping("/{projectId}")
