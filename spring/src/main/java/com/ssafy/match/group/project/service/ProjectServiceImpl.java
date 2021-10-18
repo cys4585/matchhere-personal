@@ -215,6 +215,12 @@ public class ProjectServiceImpl implements ProjectService {
             authority);
     }
 
+    // 현재 프로젝트 간편 정보 리턴
+    public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
+        Project project = findProject(projectId);
+        return ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project));
+    }
+
     // 프로젝트 기술 스택 간단한 정보
     public List<ProjectTechstackResponseDto> projectTechstackSimple(Project project) {
         return projectTechstackRepository.findProjectTechstackByProject(project)

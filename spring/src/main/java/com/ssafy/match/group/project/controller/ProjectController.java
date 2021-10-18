@@ -135,6 +135,18 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.getOneProject(projectId), HttpStatus.OK);
     }
 
+    @GetMapping("/one/simple/{projectId}")
+    @ApiOperation(value = "프로젝트 간편 조회",
+        notes = "<strong>받은 프로젝트 Id</strong>로 프로젝트 관리의 간편 정보 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<ProjectSimpleInfoResponseDto> getOneSimpleProject(
+        @PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.getOneSimpleProject(projectId), HttpStatus.OK);
+    }
+
 //    @GetMapping("/recommendation")
 //    @ApiOperation(value = "추천 프로젝트 조회", notes = "<strong>받은 프로젝트 Id</strong>로 해당 멤버가 속한 프로젝트 정보 조회")
 //    @ApiResponses({

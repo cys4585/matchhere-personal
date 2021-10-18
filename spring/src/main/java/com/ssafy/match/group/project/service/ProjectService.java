@@ -35,6 +35,8 @@ public interface ProjectService {
 
     ProjectInfoResponseDto getOneProject(Long projectId);
 
+    ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId);
+
     ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId);
 
     void addMember(Project project, Member member, String role);

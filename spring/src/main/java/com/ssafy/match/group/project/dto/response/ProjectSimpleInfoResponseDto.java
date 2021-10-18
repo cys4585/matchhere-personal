@@ -44,8 +44,8 @@ public class ProjectSimpleInfoResponseDto {
     @ApiParam(value = "생성일자")
     private LocalDateTime createDate;
 
-    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\"]")
-    @ApiParam(value = "프로젝트장 정보(id, name, nickname)")
+    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\", \"email\": \"qjawls@naver.com\"]")
+    @ApiParam(value = "프로젝트장 정보(id, name, nickname, email, coverPicUri)")
     private MemberSimpleInfoResponseDto host;
 
     @ApiModelProperty(example = "[{\"name\":\"python\", \"level\":\"상\", \"imgUri\":\"null\"}, {\"name\":\"spring\", \"level\":\"하\", \"imgUri\":\"null\"}]")
