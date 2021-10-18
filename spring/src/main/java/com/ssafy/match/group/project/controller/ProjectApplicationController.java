@@ -58,24 +58,24 @@ public class ProjectApplicationController {
     @PostMapping("/approval/{projectId}/{memberId}")
     @ApiOperation(value = "프로젝트 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "가입 처리되었습니다."),
         @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> approval(@PathVariable("projectId") Long projectId,
+    public ResponseEntity<String> approval(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok(projectService.approval(projectId, memberId));
+        return new ResponseEntity<>("가입 처리되었습니다.", projectService.approval(projectId, memberId));
     }
 
     @DeleteMapping("{projectId}/{memberId}")
     @ApiOperation(value = "가입 거절", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서가 거절되었습니다."),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> reject(@PathVariable("projectId") Long projectId,
+    public ResponseEntity<String> reject(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok(projectService.reject(projectId, memberId));
+        return new ResponseEntity<>("신청서가 거절되었습니다.", projectService.reject(projectId, memberId));
     }
 
     @GetMapping("/all/{projectId}")
