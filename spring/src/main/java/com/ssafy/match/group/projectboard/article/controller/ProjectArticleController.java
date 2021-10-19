@@ -1,9 +1,8 @@
 package com.ssafy.match.group.projectboard.article.controller;
 
-
 import com.ssafy.match.group.projectboard.article.dto.ProjectArticleRequestDto;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleInfoDto;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleListDto;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleInfoResponseDto;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.projectboard.article.service.ProjectArticleService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -32,41 +31,25 @@ public class ProjectArticleController {
 
     private final ProjectArticleService projectArticleService;
 
-    @GetMapping("/{boardid}/articles")
+    @GetMapping("/{board-id}/articles")
     @ApiOperation(value = "(프로젝트)게시글 리스트 조회", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시글들을 조회한다.")
-    public ResponseEntity<Page<ProjectArticleListDto>> getArticles(
-        @PathVariable("boardid") Integer boardid,
-        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable)
-        throws Exception {
-        return ResponseEntity.ok(projectArticleService.getProjectArticles(boardid, pageable));
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "게시글 리스트 조회"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<Page<ProjectArticleSimpleInfoResponseDto>> getArticles(@PathVariable("board-id") Integer boardId,
+        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return new ResponseEntity<>(projectArticleService.getProjectArticles(boardId, pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/{boardid}/articles/title/{title}")
-    @ApiOperation(value = "(프로젝트)게시글 리스트 제목 조회", notes = "<strong>받은 게시판 id와 제목</strong>을 사용해서 게시글들을 조회한다.")
-    public ResponseEntity<Page<ProjectArticleListDto>> getArticlesByTitle(
-        @PathVariable("boardid") Integer boardid, @PathVariable("title") String title,
-        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable)
-        throws Exception {
-        return ResponseEntity.ok(
-            projectArticleService.getProjectArticlesByTitle(boardid, title, pageable));
-    }
-
-    @GetMapping("/{boardid}/articles/nickname/{nickname}")
-    @ApiOperation(value = "(프로젝트)게시글 리스트 닉네임 조회", notes = "<strong>받은 게시판 id와 닉네임</strong>을 사용해서 게시글들을 조회한다.")
-    public ResponseEntity<Page<ProjectArticleListDto>> getArticlesByNickname(
-        @PathVariable("boardid") Integer boardid, @PathVariable("nickname") String nickname,
-        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable)
-        throws Exception {
-        return ResponseEntity.ok(
-            projectArticleService.getProjectArticlesByNickname(boardid, nickname, pageable));
-    }
-
-    @GetMapping("/{boardid}/articles/{articleid}")
+    @GetMapping("/article/{article-id}")
     @ApiOperation(value = "(프로젝트)게시글 상세조회", notes = "<strong>받은 article id</strong>를 사용해서 게시글 상세 조회")
-    public ResponseEntity<ProjectArticleInfoDto> getArticleDetail(
-        @PathVariable("boardid") Integer boardid, @PathVariable("articleid") Long articleid)
-        throws Exception {
-        return ResponseEntity.ok(projectArticleService.getProjectArticleDetail(articleid));
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "게시글 상제 정보"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<ProjectArticleInfoResponseDto> getArticleDetail(@PathVariable("article-id") Long articleId) {
+        return new ResponseEntity<>(projectArticleService.getProjectArticleDetail(articleId), HttpStatus.OK);
     }
 
     @PostMapping

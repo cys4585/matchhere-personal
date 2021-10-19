@@ -1,15 +1,10 @@
 package com.ssafy.match.group.projectboard.article.service;
 
 
-import com.ssafy.match.common.entity.Level;
-import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
-import com.ssafy.match.group.project.entity.CompositeProjectTechstack;
-import com.ssafy.match.group.project.entity.Project;
-import com.ssafy.match.group.project.entity.ProjectTechstack;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleInfoDto;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleListDto;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleInfoResponseDto;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.projectboard.article.dto.ProjectArticleRequestDto;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticleTag;
@@ -22,8 +17,6 @@ import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepositor
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -43,50 +36,41 @@ public class ProjectArticleService {
     private final ProjectArticleTagRepository projectArticleTagRepository;
 
     @Transactional(readOnly = true)
-    public ProjectArticleInfoDto getProjectArticleDetail(Long articleId) {
-        ProjectArticleInfoDto projectArticleInfoDto = projectArticleRepository.findById(articleId).map(ProjectArticleInfoDto::of).orElseThrow(() -> new NullPointerException("존재하지 않는 게시물입니다."));
-        ProjectArticle projectArticle = projectArticleRepository.getById(articleId);
-        Optional<ProjectContent> projectContent =projectContentRepository.getByProjectArticle(projectArticle);
-        if (projectContent.isEmpty()) {
-            throw new RuntimeException("내용이 존재하지 않습니다");
-        }
-        String content = projectContent.get().getContent();
-        projectArticleInfoDto.setContent(content);
-        return projectArticleInfoDto;
+    public ProjectArticleInfoResponseDto getProjectArticleDetail(Long articleId) {
+        ProjectArticle projectArticle = findProjectArticle(articleId);
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.from(projectArticle);
+        ProjectContent projectContent = findProjectContent(projectArticle);
+        projectArticleInfoResponseDto.setContent(projectContent.getContent());
+        return projectArticleInfoResponseDto;
     }
 
     @Transactional(readOnly = true)
-    public Page<ProjectArticleListDto> getProjectArticles(Integer boardId, Pageable pageable) throws Exception {
-        if (!projectBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
-        Page<ProjectArticleListDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoard(projectBoard ,pageable)
-                .map(ProjectArticleListDto::of);
-        return projectArticleListDtos;
+    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticles(Integer boardId, Pageable pageable) {
+        return projectArticleRepository.findAllByProjectBoard(findProjectBoard(boardId) ,pageable)
+            .map(ProjectArticleSimpleInfoResponseDto::from);
     }
 
-    @Transactional(readOnly = true)
-    public Page<ProjectArticleListDto> getProjectArticlesByTitle(Integer boardId, String title, Pageable pageable) throws Exception {
-        if (!projectBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
-        Page<ProjectArticleListDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndTitle(projectBoard, title, pageable)
-            .map(ProjectArticleListDto::of);
-        return projectArticleListDtos;
-    }
+//    @Transactional(readOnly = true)
+//    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticlesByTitle(Integer boardId, String title, Pageable pageable) throws Exception {
+//        if (!projectBoardRepository.existsById(boardId)) {
+//            throw new RuntimeException("존재하지 않는 게시판입니다");
+//        }
+//        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
+//        Page<ProjectArticleSimpleInfoResponseDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndTitle(projectBoard, title, pageable)
+//            .map(ProjectArticleSimpleInfoResponseDto::of);
+//        return projectArticleListDtos;
+//    }
 
-    @Transactional(readOnly = true)
-    public Page<ProjectArticleListDto> getProjectArticlesByNickname(Integer boardId, String nickname, Pageable pageable) throws Exception {
-        if (!projectBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
-        Page<ProjectArticleListDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndNickname(projectBoard, nickname, pageable)
-            .map(ProjectArticleListDto::of);
-        return projectArticleListDtos;
-    }
+//    @Transactional(readOnly = true)
+//    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticlesByNickname(Integer boardId, String nickname, Pageable pageable) throws Exception {
+//        if (!projectBoardRepository.existsById(boardId)) {
+//            throw new RuntimeException("존재하지 않는 게시판입니다");
+//        }
+//        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
+//        Page<ProjectArticleSimpleInfoResponseDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndNickname(projectBoard, nickname, pageable)
+//            .map(ProjectArticleSimpleInfoResponseDto::of);
+//        return projectArticleListDtos;
+//    }
 
     @Transactional
     public Long createArticle(ProjectArticleRequestDto dto) {

@@ -3,11 +3,19 @@ package com.ssafy.match.group.projectboard.article.dto;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
-public class ProjectArticleInfoDto {
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class ProjectArticleInfoResponseDto {
+
     @ApiModelProperty(name = "articleId", example = "3")
     private Long articleId;
 
@@ -32,8 +40,12 @@ public class ProjectArticleInfoDto {
     @ApiModelProperty(name = "viewCount", example = "2")
     private Integer viewCount;
 
-    public static ProjectArticleInfoDto of(ProjectArticle projectArticle) {
-        return ProjectArticleInfoDto.builder()
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public static ProjectArticleInfoResponseDto from(ProjectArticle projectArticle) {
+        return ProjectArticleInfoResponseDto.builder()
                 .articleId(projectArticle.getId())
                 .title(projectArticle.getTitle())
                 .projectBoard(projectArticle.getProjectBoard().getName())
@@ -44,15 +56,4 @@ public class ProjectArticleInfoDto {
                 .build();
     }
 
-    @Builder
-    public ProjectArticleInfoDto(Long articleId, String title, String projectBoard, String createdMember, LocalDateTime createdDate, LocalDateTime modifiedDate, Integer viewCount) {
-        this.articleId = articleId;
-        this.title = title;
-        this.projectBoard = projectBoard;
-        this.createdMember = createdMember;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.viewCount = viewCount;
-
-    }
 }
