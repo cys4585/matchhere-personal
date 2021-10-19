@@ -45,8 +45,8 @@ public class AuthService {
     private final EmailCheckRepository emailCheckRepository;
     private final JavaMailSender javaMailSender;
 
-    @Value("${spring.mail.username}")
-    private String from;
+//    @Value("${spring.mail.username}")
+//    private String from;
 
     @Transactional
     public Long certSignup(String email) {
@@ -57,7 +57,7 @@ public class AuthService {
             String key = certified_key();
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
-            message.setFrom(from);
+//            message.setFrom(from);
             message.setSubject("이메일 인증");
             message.setText(key);
             javaMailSender.send(message);
@@ -81,7 +81,7 @@ public class AuthService {
             String key = certified_key();
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
-            message.setFrom(from);
+//            message.setFrom(from);
             message.setSubject("이메일 인증");
             message.setText(key);
             javaMailSender.send(message);
