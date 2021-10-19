@@ -1,11 +1,10 @@
 package com.ssafy.match.member.repository;
 
-import com.ssafy.match.member.dto.CertificationInterface;
+import com.ssafy.match.member.dto.inter.CertificationInterface;
 import com.ssafy.match.member.entity.Certification;
 import com.ssafy.match.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;

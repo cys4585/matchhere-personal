@@ -136,7 +136,7 @@ public class MemberController {
     }
 
     @PutMapping("/certification/{id}")
-    @ApiOperation(value = "내 경력 Update")
+    @ApiOperation(value = "내 자격증 Update")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })

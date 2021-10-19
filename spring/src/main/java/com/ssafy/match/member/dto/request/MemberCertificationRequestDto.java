@@ -2,6 +2,7 @@ package com.ssafy.match.member.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.match.member.entity.Certification;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -52,6 +53,7 @@ public class MemberCertificationRequestDto {
     @NotNull
     private Boolean is_expire;
 
+    @JsonIgnore
     public Certification toCertification(Member member) {
         return Certification.builder()
                 .name(name)
