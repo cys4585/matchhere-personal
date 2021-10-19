@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+// chrome://flags/#block-insecure-private-network-requests
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -33,10 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring()
-            .antMatchers("/swagger-ui/**", "/swagger-resources/**","/v2/**", "/favicon.ico"
+            .antMatchers("/swagger-ui/**", "/swagger-resources/**","/v2/**", "/favicon.ico",
 //                    "/**/chat/**", // chat api
 //                    "/socket/chat/**", // chat socket
-//                    "/**/chatting/**",
+                    "/**/chat/**"
 //                    "**/topic/app/**",
 //                    "**/app/topic/**"
                 );

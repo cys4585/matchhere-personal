@@ -18,13 +18,11 @@ public class StompHandler implements ChannelInterceptor {
 
     private final TokenProvider jwtTokenProvider;
 
-    // websocket을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        // websocket 연결시 헤더의 jwt token 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("token"));
+            jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("Authorization"));
         }
         return message;
     }
