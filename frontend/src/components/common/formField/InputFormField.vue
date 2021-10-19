@@ -29,10 +29,6 @@ export default {
       type: Object,
       required: true,
     },
-    formFields: {
-      type: Object,
-      required: true,
-    },
     modelValue: {
       type: [String, Number],
       required: true,
@@ -42,18 +38,9 @@ export default {
   setup(props, { emit }) {
     const isError = computed(() => Object.keys(props.field.errors).length > 0)
 
-    const handleValidate = (value, fieldKey) => {
-      const { validators } = props.field
-      validators.every((validator) => {
-        const validateRes = validator(value, fieldKey, props.formFields)
-        emit("update:errors", validateRes)
-        return validateRes.status
-      })
-    }
-
     const handleInput = (event) => {
       emit("update:modelValue", event.target.value)
-      handleValidate(event.target.value, props.field.key)
+      props.field.validate()
     }
 
     return { isError, handleInput }
