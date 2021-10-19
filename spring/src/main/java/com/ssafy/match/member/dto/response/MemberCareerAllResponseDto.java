@@ -1,9 +1,9 @@
 package com.ssafy.match.member.dto.response;
 
 
-import com.ssafy.match.member.dto.CareerInterface;
-import com.ssafy.match.member.dto.CertificationInterface;
-import com.ssafy.match.member.dto.EducationInterface;
+import com.ssafy.match.member.dto.inter.CareerInterface;
+import com.ssafy.match.member.dto.inter.CertificationInterface;
+import com.ssafy.match.member.dto.inter.EducationInterface;
 import lombok.Builder;
 import lombok.Data;
 

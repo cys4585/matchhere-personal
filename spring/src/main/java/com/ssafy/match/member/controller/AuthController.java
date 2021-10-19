@@ -1,7 +1,7 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
+import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

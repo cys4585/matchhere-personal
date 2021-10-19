@@ -1,4 +1,4 @@
-package com.ssafy.match.member.dto;
+package com.ssafy.match.member.dto.request;
 
 
 import io.swagger.annotations.ApiModelProperty;

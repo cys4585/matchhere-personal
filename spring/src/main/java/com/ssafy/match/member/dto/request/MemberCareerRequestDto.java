@@ -1,6 +1,7 @@
 package com.ssafy.match.member.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -49,6 +50,7 @@ public class MemberCareerRequestDto {
     @ApiParam(value = "설명", required = false)
     private String description;
 
+    @JsonIgnore
     public Career toCareer(Member member) {
         return Career.builder()
                 .company(company)

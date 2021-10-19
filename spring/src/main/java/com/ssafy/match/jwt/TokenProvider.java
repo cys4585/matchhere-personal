@@ -1,6 +1,6 @@
 package com.ssafy.match.jwt;
 
-import com.ssafy.match.member.dto.TokenDto;
+import com.ssafy.match.member.dto.request.TokenDto;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
