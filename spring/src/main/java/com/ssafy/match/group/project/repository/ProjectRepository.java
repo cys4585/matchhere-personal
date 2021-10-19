@@ -22,6 +22,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
         Pageable pageable);
 
     // 추천 프로젝트
-    @Query("select p from matching.project p where p.isActive = true")
-    Page<Project> findRecommendationProject(Pageable pageable);
+//    List<Project> findAll();
 }
