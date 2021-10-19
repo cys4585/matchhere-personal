@@ -12,6 +12,9 @@ import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
 import Project from "@/views/project/Project.vue"
+import ProjectManage from "@/views/project/ProjectManage.vue"
+import ProjectBoard from "@/views/project/ProjectBoard.vue"
+import ProjectNotiBoard from "@/views/project/ProjectNotiBoard.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -92,11 +95,6 @@ const routes = [
         component: ProjectList,
       },
       {
-        path: ":projectId",
-        name: "Project",
-        component: Project,
-      },
-      {
         path: "article/form",
         name: "ProjectCreateForm",
         component: ProjectForm,
@@ -110,6 +108,28 @@ const routes = [
         path: "article/:projectId/form",
         name: "ProjectEditForm",
         component: ProjectForm,
+      },
+      {
+        path: ":projectId",
+        name: "Project",
+        component: Project,
+        children: [
+          {
+            path: "manage",
+            name: "ProjectManage",
+            component: ProjectManage,
+          },
+          {
+            path: "board",
+            name: "ProjectBoard",
+            component: ProjectBoard,
+          },
+          {
+            path: "noti-board",
+            name: "ProjectNotiBoard",
+            component: ProjectNotiBoard,
+          },
+        ],
       },
     ],
   },
