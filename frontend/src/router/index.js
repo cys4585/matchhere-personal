@@ -26,20 +26,20 @@ const routes = [
   {
     path: "/auth",
     component: AuthLayout,
-    beforeEnter: (to, from, next) => {
-      if (to.name === "Login") {
-        next()
-        return
-      }
-      if (!from.name) {
-        const signupStep = store.getters["auth/getSignupStep"]
-        if (to.name !== signupStep) {
-          next({ name: signupStep })
-          return
-        }
-      }
-      next()
-    },
+    // beforeEnter: (to, from, next) => {
+    //   if (to.name === "Login" || to.name === "FindPassword") {
+    //     next()
+    //     return
+    //   }
+    //   if (!from.name) {
+    //     const signupStep = store.getters["auth/getSignupStep"]
+    //     if (to.name !== signupStep) {
+    //       next({ name: signupStep })
+    //       return
+    //     }
+    //   }
+    //   next()
+    // },
     meta: { requiresNoAuth: true },
     children: [
       {

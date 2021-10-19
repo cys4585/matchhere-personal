@@ -4,14 +4,16 @@
     <router-view />
   </main>
   <BottomNav />
+  <AlertMessageCenter />
 </template>
 
 <script>
 import Header from "@/components/common/Header.vue"
 import BottomNav from "@/components/common/BottomNav.vue"
+import AlertMessageCenter from "@/components/common/AlertMessageCenter.vue"
 
 export default {
-  components: { Header, BottomNav },
+  components: { Header, BottomNav, AlertMessageCenter },
 }
 </script>
 

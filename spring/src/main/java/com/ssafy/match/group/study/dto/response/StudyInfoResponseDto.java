@@ -71,10 +71,10 @@ public class StudyInfoResponseDto {
     @ApiModelProperty(name = "techList", example = "[\"java\", \"python\"]")
     private List<String> techList;
 
-    public void setClub(Club club){
-        if(club == null) return;
-        this.club = new ClubSimpleInfoResponseDto(club);
-    }
+//    public void setClub(Club club){
+//        if(club == null) return;
+//        this.club = new ClubSimpleInfoResponseDto(club);
+//    }
 
     public void setData(DBFile dbFile){
         if(dbFile == null) return;
@@ -87,14 +87,14 @@ public class StudyInfoResponseDto {
                 .name(study.getName())
                 .schedule(study.getSchedule())
                 .period(study.getPeriod())
-                .host(new MemberSimpleInfoResponseDto(study.getMember()))
+//                .host(new MemberSimpleInfoResponseDto(study.getMember()))
                 .memberCount(study.getMemberCount())
                 .maxCount(study.getMaxCount())
                 .isPublic(study.getIsPublic())
                 .isParticipate(study.getIsParticipate())
                 .city(study.getCity().name())
-                .status(study.getStatus().name())
-                .club((study.getClub() == null) ? null : new ClubSimpleInfoResponseDto(study.getClub()))
+                .status(study.getStudyProgressState().name())
+//                .club((study.getClub() == null) ? null : new ClubSimpleInfoResponseDto(study.getClub()))
 //                .cover_pic((study.getDbFile() == null) ? null : study.getDbFile().getDownload_uri())
                 .modifiedDate(study.getModifyDate())
                 .bio(study.getBio())

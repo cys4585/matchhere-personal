@@ -2,7 +2,6 @@ package com.ssafy.match.member.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Certification;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,7 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
@@ -36,18 +36,20 @@ public class MemberCertificationRequestDto {
     @ApiParam(value = "등급", required = false)
     private String grade;
 
-    @ApiModelProperty(name = "issued_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "issued_date", example = "2018-05-01")
     @ApiParam(value = "취득일", required = true)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime issued_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @NotNull
+    private LocalDate issued_date;
 
-    @ApiModelProperty(name = "expired_date", example = "2018-05-01 00:00:00")
+    @ApiModelProperty(name = "expired_date", example = "2018-05-01")
     @ApiParam(value = "만료일", required = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime expired_date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate expired_date;
 
     @ApiModelProperty(name = "is_expire", example = "false")
     @ApiParam(value = "만료여부", required = true)
+    @NotNull
     private Boolean is_expire;
 
     public Certification toCertification(Member member) {
@@ -57,7 +59,7 @@ public class MemberCertificationRequestDto {
                 .code(code)
                 .grade(grade)
                 .issued_date(issued_date)
-                .expired_date((is_expire == Boolean.FALSE) ? null : expired_date)
+                .expired_date((is_expire.equals(Boolean.FALSE)) ? null : expired_date)
                 .is_expire(is_expire)
                 .member(member)
                 .build();

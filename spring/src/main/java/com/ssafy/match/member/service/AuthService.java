@@ -2,6 +2,7 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
+import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
 import com.ssafy.match.member.entity.EmailCheck;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -13,8 +14,10 @@ import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
+import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,7 +49,7 @@ public class AuthService {
     private String from;
 
     @Transactional
-    public Boolean certEmail(String email) {
+    public Boolean certSignup(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
             return Boolean.FALSE;
@@ -58,27 +61,50 @@ public class AuthService {
             message.setSubject("이메일 인증");
             message.setText(key);
             javaMailSender.send(message);
-            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
-            if(emailCheck.isEmpty()) {
-                EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
-                emailCheckRepository.save(check);
-            } else {
-                emailCheck.get().updateKey(key);
-            }
+//            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
+//            if(emailCheck.isEmpty()) {
+            EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
+            emailCheckRepository.save(check);
+//            } else {
+//                emailCheck.get().updateKey(key);
+//            }
             return Boolean.TRUE;
         }
     }
 
     @Transactional
-    public String emailAuthCode(EmailCertRequestDto emailCertRequestDto) {
-        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
-        if (emailCheck.isPresent()) {
-            if (emailCheck.get().getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
-                emailCheck.get().updateIsCheck(Boolean.TRUE);
-                return emailCheck.get().getEmail();
-            }
+    public Boolean certPassword(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (!member.isPresent()) {
+            return Boolean.FALSE;
+        } else {
+            String key = certified_key();
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setFrom(from);
+            message.setSubject("이메일 인증");
+            message.setText(key);
+            javaMailSender.send(message);
+//            Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(email);
+//            if(emailCheck.isEmpty()) {
+            EmailCheck check = new EmailCheck(email, key, Boolean.FALSE);
+            emailCheckRepository.save(check);
+//            } else {
+//                emailCheck.get().updateKey(key);
+//            }
+            return Boolean.TRUE;
         }
-        return "";
+    }
+
+    @Transactional
+    public Long emailAuthCode(Long id, EmailCertRequestDto emailCertRequestDto) throws Exception {
+//        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(emailCertRequestDto.getEmail());
+        EmailCheck emailCheck = emailCheckRepository.findById(id).orElseThrow(() -> new Exception("인증 id가 존재하지 않습니다!"));
+        if (emailCheck.getAuthCode().equals(emailCertRequestDto.getAuthCode())) {
+            emailCheck.updateIsCheck(Boolean.TRUE);
+            return emailCheck.getId();
+        }
+        return -1L;
     }
 
     @Transactional(readOnly = true)
@@ -90,18 +116,35 @@ public class AuthService {
     }
 
     @Transactional
+    public HttpStatus changePassword(ForgetChangePasswordRequestDto forgetChangePasswordRequestDto) throws Exception {
+        EmailCheck emailCheck = emailCheckRepository.findById(forgetChangePasswordRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 이메일 인증 id입니다!"));
+        if (!forgetChangePasswordRequestDto.getEmail().equals(emailCheck.getEmail())) {
+            throw new Exception("잘못된 접근입니다! 요청한 email과 인증한 이메일이 다릅니다!");
+        }
+        if (emailCheck.getIs_check().equals(Boolean.FALSE)) {
+            throw new Exception("email인증이 완료되지 않았습니다!");
+        }
+        Member member = memberRepository.findByEmail(emailCheck.getEmail())
+                .orElseThrow(() -> new NullPointerException("가입되어있지 않은 이메일입니다."));
+        forgetChangePasswordRequestDto.setPassword(member, passwordEncoder);
+        emailCheckRepository.deleteById(forgetChangePasswordRequestDto.getId());
+        return HttpStatus.OK;
+    }
+
+    @Transactional
     public MemberResponseDto signup(SignupRequestDto signupRequestDto) throws Exception {
-        if (memberRepository.existsByEmail(signupRequestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        EmailCheck emailCheck = emailCheckRepository.findById(signupRequestDto.getId()).orElseThrow(() -> new NullPointerException("잘못된 이메일 인증 id입니다!"));
+        if (emailCheck.getIs_check().equals(Boolean.FALSE)) {
+            throw new Exception("email인증이 완료되지 않았습니다!");
+        }
+        if (memberRepository.existsByEmail(emailCheck.getEmail())) {
+            throw new Exception("이미 가입되어 있는 유저입니다");
         }
         if (memberRepository.existsByNickname(signupRequestDto.getNickname())) {
             throw new Exception("중복된 닉네임 입니다");
         }
-        Optional<EmailCheck> emailCheck = emailCheckRepository.findByEmail(signupRequestDto.getEmail());
-        if (emailCheck.isEmpty() || emailCheck.get().getIs_check() == Boolean.FALSE) {
-            throw new Exception("email인증이 완료되지 않았습니다!");
-        }
-        Member member = signupRequestDto.toMember(passwordEncoder);
+
+        Member member = signupRequestDto.toMember(passwordEncoder, emailCheck.getEmail());
         Member ret = memberRepository.save(member);
 
         if (signupRequestDto.getDpositionList() != null) {
@@ -110,6 +153,7 @@ public class AuthService {
         if (signupRequestDto.getTechList() != null) {
             addTechList(signupRequestDto.getTechList(), ret);
         }
+        emailCheckRepository.deleteById(signupRequestDto.getId());
         return MemberResponseDto.of(ret);
     }
 
@@ -183,20 +227,18 @@ public class AuthService {
     }
 
     @Transactional
-    public void addTechList(List<HashMap<String, String>> techList, Member member) throws Exception {
-        for (HashMap<String, String> hashmap : techList) {
-            for (Map.Entry<String, String> entry : hashmap.entrySet()) {
-                Techstack techstack = techstackRepository.findByName(entry.getKey())
-                        .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-                validLevel(entry.getValue());
-                CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
-                        .builder()
-                        .member(member)
-                        .techstack(techstack)
-                        .build();
-                MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
-                memberTechstackRepository.save(memberTechstack);
-            }
+    public void addTechList(HashMap<String, String> techList, Member member) throws Exception {
+        for (Map.Entry<String, String> entry : techList.entrySet()) {
+            Techstack techstack = techstackRepository.findByName(entry.getKey())
+                    .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
+            validLevel(entry.getValue());
+            CompositeMemberTechstack compositeMemberTechstack = CompositeMemberTechstack
+                    .builder()
+                    .member(member)
+                    .techstack(techstack)
+                    .build();
+            MemberTechstack memberTechstack = MemberTechstack.builder().compositeMemberTechstack(compositeMemberTechstack).level(entry.getValue()).build();
+            memberTechstackRepository.save(memberTechstack);
         }
     }
 
@@ -224,5 +266,4 @@ public class AuthService {
         } while (sb.length() < 10);
         return sb.toString();
     }
-
 }

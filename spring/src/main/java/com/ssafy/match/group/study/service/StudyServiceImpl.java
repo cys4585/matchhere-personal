@@ -6,7 +6,7 @@ import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.Status;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -138,15 +138,15 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, Status.종료, pageable)
-                .map(StudyInfoResponseDto::of);
-        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
-            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
+//    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
+//        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, ProjectProgressState.PROGRESS, pageable)
+//                .map(StudyInfoResponseDto::of);
+//        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
+//            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
 //            studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
-        }
-        return studyInfoResponseDtos;
-    }
+//        }
+//        return studyInfoResponseDtos;
+//    }
 
     // 현재 스터디 정보 리턴
     public StudyInfoResponseDto getOneStudy(Long studyId) throws Exception {
@@ -173,7 +173,7 @@ public class StudyServiceImpl implements StudyService {
 //        dto.setStudyTechstack(studyTechstackName(study));
         dto.setClubList(makeClubDtos(memberClubRepository.findClubByMember(study.getMember())));
         dto.setMemberSimpleInfoResponseDtos(makeMemberDtos(findMemberInStudy(study)));
-        dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
+//        dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
 
         return dto;
     }
@@ -313,7 +313,7 @@ public class StudyServiceImpl implements StudyService {
         }
     }
     public void validStatus(String status) throws Exception {
-        if(!Stream.of(Status.values()).map(Enum::name)
+        if(!Stream.of(ProjectProgressState.values()).map(Enum::name)
             .collect(Collectors.toList()).contains(status)){
             throw new Exception("존재하지 않는 상태입니다");
         }
@@ -329,9 +329,9 @@ public class StudyServiceImpl implements StudyService {
     public List<ClubSimpleInfoResponseDto> makeClubDtos(List<Club> hostClub) {
         List<ClubSimpleInfoResponseDto> clubSimpleInfoResponseDtos = new ArrayList<>();
 
-        for (Club club : hostClub) {
-            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
-        }
+//        for (Club club : hostClub) {
+//            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
+//        }
 
         return clubSimpleInfoResponseDtos;
     }
@@ -340,9 +340,9 @@ public class StudyServiceImpl implements StudyService {
     public List<MemberSimpleInfoResponseDto> makeMemberDtos(List<Member> members) {
         List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
 
-        for (Member member : members) {
-            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
-        }
+//        for (Member member : members) {
+//            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
+//        }
 
         return memberSimpleInfoResponseDtos;
     }

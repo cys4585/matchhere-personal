@@ -89,17 +89,16 @@ export default {
     }
 
     const handleResendEmail = async () => {
-      await store.dispatch("auth/checkEmail", email.value)
+      await store.dispatch("auth/sendEmailForSignup", email.value)
     }
 
     const handleSubmit = async () => {
       const authCode = formFields.value.authCode.value
       loading.value = true
       try {
-        await store.dispatch("auth/authEmail", authCode)
+        await store.dispatch("auth/confirmEmailAuthCode", authCode)
         router.push({ name: "Signup" })
       } catch (error) {
-        alert(error.message)
         loading.value = false
       }
     }

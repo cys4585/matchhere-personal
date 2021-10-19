@@ -1,5 +1,5 @@
 <template>
-  <component :is="currentComponent" />
+  <component :is="currentComponent" @update:step="handleUpdateStep" />
 </template>
 
 <script>
@@ -15,8 +15,14 @@ export default {
     const currentComponent = computed(() =>
       step.value === 1 ? FindPWStepOne : FindPWStepTwo
     )
+
+    const handleUpdateStep = () => {
+      step.value = 2
+    }
+
     return {
       currentComponent,
+      handleUpdateStep,
     }
   },
 }

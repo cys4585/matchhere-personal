@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -21,12 +22,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignupRequestDto {
+    @ApiModelProperty(name = "id", example = "1")
+    @ApiParam(value = "id", required = true)
+    @NotNull
+    private Long id;
 
-    @ApiModelProperty(name = "email", example = "my_email@gmail.com")
-    @ApiParam(value = "이메일", required = true)
-    @Email
-    @NotEmpty
-    private String email;
+//    @ApiModelProperty(name = "email", example = "my_email@gmail.com")
+//    @ApiParam(value = "이메일", required = true)
+//    @Email
+//    @NotEmpty
+//    private String email;
 
     @ApiModelProperty(name = "password", example = "mypassword")
     @ApiParam(value = "비밀번호", required = true)
@@ -62,11 +67,11 @@ public class SignupRequestDto {
     @ApiParam(value = "세부 포지션", required = false)
     private List<String> dpositionList;
 
-    @ApiModelProperty(name = "techList", example = "[{\"python\":\"중\"}, {\"java\":\"상\"}]")
+    @ApiModelProperty(name = "techList", example = "{\"python\":\"중\",\"java\":\"상\"}")
     @ApiParam(value = "기술스택 리스트", required = false)
-    private List<HashMap<String,String>> techList;
+    private HashMap<String,String> techList;
 
-    public Member toMember(PasswordEncoder passwordEncoder) {
+    public Member toMember(PasswordEncoder passwordEncoder, String email) {
         return Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))

@@ -10,11 +10,14 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema matching
 -- -----------------------------------------------------
+-- edited by ilminmoon
 
 -- -----------------------------------------------------
 -- Schema matching
+--
+-- edited by ilminmoon
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE SCHEMA IF NOT EXISTS `matching` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 USE `matching` ;
 
 -- -----------------------------------------------------
@@ -29,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`files` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -66,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 46
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -96,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -115,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_board` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -137,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`career` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -160,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`certification` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -192,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_application_form` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -201,10 +204,10 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `matching`.`education` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `degree` VARCHAR(255) NOT NULL,
-  `end_date` DATETIME(6) NULL DEFAULT NULL,
+  `end_date` INT NULL DEFAULT NULL,
   `institution` VARCHAR(255) NOT NULL,
   `major` VARCHAR(255) NULL DEFAULT NULL,
-  `start_date` DATETIME(6) NOT NULL,
+  `start_date` INT NOT NULL,
   `member_id` BIGINT NOT NULL,
   `state` VARCHAR(30) NOT NULL,
   `description` VARCHAR(255) NULL,
@@ -215,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`education` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -237,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_club` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -245,27 +248,30 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`project` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `bio` VARCHAR(1000) NULL DEFAULT NULL,
-  `city` VARCHAR(10) NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
+  `project_progress_state` VARCHAR(45) NOT NULL,
+  `public_scope` VARCHAR(45) NOT NULL,
+  `recruitment_state` VARCHAR(45) NOT NULL,
+  `view_count` INT NOT NULL,
   `create_date` DATETIME(6) NOT NULL,
+  `modify_date` DATETIME(6) NOT NULL,
+  `host_id` BIGINT NOT NULL,
+  `schedule` VARCHAR(45) NULL DEFAULT NULL,
+  `period` DATE NULL DEFAULT NULL,
   `designer_count` INT NOT NULL,
   `designer_max_count` INT NOT NULL,
+  `apply_designer` BIT(1) NOT NULL,
   `developer_count` INT NOT NULL,
   `developer_max_count` INT NOT NULL,
-  `host_role` VARCHAR(20) NULL DEFAULT NULL,
-  `is_active` BIT(1) NOT NULL,
-  `is_participate` BIT(1) NOT NULL,
-  `is_public` BIT(1) NOT NULL,
-  `modify_date` DATETIME(6) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
-  `period` DATETIME(6) NULL DEFAULT NULL,
+  `apply_developer` BIT(1) NOT NULL,
   `planner_count` INT NOT NULL,
   `planner_max_count` INT NOT NULL,
-  `schedule` VARCHAR(45) NULL DEFAULT NULL,
-  `status` VARCHAR(10) NOT NULL,
-  `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
+  `apply_planner` BIT(1) NOT NULL,
+  `city` VARCHAR(10) NOT NULL,
   `club_id` BIGINT NULL DEFAULT NULL,
-  `host_id` BIGINT NOT NULL,
+  `bio` VARCHAR(1000) NULL DEFAULT NULL,
+  `is_active` BIT(1) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_project_files1_idx` (`cover_pic` ASC),
   INDEX `fk_project_club1_idx` (`club_id` ASC),
@@ -282,20 +288,21 @@ CREATE TABLE IF NOT EXISTS `matching`.`project` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 12
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci
+INSERT_METHOD = LAST;
 
 
 -- -----------------------------------------------------
 -- Table `matching`.`member_project`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`member_project` (
-  `is_active` BIT(1) NOT NULL,
-  `register_date` DATETIME(6) NOT NULL,
-  `role` VARCHAR(20) NULL DEFAULT NULL,
-  `member_id` BIGINT NOT NULL,
   `project_id` BIGINT NOT NULL,
+  `member_id` BIGINT NOT NULL,
+  `role` VARCHAR(20) NOT NULL,
+  `register_date` DATETIME(6) NOT NULL,
   `authority` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`member_id`, `project_id`),
+  `is_active` BIT(1) NOT NULL,
+  PRIMARY KEY (`project_id`, `member_id`),
   INDEX `fk_member_project_project1_idx` (`project_id` ASC),
   CONSTRAINT `fk_member_project_member1`
     FOREIGN KEY (`member_id`)
@@ -305,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_project` (
     REFERENCES `matching`.`project` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -324,7 +331,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_sns` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 17
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -364,7 +371,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`study` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -386,7 +393,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_study` (
     REFERENCES `matching`.`study` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -400,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`techstack` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -420,7 +427,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_techstack` (
     REFERENCES `matching`.`techstack` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -445,7 +452,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`message` (
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -480,7 +487,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_application_form` (
     REFERENCES `matching`.`project` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -501,7 +508,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_techstack` (
     REFERENCES `matching`.`techstack` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -513,7 +520,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`refresh_token` (
   PRIMARY KEY (`member_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -545,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`study_application_form` (
     REFERENCES `matching`.`study` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------

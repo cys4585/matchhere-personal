@@ -1,6 +1,8 @@
 package com.ssafy.match.member.entity;
 
 import com.ssafy.match.common.entity.State;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,9 +27,9 @@ public class Education {
     private String institution;
     private String degree;
     private String major;
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
-    private State state;
+    private Integer start_date;
+    private Integer end_date;
+    private String state;
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,7 +38,7 @@ public class Education {
 
     @Builder
     public Education(String institution, String degree, String major,
-        LocalDateTime start_date, LocalDateTime end_date, State state, String description,
+        Integer start_date, Integer end_date, String state, String description,
         Member member) {
         this.institution = institution;
         this.degree = degree;
