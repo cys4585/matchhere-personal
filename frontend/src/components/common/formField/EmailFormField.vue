@@ -43,6 +43,10 @@ export default {
       type: String,
       required: true,
     },
+    forSignup: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["update:modelValue", "onShow:authCodeField"],
   setup(props, { emit }) {
@@ -62,11 +66,13 @@ export default {
       props.field.updateButtonLabel("메일 전송 중")
       props.field.updateButtonDisabled(true)
       props.field.updateInputDisabled(true)
-      const isAlreadySignup = await store.dispatch(
-        "auth/sendEmailForSignup",
-        props.field.value
-      )
-      if (isAlreadySignup) {
+
+      let actionName = "auth/sendEmailForSignup"
+      if (!props.forSignup) {
+        actionName = "auth/sendEmailForFindPW"
+      }
+      const id = await store.dispatch(actionName, props.field.value)
+      if (id) {
         props.field.updateButtonLabel("재전송")
         props.field.updateButtonDisabled(false)
         emit("onShow:authCodeField")

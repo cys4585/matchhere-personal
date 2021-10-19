@@ -10,8 +10,8 @@ const sendEmailForFindPW = async (email) => {
   return res.data
 }
 
-const confirmEmailAuthCode = async (payload) => {
-  const res = await http.post(`/auth/cert/authcode}`, payload)
+const confirmEmailAuthCode = async ({ requestData, id }) => {
+  const res = await http.post(`/auth/cert/authcode/${id}`, requestData)
   return res.data
 }
 

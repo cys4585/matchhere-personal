@@ -62,24 +62,21 @@ export default {
     async sendEmailForSignup({ commit }, email) {
       // return으로 Error를 보내주지 않아 trycatch를 사용할 수 없다.
       try {
-        const status = await AuthAPI.sendEmailForSignup(email)
-        if (status) {
-          commit(
-            "ADD_MESSAGES",
-            { text: "인증 메일을 전송했습니다" },
-            { root: true }
-          )
-          commit("SET_EMAIL_CERT_DTO", { email })
-        } else {
-          commit(
-            "ADD_MESSAGES",
-            { text: "이미 가입된 이메일입니다", type: "error" },
-            { root: true }
-          )
-        }
-        return status
+        const id = await AuthAPI.sendEmailForSignup(email)
+        commit(
+          "ADD_MESSAGES",
+          { text: "인증 메일을 전송했습니다" },
+          { root: true }
+        )
+        commit("SET_EMAIL_CERT_DTO", { email })
+        commit("SET_SIGNUP_FORMDATA", { id })
+        return id
       } catch (error) {
-        alert(error)
+        commit(
+          "ADD_MESSAGES",
+          { text: "이미 가입된 이메일입니다", type: "error" },
+          { root: true }
+        )
         return
       }
     },
@@ -107,12 +104,14 @@ export default {
         return
       }
     },
-    async confirmEmailAuthCode({ state, commit }, authCode) {
+    async confirmEmailAuthCode({ getters, commit }, authCode) {
       try {
         commit("SET_EMAIL_CERT_DTO", { authCode })
-        const id = await AuthAPI.confirmEmailAuthCode(state.emailCertRequestDto)
+        const id = await AuthAPI.confirmEmailAuthCode(
+          getters["getEmailAuthData"]
+        )
         commit("ADD_MESSAGES", { text: "이메일 인증 성공 😎" }, { root: true })
-        commit("SET_SIGNUP_FORMDATA", { id })
+        console.log(id)
       } catch (error) {
         commit(
           "ADD_MESSAGES",
@@ -217,6 +216,12 @@ export default {
     },
     getToken(state) {
       return state.token
+    },
+    getEmailAuthData(state) {
+      return {
+        requestData: { ...state.emailCertRequestDto },
+        id: state.signupFormData.id,
+      }
     },
   },
 }
