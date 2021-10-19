@@ -34,7 +34,11 @@ spring:
       pageable:
         default-page-size: 10
         max-page-size: 100
-
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: test-group
+      auto-offset-reset: earliest
   #  kafka:
 #    consumer:
 #      bootstrap-servers: localhost:29092

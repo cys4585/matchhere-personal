@@ -1,6 +1,6 @@
 package com.ssafy.match.chat.service;
 
-import com.ssafy.match.chat.dto.ChatMessage;
+//import com.ssafy.match.chat.dto.ChatMessage;
 //import java.io.IOException;
 //import org.springframework.kafka.annotation.KafkaListener;
 //
