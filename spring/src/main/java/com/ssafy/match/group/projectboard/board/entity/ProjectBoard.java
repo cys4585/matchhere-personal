@@ -1,7 +1,7 @@
 package com.ssafy.match.group.projectboard.board.entity;
 
-
 import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.projectboard.board.dto.ProjectBoardCreateRequestDto;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,16 +12,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 @Entity(name = "matching.project_board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ProjectBoard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -35,9 +37,20 @@ public class ProjectBoard {
     @Column(name = "name")
     private String name;
 
-    @Builder
-    public ProjectBoard(String name, Project project) {
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public static ProjectBoard of(ProjectBoardCreateRequestDto dto, Project project){
+        return ProjectBoard.builder()
+            .project(project)
+            .name(dto.getName())
+            .build();
+    }
+
+    public ProjectBoard(String name, Project project){
         this.name = name;
         this.project = project;
     }
+
 }

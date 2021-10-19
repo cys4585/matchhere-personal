@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProjectBoardUpdateDto {
+
     @ApiModelProperty(name = "name", example = "일정게시판")
     @ApiParam(value = "게시판 이름", required = true)
     @NotEmpty
