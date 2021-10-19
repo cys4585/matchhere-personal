@@ -1,7 +1,7 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
+import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -47,8 +47,14 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<Boolean> certSignup(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.certSignup(email));
+    public ResponseEntity<Long> certSignup(@PathVariable("email") String email) {
+        Long response = authService.certSignup(email);
+        if (response.equals(-1L)) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+//        return ResponseEntity.ok(authService.certSignup(email));
     }
 
     @PostMapping("/cert/authcode/{id}")

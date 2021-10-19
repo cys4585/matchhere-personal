@@ -14,59 +14,35 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "matching.project_application_form")
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectApplicationForm {
 
     @EmbeddedId
     private CompositeMemberProject compositeMemberProject;
-
-    private String nickname;
-
-    @Enumerated(EnumType.STRING)
-    private City city;
-
+    private String name;
     private String role;
-
-    private String position;
-
-    private String git;
-
-    private String twitter;
-
-    private String facebook;
-
-    private String backjoon;
-
     private String bio;
-
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cover_pic")
-    private DBFile dbFile;
-
-    @Builder
-    public ProjectApplicationForm(CompositeMemberProject cmp, ProjectApplicationRequestDto dto) {
-        this.compositeMemberProject = cmp;
-        this.nickname = dto.getNickname();
-        this.position = dto.getPosition();
-        this.city = City.from(dto.getCity());
-        this.git = dto.getGit();
-        this.twitter = dto.getTwitter();
-        this.facebook = dto.getFacebook();
-        this.backjoon = dto.getBackjoon();
-        this.role = dto.getRole();
-        this.bio = dto.getBio();
-        this.createDate = LocalDateTime.now();
+    public static ProjectApplicationForm of(ProjectApplicationRequestDto dto, CompositeMemberProject cmp, String name){
+        return ProjectApplicationForm.builder()
+            .compositeMemberProject(cmp)
+            .name(name)
+            .role(dto.getRole())
+            .bio(dto.getBio())
+            .createDate(LocalDateTime.now())
+            .build();
     }
 }

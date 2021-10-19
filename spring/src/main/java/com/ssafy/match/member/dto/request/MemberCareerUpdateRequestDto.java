@@ -2,6 +2,7 @@ package com.ssafy.match.member.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.match.member.entity.Career;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
@@ -48,6 +49,7 @@ public class MemberCareerUpdateRequestDto {
     @ApiParam(value = "설명", required = false)
     private String description;
 
+    @JsonIgnore
     public void setCareer(Career career) {
         career.setCompany(company);
         career.setRole(role);

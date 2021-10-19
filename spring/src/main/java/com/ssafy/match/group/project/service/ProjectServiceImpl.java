@@ -2,49 +2,48 @@ package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
+import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
+import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
+import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
-import com.ssafy.match.group.club.entity.Club;
-import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
-import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
-import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
-import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
-import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.ProjectProgressState;
-import com.ssafy.match.common.entity.Techstack;
-import com.ssafy.match.group.club.repository.MemberClubRepository;
-import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.common.repository.TechstackRepository;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.club.repository.ClubRepository;
+import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
-import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
 import com.ssafy.match.group.project.entity.CompositeMemberProject;
 import com.ssafy.match.group.project.entity.CompositeProjectTechstack;
 import com.ssafy.match.group.project.entity.MemberProject;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.entity.ProjectApplicationForm;
 import com.ssafy.match.group.project.entity.ProjectTechstack;
-import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.group.project.repository.ProjectApplicationFormRepository;
 import com.ssafy.match.group.project.repository.ProjectRepository;
 import com.ssafy.match.group.project.repository.ProjectTechstackRepository;
+import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
+import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
+import com.ssafy.match.member.entity.Member;
+import com.ssafy.match.member.repository.MemberRepository;
+import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,10 +54,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,7 +74,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final TechstackRepository techstackRepository;
     private final ProjectTechstackRepository projectTechstackRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberSnsRepository memberSnsRepository;
     private final ProjectBoardRepository projectBoardRepository;
 
     // 프로젝트 생성을 위한 정보(회원의 클럽 리스트)
@@ -115,6 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 업데이트를 위한 정보
     public ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId) {
         Project project = findProject(projectId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
         if (!SecurityUtil.getCurrentMemberId().equals(project.getMember().getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
@@ -122,7 +120,14 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectInfoForUpdateResponseDto.of(project,
             projectTechstackSimple(project), makeClubSimpleInfoResponseDtos(
                 memberClubRepository.findClubByMember(
-                    findMember(SecurityUtil.getCurrentMemberId()))));
+                    findMember(SecurityUtil.getCurrentMemberId())))
+            , findMemberProject(member, project).getRole());
+    }
+
+    public MemberProject findMemberProject(Member member, Project project) {
+        return memberProjectRepository.findMemberProjectByCompositeMemberProject(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
     }
 
     // 프로젝트 업데이트
@@ -138,7 +143,9 @@ public class ProjectServiceImpl implements ProjectService {
         if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
-
+        project.removeRole(mp.getRole());
+        mp.setRole(dto.getHostPosition());
+        project.addRole(dto.getHostPosition());
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
@@ -163,10 +170,12 @@ public class ProjectServiceImpl implements ProjectService {
         for (MemberProject mem : memberProjects) {
             mem.deactivation();
         }
+        // 프로젝트 Cover 제거
+        if (project.getCoverPic().getId() != null) {
+            dbFileRepository.delete(project.getCoverPic());
+        }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
-//        projectTechstackRepository.deleteAllByProject(project);
-        projectTechstackRepository.deleteAll(
-            projectTechstackRepository.findProjectTechstackByProject(project));
+        projectTechstackRepository.deleteAllByProject(project);
         // 프로젝트 비활성화
         project.setIsActive(Boolean.FALSE);
 
@@ -186,16 +195,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 추천 프로젝트 조회
-    public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
-//        Pageable limit = PageRequest.of(0, 10);
-        Page<Project> projects = projectRepository.findRecommendationProject(pageable);
-        List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
-        for (Project project : projects) {
-            projectInfoResponseDtos.add(
-                ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project)));
-        }
-        return projectInfoResponseDtos;
-    }
+//    public List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable) {
+////        Pageable limit = PageRequest.of(0, 10);
+//        List<Project> projects = projectRepository.findTop10OrderByCreateDateDesc(pageable);
+//
+//        List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
+//        for (Project project : projects) {
+//            projectInfoResponseDtos.add(
+//                ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project)));
+//        }
+//        return projectInfoResponseDtos;
+//    }
 
     // 현재 프로젝트 정보 리턴
     public ProjectInfoResponseDto getOneProject(Long projectId) {
@@ -215,6 +225,12 @@ public class ProjectServiceImpl implements ProjectService {
             authority);
     }
 
+    // 현재 프로젝트 간편 정보 리턴
+    public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
+        Project project = findProject(projectId);
+        return ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project));
+    }
+
     // 프로젝트 기술 스택 간단한 정보
     public List<ProjectTechstackResponseDto> projectTechstackSimple(Project project) {
         return projectTechstackRepository.findProjectTechstackByProject(project)
@@ -231,12 +247,15 @@ public class ProjectServiceImpl implements ProjectService {
             .collect(Collectors.toList());
     }
 
-    // 현재 프로젝트에 어떤 멤버가 속해있는지 멤버 리스트 리턴
-    public List<Member> memberInProject(Project project) {
-        return memberProjectRepository.findMemberInProject(project);
+    // 현재 프로젝트 구성원 리스트 리턴
+    public List<ProjectMemberResponseDto> memberInProject(Long projectId) {
+        return memberProjectRepository.findMemberRelationInProject(findProject(projectId))
+            .stream()
+            .map(ProjectMemberResponseDto::from)
+            .collect(Collectors.toList());
     }
 
-    // 특정 프로젝트의 특정 역할인 멤버의 닉네임 리스트
+    // 특정 프로젝트의 특정 역할인 멤버 간편 정보 리스트
     public List<MemberSimpleInfoResponseDto> memberRole(Project project, String role) {
         return memberProjectRepository.findMemberRole(project, role)
             .stream()
@@ -247,9 +266,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 기술 스택 추가
     @Transactional
     public void addTechstack(Project project, HashMap<String, String> techstacks) {
-        projectTechstackRepository.deleteAll(
-            projectTechstackRepository.findProjectTechstackByProject(project));
-//        projectTechstackRepository.deleteAllByProject(project);
+        projectTechstackRepository.deleteAllByProject(project);
         if (techstacks == null) {
             return;
         }
@@ -286,7 +303,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 멤버 탈퇴
     @Transactional
-    public void removeMe(Long projectId) {
+    public HttpStatus removeMe(Long projectId) {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
 
@@ -299,17 +316,18 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
-        // DB에 해당 멤버 기록이 없다면 새로 생성
+        // DB에 해당 멤버 기록이 없다면 예외 발생
         MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         project.removeRole(memberProject.getRole());
         memberProject.deactivation();
+        return HttpStatus.OK;
     }
 
     // 멤버 추방
     @Transactional
-    public void removeMember(Long projectId, Long memberId) {
+    public HttpStatus removeMember(Long projectId, Long memberId) {
         Project project = findProject(projectId);
         Member remover = findMember(SecurityUtil.getCurrentMemberId());
         Member removed = findMember(memberId);
@@ -332,11 +350,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.removeRole(removedmp.getRole()); // 추방되는 사람의 역할 수 감소
         removedmp.deactivation(); // 비활성화
+        return HttpStatus.OK;
     }
 
     // 역할 변경
     @Transactional
-    public void changeRole(Long projectId, Long memberId, String role) {
+    public HttpStatus changeRole(Long projectId, Long memberId, String role) {
         Project project = findProject(projectId);
         Member member = findMember(memberId);
 
@@ -345,26 +364,42 @@ public class ProjectServiceImpl implements ProjectService {
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
 
         // 역할 변경 권한에 관한 로직
-        // 본인 권한 이하? 미만? 의 인원 역할 변경이 가능하다
-        // 본인의 역할 변경이 가능하다?
+        // 소유자는 본인 이하의 권한을 가진 사람의 역할 변경 가능
+        // 관리자는 본인 이하의 권한을 가진 사람의 역할 변경 가능
+        // 팀원은 역할을 변경할 수 없다
 
         project.removeRole(mp.getRole());
+        mp.setRole(role);
         project.addRole((role));
+        return HttpStatus.OK;
     }
 
     // 권한 변경
     @Transactional
-    public void changeAuthority(Long projectId, Long memberId, String authority) {
+    public HttpStatus changeAuthority(Long projectId, Long memberId, String authority) {
         Project project = findProject(projectId);
+        Member changer = findMember(SecurityUtil.getCurrentMemberId());
         Member member = findMember(memberId);
 
         MemberProject mp = memberProjectRepository.findById(
                 new CompositeMemberProject(member, project))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
 
+        MemberProject mpChanger = memberProjectRepository.findById(
+                new CompositeMemberProject(changer, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
         // 권한 변경 권한에 관한 로직
-
+        // 소유자만이 권한을 변경할 수 있다
+        if (!mpChanger.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+        // 소유자는 양도가 가능하다
+        if (authority.equals("소유자")) {
+            project.setMember(member);
+            mpChanger.setAuthority(GroupAuthority.팀원);
+        }
         mp.setAuthority(GroupAuthority.from(authority));
+        return HttpStatus.OK;
     }
 
     // 프로젝트 찾기
@@ -414,7 +449,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public void validCity(String city) {
-        if (!Stream.of(City.values()).map(Enum::name)
+        if (!Stream.of(GroupCity.values()).map(Enum::name)
             .collect(Collectors.toList()).contains(city)) {
             throw new CustomException(ErrorCode.CITY_NOT_FOUND);
         }
@@ -433,6 +468,7 @@ public class ProjectServiceImpl implements ProjectService {
             .collect(Collectors.toList());
     }
 
+    // 기본 게시판 생성
     @Transactional
     public void makeBasicBoards(Project project) {
         projectBoardRepository.save(new ProjectBoard("공지사항", project));
@@ -440,54 +476,31 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 신청 버튼 클릭시 관련 정보 및 권한 체크
-    public InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception {
+    public HttpStatus checkCanApply(Long projectId) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
-
-        List<Member> memberList = memberInProject(project);
-        for (Member mem : memberList) {
-            if (SecurityUtil.getCurrentMemberId() == mem.getId()) {
-                throw new Exception("이미 가입한 멤버입니다.");
-            }
+        // 신청 가능 확인 로직
+        if (project.getProjectProgressState().equals(ProjectProgressState.FINISH)
+            || project.getIsActive().equals(Boolean.FALSE) || project.getRecruitmentState()
+            .equals(RecruitmentState.FINISH)) {
+            throw new CustomException(ErrorCode.CANNOT_APPLY);
         }
-//
-//        if (!project.getIsParticipate()) {
-//            throw new Exception("참여 불가능한 프로젝트입니다.");
-//        }
+        checkAlreadyJoin(project, member);
 
-        InfoForApplyProjectFormResponseDto dto = InfoForApplyProjectFormResponseDto.builder()
-            .nickname(member.getNickname())
-            .position(member.getPosition()) // 역할도 받아와야할수도
-//            .strong(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-//            .knowledgeable(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
-            .build();
+        return HttpStatus.OK;
+    }
 
-        Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
-        Optional<MemberSns> twitter = memberSnsRepository.findByMemberAndSnsName(member, "twitter");
-        Optional<MemberSns> facebook = memberSnsRepository
-            .findByMemberAndSnsName(member, "facebook");
-        Optional<MemberSns> backjoon = memberSnsRepository
-            .findByMemberAndSnsName(member, "backjoon");
-
-        if (git.isPresent()) {
-            dto.setGit(git.get().getSnsAccount());
+    // 프로젝트 가입 여부 확인 로직
+    public void checkAlreadyJoin(Project project, Member member) {
+        Optional<MemberProject> mp = memberProjectRepository.findMemberProjectByCompositeMemberProject(
+            new CompositeMemberProject(member, project));
+        if (mp.isPresent()) {
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
         }
-        if (twitter.isPresent()) {
-            dto.setTwitter(twitter.get().getSnsAccount());
-        }
-        if (facebook.isPresent()) {
-            dto.setFacebook(facebook.get().getSnsAccount());
-        }
-        if (backjoon.isPresent()) {
-            dto.setBackjoon(backjoon.get().getSnsAccount());
-        }
-
-        return dto;
     }
 
     @Transactional
-    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto)
-        throws Exception {
+    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
 
@@ -495,116 +508,65 @@ public class ProjectServiceImpl implements ProjectService {
 
         Optional<ProjectApplicationForm> form = projectApplicationFormRepository.findById(cmp);
         if (form.isPresent()) {
-            throw new Exception("신청한 내역이 존재합니다.");
+            throw new CustomException(ErrorCode.ALREADY_APPLY);
         }
 
-        ProjectApplicationForm projectApplicationForm = new ProjectApplicationForm(cmp, dto);
-
-        projectApplicationForm.setDbFile(findDBFile(dto.getUuid()));
-
+        ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp,
+            member.getName());
         projectApplicationFormRepository.save(projectApplicationForm);
         return HttpStatus.OK;
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
-    public List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception {
+    public List<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId) {
         Project project = findProject(projectId);
-
-        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
-            throw new Exception("조회 권한이 없습니다.");
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        // 조회 권한 확인 로직
+        MemberProject mp = memberProjectRepository.findById(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+        if (mp.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
-
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
-            project);
-        List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
-
-        for (ProjectApplicationForm form : forms) {
-            projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
-                .form(form)
-//                .strong(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//                .knowledgeable(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .build());
-        }
-
-        return projectFormInfoResponseDtos;
-    }
-
-    // 닉네임으로 신청서 검색
-    public List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId,
-        String nickname) throws Exception {
-        Project project = findProject(projectId);
-
-        if (SecurityUtil.getCurrentMemberId() != project.getMember().getId()) {
-            throw new Exception("조회 권한이 없습니다.");
-        }
-
-        List<ProjectApplicationForm> forms = projectApplicationFormRepository.formByProjectId(
-            project);
-        List<ProjectFormInfoResponseDto> projectFormInfoResponseDtos = new ArrayList<>();
-
-        for (ProjectApplicationForm form : forms) {
-            projectFormInfoResponseDtos.add(ProjectFormInfoResponseDto.builder()
-                .form(form)
-//                .strong(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//                .knowledgeable(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-                .build());
-        }
-
-        return projectFormInfoResponseDtos;
+        return projectApplicationFormRepository.formByProjectId(project);
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회 (프론트 방식에 따라 불필요할 수 있음)
-    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId)
-        throws Exception {
+    public ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId) {
         CompositeMemberProject cmp = new CompositeMemberProject(findMember(memberId),
             findProject(projectId));
 
         ProjectApplicationForm form = projectApplicationFormRepository.oneFormById(cmp)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다"));
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
 
-        return ProjectFormInfoResponseDto.builder()
-            .form(form)
-//            .strong(memberExperiencedTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-//            .knowledgeable(memberBeginnerTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberProject().getMember()))
-            .build();
+        return ProjectFormInfoResponseDto.from(form);
     }
 
     // 가입 승인
     @Transactional
-    public HttpStatus approval(Long projectId, Long memberId) throws Exception {
+    public HttpStatus approval(Long projectId, Long memberId) {
         Project project = findProject(projectId);
-        List<Member> members = memberInProject(project);
         Member member = findMember(memberId);
 
-        for (Member mem : members) {
-            if (mem.equals(member)) {
-                throw new Exception("이미 가입되어있는 회원입니다.");
-            }
-        }
-
-        ProjectApplicationForm form = projectApplicationFormRepository
-            .findById(new CompositeMemberProject(findMember(memberId), findProject(projectId)))
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다."));
+        checkAlreadyJoin(project, member);
+        ProjectApplicationForm form = validProjectApplicationForm(member, project);
 
         addMember(project, member, form.getRole());
         reject(projectId, memberId);
-
         return HttpStatus.OK;
     }
 
     // 신청서 제거
     @Transactional
-    public HttpStatus reject(Long projectId, Long memberId) throws Exception {
-        projectApplicationFormRepository.delete(projectApplicationFormRepository
-            .findById(new CompositeMemberProject(findMember(memberId), findProject(projectId)))
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다.")));
-
+    public HttpStatus reject(Long projectId, Long memberId) {
+        projectApplicationFormRepository.delete(
+            validProjectApplicationForm(findMember(memberId), findProject(projectId)));
         return HttpStatus.OK;
+    }
+
+    public ProjectApplicationForm validProjectApplicationForm(Member member, Project project) {
+        return projectApplicationFormRepository
+            .findById(new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
     }
 }

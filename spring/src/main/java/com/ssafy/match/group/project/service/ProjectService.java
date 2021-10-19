@@ -1,5 +1,7 @@
 package com.ssafy.match.group.project.service;
 
+import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 
 public interface ProjectService {
@@ -29,31 +32,35 @@ public interface ProjectService {
 
     List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable);
 
+//    List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable);
+
     ProjectInfoResponseDto getOneProject(Long projectId);
+
+    ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId);
 
     ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId);
 
+    List<ProjectMemberResponseDto> memberInProject(Long projectId);
+
     void addMember(Project project, Member member, String role);
 
-    void removeMe(Long projectId);
+    HttpStatus removeMe(Long projectId);
 
-    void removeMember(Long projectId, Long memberId);
+    HttpStatus removeMember(Long projectId, Long memberId);
 
-    void changeRole(Long projectId, Long memberId, String role);
+    HttpStatus changeRole(Long projectId, Long memberId, String role);
 
-    void changeAuthority(Long projectId, Long memberId, String authority);
+    HttpStatus changeAuthority(Long projectId, Long memberId, String authority);
 
-    InfoForApplyProjectFormResponseDto getInfoForApply(Long projectId) throws Exception;
+    HttpStatus checkCanApply(Long projectId);
 
-    HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) throws Exception;
+    HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto);
 
-    List<ProjectFormInfoResponseDto> allProjectForm(Long projectId) throws Exception;
+    List<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId);
 
-    List<ProjectFormInfoResponseDto> allFormByProjectNickname(Long projectId, String nickname) throws Exception;
+    ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId);
 
-    ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId) throws Exception;
+    HttpStatus approval(Long projectId, Long memberId);
 
-    HttpStatus approval(Long projectId, Long memberId) throws Exception;
-
-    HttpStatus reject(Long projectId, Long memberId) throws Exception;
+    HttpStatus reject(Long projectId, Long memberId);
 }

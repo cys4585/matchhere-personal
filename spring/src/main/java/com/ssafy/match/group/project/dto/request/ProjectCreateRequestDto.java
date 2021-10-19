@@ -16,7 +16,7 @@ public class ProjectCreateRequestDto {
     @ApiParam(value = "프로젝트명", required = true)
     private String name;
 
-    @ApiModelProperty(example = "프로젝트 진행 예정")
+    @ApiModelProperty(example = "프로젝트 준비 중")
     @ApiParam(value = "프로젝트 진행 상태", required = true)
     private String projectProgressState;
 

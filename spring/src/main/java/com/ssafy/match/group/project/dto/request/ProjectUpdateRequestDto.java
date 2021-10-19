@@ -68,4 +68,8 @@ public class ProjectUpdateRequestDto {
     @ApiParam(value = "기획자 모집 인원", required = true)
     private int plannerMaxCount;
 
+    @ApiModelProperty(example = "개발자")
+    @ApiParam(value = "호스트 역할")
+    private String hostPosition;
+
 }
