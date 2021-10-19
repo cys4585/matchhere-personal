@@ -72,10 +72,10 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean certPassword(String email) {
+    public Long certPassword(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (!member.isPresent()) {
-            return Boolean.FALSE;
+            return -1L;
         } else {
             String key = certified_key();
             SimpleMailMessage message = new SimpleMailMessage();
@@ -91,7 +91,7 @@ public class AuthService {
 //            } else {
 //                emailCheck.get().updateKey(key);
 //            }
-            return Boolean.TRUE;
+            return check.getId();
         }
     }
 

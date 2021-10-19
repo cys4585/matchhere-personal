@@ -72,8 +72,13 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<Boolean> passwordCertEmail(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.certPassword(email));
+    public ResponseEntity<Long> passwordCertEmail(@PathVariable("email") String email) {
+        Long response = authService.certPassword(email);
+        if (response.equals(-1L)) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
     @GetMapping("/check/nickname/{nickname}")
