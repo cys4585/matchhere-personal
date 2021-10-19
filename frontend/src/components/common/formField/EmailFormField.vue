@@ -71,12 +71,12 @@ export default {
       if (!props.forSignup) {
         actionName = "auth/sendEmailForFindPW"
       }
-      const id = await store.dispatch(actionName, props.field.value)
-      if (id) {
+      try {
+        await store.dispatch(actionName, props.field.value)
         props.field.updateButtonLabel("재전송")
         props.field.updateButtonDisabled(false)
         emit("onShow:authCodeField")
-      } else {
+      } catch (error) {
         props.field.updateButtonLabel("메일 인증")
         props.field.updateButtonDisabled(false)
         props.field.updateInputDisabled(false)

@@ -34,6 +34,10 @@ const reissue = async (tokenData) => {
   return res.data
 }
 
+const findPassword = async ({ email, id, password }) => {
+  await http.post(`auth/findpassword`, { email, id, password })
+}
+
 export default {
   sendEmailForSignup,
   sendEmailForFindPW,
@@ -42,4 +46,5 @@ export default {
   signup,
   login,
   reissue,
+  findPassword,
 }
