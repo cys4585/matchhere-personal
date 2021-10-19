@@ -130,6 +130,7 @@ public class ProjectInfoResponseDto {
             .projectProgressState(project.getProjectProgressState().getState())
             .coverPicUri(
                 (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
+            .name(project.getName())
             .recruitmentState(project.getRecruitmentState().getState())
             .viewCount(project.getViewCount())
             .createDate(project.getCreateDate())

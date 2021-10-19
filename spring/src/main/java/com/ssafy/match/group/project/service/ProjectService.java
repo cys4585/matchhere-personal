@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
@@ -35,7 +36,11 @@ public interface ProjectService {
 
     ProjectInfoResponseDto getOneProject(Long projectId);
 
+    ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId);
+
     ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId);
+
+    List<ProjectMemberResponseDto> memberInProject(Long projectId);
 
     void addMember(Project project, Member member, String role);
 
@@ -51,11 +56,11 @@ public interface ProjectService {
 
     HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto);
 
-    Slice<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId, Pageable pageable);
+    List<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId);
 
     ProjectFormInfoResponseDto oneProjectForm(Long projectId, Long memberId);
 
-    HttpStatus approval(Long projectId, Long memberId) throws Exception;
+    HttpStatus approval(Long projectId, Long memberId);
 
-    HttpStatus reject(Long projectId, Long memberId) throws Exception;
+    HttpStatus reject(Long projectId, Long memberId);
 }

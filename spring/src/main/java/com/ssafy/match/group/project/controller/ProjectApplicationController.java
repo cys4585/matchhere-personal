@@ -36,7 +36,7 @@ public class ProjectApplicationController {
     @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 프로젝트에 신청 가능한지 여부")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청 가능합니다."),
-        @ApiResponse(code = 401, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 400, message = "CANNOT_APPLY\nALREADY_JOIN"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<String> checkForApply(@PathVariable("projectId") Long projectId) {
@@ -47,7 +47,7 @@ public class ProjectApplicationController {
     @ApiOperation(value = "프로젝트 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 프로젝트에 신청을 한다")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청되었습니다."),
-        @ApiResponse(code = 401, message = "ALREADY_APPLY"),
+        @ApiResponse(code = 400, message = "ALREADY_APPLY"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId,
@@ -58,34 +58,35 @@ public class ProjectApplicationController {
     @PostMapping("/approval/{projectId}/{memberId}")
     @ApiOperation(value = "프로젝트 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "가입 처리되었습니다."),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> approval(@PathVariable("projectId") Long projectId,
-        @PathVariable("memberId") Long memberId) throws Exception {
-        return ResponseEntity.ok(projectService.approval(projectId, memberId));
+    public ResponseEntity<String> approval(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId) {
+        return new ResponseEntity<>("가입 처리되었습니다.", projectService.approval(projectId, memberId));
     }
 
     @DeleteMapping("{projectId}/{memberId}")
     @ApiOperation(value = "가입 거절", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서가 거절되었습니다."),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> reject(@PathVariable("projectId") Long projectId,
-        @PathVariable("memberId") Long memberId) throws Exception {
-        return ResponseEntity.ok(projectService.reject(projectId, memberId));
+    public ResponseEntity<String> reject(@PathVariable("projectId") Long projectId,
+        @PathVariable("memberId") Long memberId) {
+        return new ResponseEntity<>("신청서가 거절되었습니다.", projectService.reject(projectId, memberId));
     }
 
     @GetMapping("/all/{projectId}")
-    @ApiOperation(value = "특정 프로젝트 신청서 페이징 조회", notes = "특정 프로젝트의 신청서 리스트를 작성일 기준 내림차순으로 페이징해서 받는다")
+    @ApiOperation(value = "특정 프로젝트 신청서  조회", notes = "특정 프로젝트의 신청서 리스트를 작성일 기준 내림차순으로 받는다")
     @ApiResponses({
         @ApiResponse(code = 200, message = "신청되었습니다."),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<Slice<ProjectFormSimpleInfoResponseDto>> allProjectForm(
-        @PathVariable("projectId") Long projectId,
-        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return new ResponseEntity<>(projectService.allProjectForm(projectId, pageable), HttpStatus.OK);
+    public ResponseEntity<List<ProjectFormSimpleInfoResponseDto>> allProjectForm(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.allProjectForm(projectId), HttpStatus.OK);
     }
 
     @GetMapping("/one/{projectId}/{memberId}")
