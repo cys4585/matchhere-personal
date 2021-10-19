@@ -48,9 +48,10 @@ const routes = [
     component: ProfileLayout,
     children: [
       {
-        path: ":userId",
+        path: ":email",
         name: "Profile",
         component: Profile,
+        props: true,
       },
     ],
   },

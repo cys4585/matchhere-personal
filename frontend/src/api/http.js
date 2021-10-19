@@ -26,7 +26,7 @@ http.interceptors.request.use(async (config) => {
       return
     }
   }
-  config.headers.Authorization = `${tokenData.grantType} ${tokenData.accessToken}`
+  config.headers.Authorization = `Bearer ${tokenData.accessToken}`
   return config
 })
 
