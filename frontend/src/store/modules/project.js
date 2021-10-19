@@ -5,19 +5,16 @@ export default {
   namespaced: true,
   state: {
     myClubList: [],
-    projectInfo: {},
   },
   mutations: {
     SET_MY_CLUB_LIST(state, myClubList) {
       state.myClubList = myClubList
     },
-    SET_PROJECT_INFO(state, projectInfo) {
-      state.projectInfo = projectInfo
-    },
   },
   actions: {
     async getMyClubList({ commit }) {
       const { clubs } = await ProjectAPI.getMyClubList()
+      console.log("my clubs: ", clubs)
       commit("SET_MY_CLUB_LIST", clubs)
     },
     async createProject(context, formData) {
@@ -34,11 +31,24 @@ export default {
         throw Error(`${status} 문제가 발생했어!`)
       }
     },
-    async getProject({ commit }, projectId) {
-      console.log("projectId:", projectId)
+    async updateProject(context, { formData, projectId }) {
+      try {
+        console.log(projectId)
+        const resData = await ProjectAPI.updateProject(formData, projectId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status } = error.response
+        throw Error(`${status} 문제가 발생했어!`)
+      }
+    },
+    async getProject(context, projectId) {
       const projectInfo = await ProjectAPI.getProject(projectId)
       console.log(projectInfo)
-      commit("SET_PROJECT_INFO", projectInfo)
+      return projectInfo
+    },
+    async getInfoForUpdate(context, projectId) {
+      const projectInfo = await ProjectAPI.getInfoForUpdate(projectId)
       return projectInfo
     },
     async applyForParticipation({ commit }, { position, introduce }) {

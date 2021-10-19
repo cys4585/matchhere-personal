@@ -131,9 +131,16 @@
           </div>
           <hr v-if="index < Object.keys(formFields).length - 1" />
         </div>
-        <SubmitButton :disabled="!canSubmit" @click="createProject"
-          >생성</SubmitButton
+        <SubmitButton
+          v-if="projectId"
+          :disabled="!canSubmit"
+          @click="handleSubmit"
         >
+          수정
+        </SubmitButton>
+        <SubmitButton v-else :disabled="!canSubmit" @click="handleSubmit">
+          생성
+        </SubmitButton>
       </div>
     </section>
   </div>
@@ -141,7 +148,7 @@
 
 <script>
 import InputFormField from "@/components/common/InputFormField.vue"
-import SelectFormField from "@/components/common/SelectFormField.vue"
+import SelectFormField from "@/components/project/SelectFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import TechStackField from "@/components/common/TeckStackField.vue"
 import TechStackListItem from "@/components/common/TeckStackListItem.vue"
@@ -151,7 +158,7 @@ import { ref, computed, onBeforeMount, watch } from "vue"
 import { requiredValidator } from "@/libs/validator"
 import { cityList } from "@/libs/data"
 import { useStore } from "vuex"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 export default {
   name: "ProjectForm",
@@ -166,15 +173,64 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
+    const route = useRoute()
 
+    const projectId = ref()
     onBeforeMount(async () => {
-      await store.dispatch("project/getMyClubList")
-      formFields.value.project.club.clubList =
-        store.getters["project/getMyClubList"]
-      formFields.value.project.club.options = [
-        "선택 안함",
-        ...formFields.value.project.club.clubList.map((club) => club.name),
-      ]
+      projectId.value = route.params.projectId
+      if (projectId.value) {
+        const projectInfo = await store.dispatch(
+          "project/getInfoForUpdate",
+          projectId.value
+        )
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        projectInfo.hostPosition = "개발자"
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        // 임시
+        console.log(projectInfo)
+        for (let form in formFields.value) {
+          for (let field in formFields.value[form]) {
+            const backendKey = formFields.value[form][field].backendKey
+            console.log(backendKey)
+            console.log(projectInfo[backendKey])
+            if (backendKey === "techstacks") {
+              projectInfo.techstacks.forEach(
+                (item) =>
+                  (formFields.value.project.techStacks.value[item.name] =
+                    item.level)
+              )
+            } else if (backendKey === "clubId") {
+              formFields.value.project.club.clubList = projectInfo.clubs
+              formFields.value.project.club.options = [
+                "선택 안함",
+                ...formFields.value.project.club.clubList.map(
+                  (club) => club.name
+                ),
+              ]
+            } else {
+              formFields.value[form][field].value = projectInfo[backendKey]
+            }
+          }
+        }
+        console.log(formFields.value)
+      } else {
+        await store.dispatch("project/getMyClubList")
+        formFields.value.project.club.clubList =
+          store.getters["project/getMyClubList"]
+        formFields.value.project.club.options = [
+          "선택 안함",
+          ...formFields.value.project.club.clubList.map((club) => club.name),
+        ]
+      }
     })
 
     const formFields = ref({
@@ -445,13 +501,13 @@ export default {
       delete formFields.value.project.techStacks.value[key]
     }
 
-    const createProject = async () => {
+    const handleSubmit = async (e) => {
       const tmpFields = {
         ...formFields.value.project,
         ...formFields.value.member,
       }
       const formData = {}
-      for (const field in tmpFields) {
+      for (let field in tmpFields) {
         if (field === "ThumbnailImageFile") continue
         else if (field === "club") {
           const clubValue = tmpFields[field].value
@@ -476,24 +532,38 @@ export default {
       console.log(formData)
 
       try {
-        const projectId = await store.dispatch(
-          "project/createProject",
-          formData
-        )
-        alert(`임시: ${projectId}번 글 생성 성공`)
-        router.push({ name: "ProjectArticle", params: { projectId } })
+        if (e.target.innerText === "수정") {
+          console.log(projectId.value)
+          const resData = await store.dispatch("project/updateProject", {
+            formData,
+            projectId: projectId.value,
+          })
+          alert(`임시: ${resData}`)
+          router.push({
+            name: "ProjectArticle",
+            params: { projectId: projectId.value },
+          })
+        } else {
+          const projectId = await store.dispatch(
+            "project/createProject",
+            formData
+          )
+          alert(`임시: ${projectId}번 글 생성 성공`)
+          router.push({ name: "ProjectArticle", params: { projectId } })
+        }
       } catch (error) {
         alert(error.message)
       }
     }
 
     return {
+      projectId,
       formFields,
       haveClub,
       selectThumbnailImage,
       handleUpdateErrors,
       canSubmit,
-      createProject,
+      handleSubmit,
       handleSelectTechStack,
       handleChangeTechLevel,
       handleRemoveTechStack,

@@ -34,7 +34,7 @@
             <p class="flex gap-2 items-center">
               <img :src="profilePic" alt="" class="w-6 h-6" />
               <span class="text-xs text-gray-500">{{
-                projectInfo.host.nickname
+                projectInfo.host.name
               }}</span>
             </p>
           </div>
@@ -43,9 +43,13 @@
           <div class="content">
             <h3>주요 기술 스택</h3>
             <div class="grid gap-4">
-              <!-- <p v-for="tech in projectInfo.techList" :key="tech.id">
-              {{ tech }}
-            </p> -->
+              <p
+                v-for="tech in projectInfo.techstacks"
+                :key="tech.name"
+                class="flex gap-2 items-center"
+              >
+                {{ tech }}
+              </p>
               <p class="flex gap-2 items-center">
                 <img :src="javaPic" alt="" class="w-4 h-4" />
                 <span>java</span>
@@ -60,7 +64,7 @@
             <h3>일정</h3>
             <div class="grid gap-2">
               <p>{{ projectInfo.schedule }}</p>
-              <p>2021. 11. 01 까지</p>
+              <p>{{ projectInfo.period }} 까지</p>
             </div>
           </div>
           <div class="content">
@@ -84,11 +88,13 @@
                 <div class="flex gap-4">
                   <p
                     class="flex gap-2 items-center"
-                    v-for="nickname in projectInfo.developerNicknames"
-                    :key="nickname.id"
+                    v-for="developer in projectInfo.developers"
+                    :key="developer.id"
                   >
                     <img :src="profilePic" alt="" class="w-6 h-6" />
-                    <span class="text-xs text-gray-500">{{ nickname }}</span>
+                    <span class="text-xs text-gray-500">{{
+                      developer.name
+                    }}</span>
                   </p>
                 </div>
               </div>
@@ -110,11 +116,13 @@
                 <div class="flex gap-4">
                   <p
                     class="flex gap-2 items-center"
-                    v-for="nickname in projectInfo.developerNicknames"
-                    :key="nickname.id"
+                    v-for="planner in projectInfo.planners"
+                    :key="planner.id"
                   >
                     <img :src="profilePic" alt="" class="w-6 h-6" />
-                    <span class="text-xs text-gray-500">{{ nickname }}</span>
+                    <span class="text-xs text-gray-500">{{
+                      planner.name
+                    }}</span>
                   </p>
                 </div>
               </div>
@@ -136,11 +144,13 @@
                 <div class="flex gap-4">
                   <p
                     class="flex gap-2 items-center"
-                    v-for="nickname in projectInfo.developerNicknames"
-                    :key="nickname.id"
+                    v-for="designer in projectInfo.designers"
+                    :key="designer.id"
                   >
                     <img :src="profilePic" alt="" class="w-6 h-6" />
-                    <span class="text-xs text-gray-500">{{ nickname }}</span>
+                    <span class="text-xs text-gray-500">{{
+                      designer.name
+                    }}</span>
                   </p>
                 </div>
               </div>
@@ -159,7 +169,9 @@
           </div>
           <div class="content">
             <h3>소개</h3>
-            <p>{{ projectInfo.bio }}</p>
+            <div
+              v-html="projectInfo.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')"
+            ></div>
           </div>
         </div>
         <div class="flex flex-col items-center gap-2 px-7">
@@ -169,7 +181,7 @@
           >
             프로젝트 참가 신청
           </button>
-          <button class="py-2 px-6">
+          <button class="py-2 px-6" @click="editProject">
             <p class="text-gray-600 font-medium text-sm">수정</p>
           </button>
         </div>
@@ -184,7 +196,7 @@
 
 <script>
 import { onMounted, ref } from "@vue/runtime-core"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import ApplyForParticipationModal from "@/components/project/ApplyForParticipationModal.vue"
 
@@ -194,6 +206,7 @@ export default {
   setup() {
     const route = useRoute()
     const store = useStore()
+    const router = useRouter()
 
     const projectInfo = ref()
     const projectProgressStateColorClass = ref()
@@ -220,6 +233,13 @@ export default {
 
     const isApplyModalActivation = ref()
 
+    const editProject = () => {
+      router.push({
+        name: "ProjectEditForm",
+        params: { projectId: projectInfo.value.id },
+      })
+    }
+
     const profilePic = ref(require("@/assets/test-profile.png"))
     const javaPic = ref(require("@/assets/test-java.png"))
     const pythonPic = ref(require("@/assets/test-python.png"))
@@ -229,6 +249,7 @@ export default {
       projectProgressStateColorClass,
       recruitmentStateColorClass,
       isApplyModalActivation,
+      editProject,
       profilePic,
       javaPic,
       pythonPic,

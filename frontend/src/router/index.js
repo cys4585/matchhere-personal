@@ -97,14 +97,19 @@ const routes = [
         component: Project,
       },
       {
-        path: "form",
-        name: "ProjectForm",
+        path: "article/form",
+        name: "ProjectCreateForm",
         component: ProjectForm,
       },
       {
         path: "article/:projectId",
         name: "ProjectArticle",
         component: ProjectArticle,
+      },
+      {
+        path: "article/:projectId/form",
+        name: "ProjectEditForm",
+        component: ProjectForm,
       },
     ],
   },
