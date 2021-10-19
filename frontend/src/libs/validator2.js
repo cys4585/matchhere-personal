@@ -1,16 +1,14 @@
-export const requiredValidator = (value, fieldKey) => {
+export const requiredValidator = (value) => {
   if (typeof value === "string") {
     const type = "required"
     if (value.length === 0) {
       return {
-        fieldKey,
         type,
         status: false,
         message: "필수 입력 요소입니다",
       }
     }
     return {
-      fieldKey,
       type,
       status: true,
     }
@@ -19,7 +17,7 @@ export const requiredValidator = (value, fieldKey) => {
   }
 }
 
-export const emailValidator = (value, fieldKey) => {
+export const emailValidator = (value) => {
   if (typeof value !== "string") {
     alert("emailValidator 올바른 타입을 입력하세요")
     return
@@ -28,20 +26,18 @@ export const emailValidator = (value, fieldKey) => {
   const type = "invalidEmail"
   if (!regex.test(value)) {
     return {
-      fieldKey,
       type,
       status: false,
       message: "이메일을 다시 확인하세요",
     }
   }
   return {
-    fieldKey,
     type,
     status: true,
   }
 }
 
-export const passwordValidator = (value, fieldKey) => {
+export const passwordValidator = (value) => {
   if (typeof value !== "string") {
     alert("passwordValidator에 올바른 타입을 입력하세요")
     return
@@ -51,14 +47,12 @@ export const passwordValidator = (value, fieldKey) => {
   const type = "invalidPassword"
   if (!regex.test(value)) {
     return {
-      fieldKey,
       type,
       status: false,
       message: "대소문자, 숫자, 특수문자를 포함하여 8자리 이상으로 입력하세요",
     }
   }
   return {
-    fieldKey,
     type,
     status: true,
   }
@@ -83,19 +77,17 @@ export const confirmPasswordValidator = (value, fieldKey, formFields) => {
   }
 }
 
-export const nameValidator = (value, fieldKey) => {
+export const nameValidator = (value) => {
   const regex = /^[가-힣]{1,8}|[a-zA-Z]{2,8}$/
   const type = "invalidName"
   if (!regex.test(value)) {
     return {
-      fieldKey,
       type,
       status: false,
       message: "한글(1 - 8자) 또는 영어(2 - 8자)로 입력하세요.",
     }
   }
   return {
-    fieldKey,
     type,
     status: true,
   }

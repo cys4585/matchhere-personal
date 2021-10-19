@@ -1,0 +1,60 @@
+{
+  "data": {
+    "bio": "Git 매칭 프로젝트입니다.",
+    "city": "구미",
+    "club": {
+      "id": 0,
+      "name": "string"
+    },
+    "cover_pic": "사진 uri",
+    "designerCount": 3,
+    "designerMaxCount": 3,
+    "designerNicknames": [
+      "BJP",
+      "닉넴"
+    ],
+    "developerCount": 3,
+    "developerMaxCount": 3,
+    "developerNicknames": [
+      "BJP",
+      "닉넴"
+    ],
+    "host": {
+      "email": "string",
+      "fileDownloadUri": "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42",
+      "id": 0,
+      "name": "string",
+      "nickname": "string"
+    },
+    "id": 4,
+    "isParticipate": false,
+    "isPublic": false,
+    "memberSimpleInfoResponseDtos": [
+      {
+        "id": 4,
+        "name": "문일민",
+        "nickname": "별명"
+      },
+      {
+        "id": 4,
+        "name": "박범진",
+        "nickname": "내별명"
+      }
+    ],
+    "modifiedDate": "2021-09-06 06:57:37.667537",
+    "name": "매칭 프로젝트",
+    "period": 7,
+    "plannerCount": 3,
+    "plannerMaxCount": 3,
+    "plannerNicknames": [
+      "BJP",
+      "닉넴"
+    ],
+    "schedule": "매주 화, 수 6시",
+    "status": "모집, 진행, 종료 중 하나",
+    "techList": [
+      "java",
+      "python"
+    ]
+  }
+}
