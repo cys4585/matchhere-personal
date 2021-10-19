@@ -11,9 +11,7 @@
             v-for="(field, key) in formFields"
             :key="key"
             :field="field"
-            :formFields="formFields"
             v-model="field.value"
-            @update:errors="handleUpdateErrors"
           />
         </div>
         <SubmitButton @click="handleSubmit" :disabled="!canSubmit">
@@ -21,7 +19,7 @@
         </SubmitButton>
       </div>
       <div class="links">
-        <router-link :to="{ name: 'CheckEmail' }" class="link">
+        <router-link :to="{ name: 'Signup' }" class="link">
           회원가입
         </router-link>
         <div class="divider"></div>
@@ -35,10 +33,11 @@
 
 <script>
 import { computed, ref } from "vue"
-import InputFormField from "@/components/common/InputFormField.vue"
+import InputFormField from "@/components/common/formField/InputFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
+import { InputFormFieldMaker } from "@/libs/func"
 
-import { emailValidator, passwordValidator } from "@/libs/validator"
+// import { emailValidator, passwordValidator } from "@/libs/validator2"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
@@ -49,24 +48,8 @@ export default {
     const store = useStore()
     const router = useRouter()
     const formFields = ref({
-      email: {
-        key: "email",
-        label: "이메일",
-        type: "string",
-        value: "",
-        placeholder: "이메일을 입력하세요",
-        errors: {},
-        validators: [emailValidator],
-      },
-      password: {
-        key: "password",
-        label: "비밀번호",
-        type: "password",
-        value: "",
-        placeholder: "비밀번호를 입력하세요",
-        errors: {},
-        validators: [passwordValidator],
-      },
+      email: new InputFormFieldMaker("email"),
+      password: new InputFormFieldMaker("password"),
     })
 
     const isAllfieldsFill = computed(() => {
@@ -83,15 +66,6 @@ export default {
       () => isAllfieldsFill.value && isAllfieldsValid.value
     )
 
-    const handleUpdateErrors = (validateRes) => {
-      const { fieldKey, status, type } = validateRes
-      if (status) {
-        delete formFields.value[fieldKey].errors[type]
-      } else {
-        formFields.value[fieldKey].errors[type] = validateRes.message
-      }
-    }
-
     const handleSubmit = async () => {
       const formData = {
         email: formFields.value.email.value,
@@ -102,11 +76,11 @@ export default {
         await store.dispatch("auth/login", formData)
         router.push({ name: "Home" })
       } catch (error) {
-        alert("이메일 또는 비밀번호를 확인하세요")
+        console.log(error)
       }
     }
 
-    return { formFields, handleUpdateErrors, canSubmit, handleSubmit }
+    return { formFields, canSubmit, handleSubmit }
   },
 }
 </script>

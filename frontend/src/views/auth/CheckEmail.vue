@@ -79,11 +79,12 @@ export default {
       const email = formFields.value.email.value
       sendEmailLoading.value = true
 
-      const isValidEmail = await store.dispatch("auth/checkEmail", email)
+      const isValidEmail = await store.dispatch(
+        "auth/sendEmailForSignup",
+        email
+      )
       if (isValidEmail) {
         router.push({ name: "AuthEmail" })
-      } else {
-        alert("이미 가입된 이메일입니다")
       }
 
       sendEmailLoading.value = false
