@@ -5,6 +5,10 @@ import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
+import com.ssafy.match.member.dto.inter.CareerInterface;
+import com.ssafy.match.member.dto.inter.CertificationInterface;
+import com.ssafy.match.member.dto.inter.EducationInterface;
+import com.ssafy.match.member.dto.inter.MemberTechstackInterface;
 import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.dto.response.*;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -46,6 +50,13 @@ public class MemberService {
     private final CareerRepository careerRepository;
     private final CertificationRepository certificationRepository;
     private final EducationRepository educationRepository;
+
+    @Transactional(readOnly = true)
+    public MemberMeResponseDto getMe() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
+        MemberMeResponseDto memberMeResponseDto = MemberMeResponseDto.of(member);
+        return memberMeResponseDto;
+    }
 
     @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {

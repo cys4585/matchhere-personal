@@ -2,7 +2,8 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
-import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
+import com.ssafy.match.member.dto.request.*;
+import com.ssafy.match.member.dto.response.LoginResponseDto;
 import com.ssafy.match.member.entity.EmailCheck;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -14,7 +15,6 @@ import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
-import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -73,10 +73,10 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean certPassword(String email) {
+    public Long certPassword(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (!member.isPresent()) {
-            return Boolean.FALSE;
+            return -1L;
         } else {
             String key = certified_key();
             SimpleMailMessage message = new SimpleMailMessage();
@@ -92,7 +92,7 @@ public class AuthService {
 //            } else {
 //                emailCheck.get().updateKey(key);
 //            }
-            return Boolean.TRUE;
+            return check.getId();
         }
     }
 
@@ -158,7 +158,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenDto login(LoginRequestDto loginRequestDto) throws Exception{
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws Exception{
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = loginRequestDto.toAuthentication();
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
@@ -177,11 +177,10 @@ public class AuthService {
                 .key(authentication.getName())
                 .value(tokenDto.getRefreshToken())
                 .build();
-
         refreshTokenRepository.save(refreshToken);
 
-        // 5. 토큰 발급
-        return tokenDto;
+        LoginResponseDto loginResponseDto = LoginResponseDto.of(member, tokenDto);
+        return loginResponseDto;
     }
 
     @Transactional

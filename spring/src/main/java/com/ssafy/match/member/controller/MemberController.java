@@ -18,6 +18,12 @@ import javax.validation.Valid;
 public class MemberController {
     private final MemberService memberService;
 
+    @GetMapping("/me")
+    @ApiOperation(value = "다른사람의 마이페이지")
+    public ResponseEntity<MemberMeResponseDto> getMe() {
+        return ResponseEntity.ok(memberService.getMe());
+    }
+
     @PostMapping("/check/password")
     @ApiOperation(value = "비밀번호 체크")
     @ApiResponses({
@@ -136,7 +142,7 @@ public class MemberController {
     }
 
     @PutMapping("/certification/{id}")
-    @ApiOperation(value = "내 경력 Update")
+    @ApiOperation(value = "내 자격증 Update")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
