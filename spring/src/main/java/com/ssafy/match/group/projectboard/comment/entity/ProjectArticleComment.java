@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,23 +23,21 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "project_article_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ProjectArticleComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String content;
-
     @Column(name = "create_date")
     private LocalDateTime createDate;
-
     @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
     private int depth;
-
     @Column(name = "parent_id")
     private Long parentId;
 
@@ -47,10 +46,8 @@ public class ProjectArticleComment {
 
     @Column(name = "reply_count")
     private int replyCount;
-
     @Column(name = "is_modified")
     private Boolean isModified;
-
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
@@ -75,16 +72,16 @@ public class ProjectArticleComment {
         this.parentId = parentId;
     }
 
-    @Builder
-    public ProjectArticleComment(Long parentId, ProjectArticleCommentRequestDto projectArticleCommentRequestDto, Member member, ProjectArticle projectArticle) {
-        this.member = member;
-        this.projectArticle = projectArticle;
-        this.content = projectArticleCommentRequestDto.getContent();
-        this.createDate = LocalDateTime.now();
-        this.modifiedDate = LocalDateTime.now();
-        this.isModified = false;
-        this.isDeleted = false;
-        setDepth(parentId);
-        this.replyCount = 0;
+    public static ProjectArticleComment of(ProjectArticleCommentRequestDto dto, Member member, ProjectArticle projectArticle){
+        return ProjectArticleComment.builder()
+            .member(member)
+            .projectArticle(projectArticle)
+            .content(dto.getContent())
+            .createDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .isModified(false)
+            .isDeleted(false)
+            .replyCount(0)
+            .build();
     }
 }

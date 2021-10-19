@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProjectArticleCommentRepository extends JpaRepository<ProjectArticleComment, Long> {
 
-    @Query("select sac from ProjectArticleComment sac order by sac.parentId, sac.createDate")
+    @Query("select sac from ProjectArticleComment sac where sac.projectArticle = :projectArticle order by sac.parentId, sac.createDate")
     List<ProjectArticleComment> allComment(@Param("projectArticle") ProjectArticle projectArticle);
 }
