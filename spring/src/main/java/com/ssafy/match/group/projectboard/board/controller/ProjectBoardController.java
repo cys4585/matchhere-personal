@@ -6,6 +6,8 @@ import com.ssafy.match.group.projectboard.board.dto.ProjectBoardInfoDto;
 import com.ssafy.match.group.projectboard.board.dto.ProjectBoardUpdateDto;
 import com.ssafy.match.group.projectboard.board.service.ProjectBoardService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,24 +29,40 @@ public class ProjectBoardController {
 
     @GetMapping("/{projectid}/boards")
     @ApiOperation(value = "(프로젝트)게시판 리스트 조회", notes = "<strong>받은 프로젝트 id</strong>를 사용해서 게시판들을 조회한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
+    })
     public ResponseEntity<List<ProjectBoardInfoDto>> getBoards(@PathVariable("projectid") Long projectid) {
         return new ResponseEntity<>(projectBoardService.getProjectBoards(projectid), HttpStatus.OK);
     }
 
     @PostMapping("/{projectid}/boards")
     @ApiOperation(value = "(프로젝트)게시판 생성", notes = "<strong>받은 프로젝트 id</strong>를 사용해서 게시판을 생성한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
+    })
     public ResponseEntity<Integer> create(@PathVariable("projectid") Long projectid, @RequestBody ProjectBoardCreateRequestDto dto) {
         return new ResponseEntity<>(projectBoardService.createBoard(projectid, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/boards/{boardid}")
     @ApiOperation(value = "(프로젝트)게시판 삭제", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시판을 삭제한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
+    })
     public ResponseEntity<String> deleteBoard(@PathVariable("boardid") Integer boardid){
         return new ResponseEntity<>("게시판이 삭제되었습니다.", projectBoardService.deleteBoard(boardid));
     }
 
     @PutMapping("/boards/{boardid}")
     @ApiOperation(value = "(프로젝트)게시판 수정", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시판을 수정한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
+    })
     public ResponseEntity<String> updateBoard(@PathVariable("boardid") Integer boardid, @RequestBody ProjectBoardUpdateDto dto) {
         return new ResponseEntity<>("수정되었습니다.", projectBoardService.updateBoard(boardid, dto));
     }

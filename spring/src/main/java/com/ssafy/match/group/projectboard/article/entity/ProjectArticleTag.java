@@ -1,47 +1,38 @@
 package com.ssafy.match.group.projectboard.article.entity;
 
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Builder
-@Entity(name = "matching.project_content")
+@Entity
+@Table(name = "project_article_tag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ProjectContent {
+public class ProjectArticleTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "project_article_id")
     private ProjectArticle projectArticle;
-    private String content;
+    private String name;
 
-    public void setContent(String content){
-        this.content = content;
-    }
-
-    public static ProjectContent of(ProjectArticle projectArticle, String content) {
-        return ProjectContent.builder()
-            .projectArticle(projectArticle)
-            .content(content)
+    public static ProjectArticleTag of(ProjectArticle pa, String name){
+        return ProjectArticleTag.builder()
+            .projectArticle(pa)
+            .name(name)
             .build();
     }
-
 }
