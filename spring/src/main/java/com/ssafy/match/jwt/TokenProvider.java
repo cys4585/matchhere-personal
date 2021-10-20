@@ -2,6 +2,8 @@ package com.ssafy.match.jwt;
 
 import com.ssafy.match.member.dto.request.TokenDto;
 
+import com.ssafy.match.member.entity.CustomUserDetails;
+import com.ssafy.match.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +38,19 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String getUserIdFromJwt(String jwt) {
+        return parseClaims(jwt).getSubject();
+    }
+
+    public ConcurrentHashMap<String, String> getUserDataFromJwt(String jwt) {
+        ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap();
+        Claims claims = parseClaims(jwt);
+        concurrentHashMap.put("userid", claims.getSubject());
+//        concurrentHashMap.put("email", claims.get("email").toString());
+        concurrentHashMap.put("nickname", claims.get("nickname").toString());
+        return concurrentHashMap;
+    }
+
     public TokenDto generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -42,10 +58,14 @@ public class TokenProvider {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
+        Object principal = authentication.getPrincipal();
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
+                .setIssuer("moonilmin")
+                .setIssuedAt(new Date(now))
+                .setClaims(createClaims(principal))
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
@@ -64,6 +84,17 @@ public class TokenProvider {
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private static Map<String, Object> createClaims(Object principal) {
+        Map<String, Object> claims = new HashMap<>();
+        CustomUserDetails customUserDetails = (CustomUserDetails)principal;
+//        if (principal instanceof CustomUserDetails) {
+        claims.put("email", customUserDetails.getEmail());
+        claims.put("nickname", customUserDetails.getNickname());
+//        claims.put("username", customUserDetails.getUsername());
+        return claims;
+//        }
     }
 
     public Authentication getAuthentication(String accessToken) {
