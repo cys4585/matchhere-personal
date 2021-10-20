@@ -7,7 +7,7 @@ const http = axios.create({
 })
 
 http.interceptors.request.use(async (config) => {
-  console.log(config)
+  // console.log(config)
   let tokenData = store.getters["auth/getToken"]
   if (!tokenData.accessToken || config.url.includes("reissue")) {
     return config
