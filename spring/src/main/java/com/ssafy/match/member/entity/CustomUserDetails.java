@@ -1,5 +1,6 @@
 package com.ssafy.match.member.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
     private boolean is_active;
     private boolean banned;
     private String nickname;
+    private boolean isCredentialsNonExpired;
     private Collection<GrantedAuthority> authorities;	//권한 목록
 
 
@@ -53,7 +55,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
      */
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return !is_active;
     }
 
     /**
@@ -69,9 +71,8 @@ public class CustomUserDetails implements UserDetails, Serializable {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isCredentialsNonExpired;
     }
-
 
     /**
      * 사용자 활성화 여부
@@ -83,5 +84,17 @@ public class CustomUserDetails implements UserDetails, Serializable {
     public boolean isEnabled() {
         //이메일이 인증되어 있고 계정이 잠겨있지 않으면 true
         return (is_active && !banned);
+    }
+
+    @Builder
+    public CustomUserDetails(String id, String password, String email, boolean is_active, boolean banned, String nickname, boolean isCredentialsNonExpired, Collection<GrantedAuthority> authorities) {
+        this.id = id;
+        this.password = password;
+        this.email = email;
+        this.is_active = is_active;
+        this.banned = banned;
+        this.nickname = nickname;
+        this.isCredentialsNonExpired = isCredentialsNonExpired;
+        this.authorities = authorities;
     }
 }
