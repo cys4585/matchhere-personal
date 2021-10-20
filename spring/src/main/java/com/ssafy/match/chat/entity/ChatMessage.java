@@ -14,10 +14,9 @@ public class ChatMessage {
     private String message;
     private String sender;
 
-    private Long messageId;
-    private String roomId;
-//    private Long timeStamp;
-    private LocalDateTime sentTime;
+    private Long message_id;
+    private String room_id;
+    private LocalDateTime sent_time;
     private String nickname;
 //    private Boolean is_read;
 

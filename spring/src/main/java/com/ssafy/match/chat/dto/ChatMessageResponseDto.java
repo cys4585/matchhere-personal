@@ -18,7 +18,7 @@ public class ChatMessageResponseDto {
         return ChatMessageResponseDto.builder()
                 .message(chatMessage.getMessage())
                 .nickname(chatMessage.getNickname())
-                .sentTime(chatMessage.getSentTime())
+                .sentTime(chatMessage.getSent_time())
                 .dbFile(DBFileDto.of(chatMessage.getDbFile()))
                 .build();
     }

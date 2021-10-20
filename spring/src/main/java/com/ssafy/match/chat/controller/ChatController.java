@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,10 +49,10 @@ public class ChatController {
         sender.send(BOOT_TOPIC, message);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
 //    @RequestMapping("/history")
-    public ResponseEntity<ChatMessageResponseDto> getChattingHistory() throws Exception {
-        return ResponseEntity.ok(chatService.getHistory());
+    public ResponseEntity<ChatMessageResponseDto> getChattingHistory(@PathVariable("id") Long id) throws Exception {
+        return ResponseEntity.ok(chatService.getHistory(id));
 //        return chatHistoryDao.get();
     }
 
