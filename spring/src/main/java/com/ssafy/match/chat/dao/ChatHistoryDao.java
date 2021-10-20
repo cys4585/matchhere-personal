@@ -25,7 +25,7 @@ public class ChatHistoryDao {
 
     public List<ChatMessage> get() {
         return chatHistoryCache.asMap().values().stream()
-                .sorted(Comparator.comparing(ChatMessage::getTimeStamp))
+                .sorted(Comparator.comparing(ChatMessage::getSentTime))
                 .collect(Collectors.toList());
     }
 }

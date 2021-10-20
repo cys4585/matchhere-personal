@@ -2,6 +2,7 @@ package com.ssafy.match.jwt;
 
 import com.ssafy.match.member.dto.request.TokenDto;
 
+import com.ssafy.match.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -35,6 +36,10 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String getUserIdFromJwt(String jwt) {
+        return parseClaims(jwt).getSubject();
+    }
+
     public TokenDto generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -46,6 +51,9 @@ public class TokenProvider {
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
+                .setIssuer("ilmin")
+                .setIssuedAt(new Date(now))
+
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
@@ -64,6 +72,12 @@ public class TokenProvider {
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private static Map<String, String> createClaims(Member member) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", user.g);
+
     }
 
     public Authentication getAuthentication(String accessToken) {

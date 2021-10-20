@@ -4,13 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
 public class ChatMessage {
     private String message;
-    private String user;
-    private Long timeStamp;
+    private String sender;
+
+//    private Long timeStamp;
+    private LocalDateTime sentTime;
 
     private String fileName;
     private String rawData;
@@ -18,16 +22,16 @@ public class ChatMessage {
     public ChatMessage() {
     }
 
-    public ChatMessage(String message, String user) {
-        this.user = user;
+    public ChatMessage(String message, String sender) {
+        this.sender = sender;
         this.message = message;
     }
 
-    public ChatMessage(String fileName, String rawData, String user) {
+    public ChatMessage(String fileName, String rawData, String sender) {
 
         this.fileName = fileName;
         this.rawData = rawData;
-        this.user = user;
+        this.sender = sender;
     }
 
     public ChatMessage(String message) {
