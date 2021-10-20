@@ -2,6 +2,7 @@ package com.ssafy.match.chat.controller;
 
 
 import com.ssafy.match.chat.dao.ChatHistoryDao;
+import com.ssafy.match.chat.dto.ChatMessageResponseDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.service.ChatService;
 import com.ssafy.match.chat.service.Receiver;
@@ -53,7 +54,7 @@ public class ChatController {
 
     @GetMapping
 //    @RequestMapping("/history")
-    public ResponseEntity<ChatMessageDto> getChattingHistory() throws Exception {
+    public ResponseEntity<ChatMessageResponseDto> getChattingHistory() throws Exception {
         return ResponseEntity.ok(chatService.getHistory());
 //        return chatHistoryDao.get();
     }

@@ -1,7 +1,9 @@
 package com.ssafy.match.chat.service;
 
 
+import com.ssafy.match.chat.dto.ChatMessageResponseDto;
 import com.ssafy.match.chat.entity.ChatMessage;
+import com.ssafy.match.chat.repository.ChatMessageRepository;
 import com.ssafy.match.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class ChatService {
     private final TokenProvider tokenProvider;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public void sendMessage(ChatMessage message, String token) {
@@ -24,7 +27,7 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public ChatMessageDto getHistory() {
-
+    public ChatMessageResponseDto getHistory() {
+        chatMessageRepository.findById();
     }
 }
