@@ -36,6 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .is_active(member.getIs_active())
                 .banned(member.getBanned())
                 .nickname(member.getNickname())
+                .isCredentialsNonExpired(true)
                 .authorities(Collections.singleton(new SimpleGrantedAuthority(member.getAuthority().toString())))
                 .build();
         return customUserDetails;

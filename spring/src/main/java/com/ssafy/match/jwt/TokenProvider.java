@@ -2,6 +2,7 @@ package com.ssafy.match.jwt;
 
 import com.ssafy.match.member.dto.request.TokenDto;
 
+import com.ssafy.match.member.entity.CustomUserDetails;
 import com.ssafy.match.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -47,13 +48,14 @@ public class TokenProvider {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
+        Object principal = authentication.getPrincipal();
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
-                .setIssuer("ilmin")
+                .setIssuer("moonilmin")
                 .setIssuedAt(new Date(now))
-
+                .setClaims(createClaims(principal))
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
@@ -74,10 +76,15 @@ public class TokenProvider {
                 .build();
     }
 
-    private static Map<String, String> createClaims(Member member) {
+    private static Map<String, Object> createClaims(Object principal) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", user.g);
-
+        CustomUserDetails customUserDetails = (CustomUserDetails)principal;
+//        if (principal instanceof CustomUserDetails) {
+        claims.put("email", customUserDetails.getEmail());
+        claims.put("nickname", customUserDetails.getNickname());
+//        claims.put("username", customUserDetails.getUsername());
+        return claims;
+//        }
     }
 
     public Authentication getAuthentication(String accessToken) {

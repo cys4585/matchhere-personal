@@ -55,7 +55,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
      */
     @Override
     public boolean isAccountNonExpired() {
-        return !is_active;
+        return is_active;
     }
 
     /**
