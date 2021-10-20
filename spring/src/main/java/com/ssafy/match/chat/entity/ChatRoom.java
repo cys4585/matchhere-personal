@@ -28,7 +28,7 @@ public class ChatRoom {
     private String other_nickname;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_pic_id")
+    @JoinColumn(name = "other_pic_id")
     private DBFile other_pic;
 
 //    private

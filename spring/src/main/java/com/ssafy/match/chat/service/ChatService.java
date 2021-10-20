@@ -30,7 +30,7 @@ public class ChatService {
     @Transactional
     public void sendMessage(ChatMessage message, String token) {
         ConcurrentHashMap<String, String> concurrentHashMap = tokenProvider.getUserDataFromJwt(token);
-        message.setSender(concurrentHashMap.get("userid"));
+        message.setSender_id(concurrentHashMap.get("userid"));
         message.setNickname(concurrentHashMap.get("nickname"));
         message.setSent_time(LocalDateTime.now());
     }

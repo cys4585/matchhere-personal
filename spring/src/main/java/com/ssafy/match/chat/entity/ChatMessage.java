@@ -22,7 +22,7 @@ public class ChatMessage {
     private String sender_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatroom_id")
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
     private LocalDateTime sent_time;
