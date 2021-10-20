@@ -16,7 +16,7 @@
         <hr />
         <Member />
         <hr />
-        <div>지원자</div>
+        <Applyer />
       </div>
     </div>
   </div>
@@ -26,10 +26,11 @@
 import ProjectCard from "@/components/project/ProjectCard.vue"
 import Invite from "@/components/project/Invite.vue"
 import Member from "@/components/project/Member.vue"
+import Applyer from "@/components/project/Applyer.vue"
 
 export default {
   name: "ProjectManage",
-  components: { ProjectCard, Invite, Member },
+  components: { ProjectCard, Invite, Member, Applyer },
 }
 </script>
 
