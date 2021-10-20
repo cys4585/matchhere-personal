@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +40,15 @@ public class TokenProvider {
 
     public String getUserIdFromJwt(String jwt) {
         return parseClaims(jwt).getSubject();
+    }
+
+    public ConcurrentHashMap<String, String> getUserDataFromJwt(String jwt) {
+        ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap();
+        Claims claims = parseClaims(jwt);
+        concurrentHashMap.put("userid", claims.getSubject());
+//        concurrentHashMap.put("email", claims.get("email").toString());
+        concurrentHashMap.put("nickname", claims.get("nickname").toString());
+        return concurrentHashMap;
     }
 
     public TokenDto generateTokenDto(Authentication authentication) {

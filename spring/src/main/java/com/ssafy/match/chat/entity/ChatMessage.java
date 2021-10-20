@@ -15,6 +15,7 @@ public class ChatMessage {
 
 //    private Long timeStamp;
     private LocalDateTime sentTime;
+    private String nickname;
 
     private String fileName;
     private String rawData;

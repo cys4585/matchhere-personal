@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 //@CrossOrigin(origins = "http://localhost:3000")
@@ -40,8 +41,10 @@ public class ChatController {
     @MessageMapping("/message")//@MessageMapping works for WebSocket protocol communication. This defines the URL mapping.
     @SendTo("/topic/public")//websocket subscribe topic& direct send
     public void sendMessage(ChatMessage message, @Header("Authorization") String token) throws Exception {
-        String userId = tokenProvider.getUserIdFromJwt(token);
-        message.setSender(userId);
+//        String userId = tokenProvider.getUserIdFromJwt(token);
+        ConcurrentHashMap<String, String> concurrentHashMap = tokenProvider.getUserDataFromJwt(token);
+        message.setSender(concurrentHashMap.get("userid"));
+        message.setNickname(concurrentHashMap.get("nickname"));
         message.setSentTime(LocalDateTime.now());
         chatHistoryDao.save(message);
         sender.send(BOOT_TOPIC, message);
@@ -49,7 +52,6 @@ public class ChatController {
 
     @RequestMapping("/history")
     public List<ChatMessage> getChattingHistory() throws Exception {
-        System.out.println("history!");
         return chatHistoryDao.get();
     }
 

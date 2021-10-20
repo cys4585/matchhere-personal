@@ -25,6 +25,7 @@ public class Receiver {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
         msg.put("senttime", message.getSentTime().format(DateTimeFormatter.ISO_DATE_TIME));
+        msg.put("nickname", message.getNickname());
         msg.put("message", message.getMessage());
         msg.put("sender", message.getSender());
 
