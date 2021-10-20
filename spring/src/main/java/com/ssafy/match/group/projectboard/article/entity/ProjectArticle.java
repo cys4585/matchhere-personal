@@ -48,6 +48,10 @@ public class ProjectArticle {
     @Column(name = "view_count")
     private int viewCount;
 
+    public void plusViewCount(){
+        this.viewCount++;
+    }
+
     public void update(ProjectArticleRequestDto dto, ProjectBoard projectBoard){
         this.projectBoard = projectBoard;
         this.title = dto.getTitle();

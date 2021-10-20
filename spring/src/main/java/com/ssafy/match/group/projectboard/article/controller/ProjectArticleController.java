@@ -81,4 +81,14 @@ public class ProjectArticleController {
     public ResponseEntity<String> deleteArticle(@PathVariable("article-id") Long articleId) {
         return new ResponseEntity<>("삭제되었습니다.", projectArticleService.deleteArticle(articleId));
     }
+
+    @GetMapping("/view-count/{project-article-id}")
+    @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 게시글 id</strong>로 조회수를 증가시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 404, message = "ARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> plusViewCount(@PathVariable("project-article-id") Long projectArticleId) {
+        return new ResponseEntity<>("처리되었습니다.", projectArticleService.plusViewCount(projectArticleId));
+    }
 }

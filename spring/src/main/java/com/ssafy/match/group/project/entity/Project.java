@@ -93,6 +93,9 @@ public class Project {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    public void plusViewCount(){
+        this.viewCount++;
+    }
     public void plusDeveloper() {
         if(Boolean.FALSE.equals(this.applyDeveloper)){
             throw new CustomException(ErrorCode.DEVELOPER_COUNT_OVER);

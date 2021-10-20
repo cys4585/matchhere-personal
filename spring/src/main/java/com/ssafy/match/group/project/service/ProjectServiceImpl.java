@@ -263,6 +263,12 @@ public class ProjectServiceImpl implements ProjectService {
             .collect(Collectors.toList());
     }
 
+    // 프로젝트 조회수 증가
+    public HttpStatus plusViewCount(Long projectId){
+        findProject(projectId).plusViewCount();
+        return HttpStatus.OK;
+    }
+
     // 기술 스택 추가
     @Transactional
     public void addTechstack(Project project, HashMap<String, String> techstacks) {

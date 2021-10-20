@@ -63,4 +63,6 @@ public interface ProjectService {
     HttpStatus approval(Long projectId, Long memberId);
 
     HttpStatus reject(Long projectId, Long memberId);
+
+    HttpStatus plusViewCount(Long projectId);
 }
