@@ -1,10 +1,14 @@
 package com.ssafy.match.chat.entity;
 
 import com.ssafy.match.file.entity.DBFile;
+import com.ssafy.match.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,7 +19,11 @@ public class ChatMessage {
     private String sender;
 
     private Long message_id;
-    private String room_id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatroom_id")
+    private ChatRoom chatRoom;
+
     private LocalDateTime sent_time;
     private String nickname;
 //    private Boolean is_read;
@@ -27,11 +35,11 @@ public class ChatMessage {
     public ChatMessage() {
     }
 
-    public ChatMessage(String message, String sender, String roomId, LocalDateTime sentTime, String nickname) {
+    public ChatMessage(String message, String sender, ChatRoom chatRoom, LocalDateTime sentTime, String nickname) {
         this.message = message;
         this.sender = sender;
-        this.roomId = roomId;
-        this.sentTime = sentTime;
+        this.chatRoom = chatRoom;
+        this.sent_time = sentTime;
         this.nickname = nickname;
     }
 

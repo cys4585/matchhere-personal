@@ -2,24 +2,18 @@ package com.ssafy.match.chat.controller;
 
 
 import com.ssafy.match.chat.dao.ChatHistoryDao;
-import com.ssafy.match.chat.dto.ChatMessageResponseDto;
+import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.service.ChatService;
 import com.ssafy.match.chat.service.Receiver;
 import com.ssafy.match.chat.service.Sender;
-import com.ssafy.match.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 //@CrossOrigin(origins = "http://localhost:3000")
@@ -51,7 +45,7 @@ public class ChatController {
 
     @GetMapping("/{id}")
 //    @RequestMapping("/history")
-    public ResponseEntity<ChatMessageResponseDto> getChattingHistory(@PathVariable("id") Long id) throws Exception {
+    public ResponseEntity<ChatMessagesResponseDto> getChattingHistory(@PathVariable("id") Long id) throws Exception {
         return ResponseEntity.ok(chatService.getHistory(id));
 //        return chatHistoryDao.get();
     }
