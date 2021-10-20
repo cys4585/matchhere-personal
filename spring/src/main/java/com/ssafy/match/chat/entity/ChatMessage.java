@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long message_id;
+    private Long id;
 
-    private String message;
-    private String sender;
+    private String content;
+
+    private String sender_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id")
@@ -29,14 +30,14 @@ public class ChatMessage {
 //    private Boolean is_read;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "db_file")
+    @JoinColumn(name = "file_id")
     private DBFile dbFile;
 //    private String fileName;
 //    private String rawData;
 
-    public ChatMessage(String message, String sender, ChatRoom chatRoom, LocalDateTime sentTime, String nickname) {
-        this.message = message;
-        this.sender = sender;
+    public ChatMessage(String content, String sender, ChatRoom chatRoom, LocalDateTime sentTime, String nickname) {
+        this.content = content;
+        this.sender_id = sender;
         this.chatRoom = chatRoom;
         this.sent_time = sentTime;
         this.nickname = nickname;

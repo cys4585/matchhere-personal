@@ -17,7 +17,7 @@ public class ChatMessageResponseDto {
 
     public static ChatMessageResponseDto of(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
-                .message(chatMessage.getMessage())
+                .message(chatMessage.getContent())
                 .nickname(chatMessage.getNickname())
                 .sentTime(chatMessage.getSent_time())
                 .dbFile(DBFileDto.of(chatMessage.getDbFile()))

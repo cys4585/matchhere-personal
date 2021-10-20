@@ -1,15 +1,13 @@
 package com.ssafy.match.chat.entity;
 
 
+import com.ssafy.match.file.entity.DBFile;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -17,15 +15,21 @@ import javax.persistence.Id;
 @Entity(name = "matching.chat_room")
 public class ChatRoom {
     @Id
-    private String roomId;
+    private String id;
 
-    private String user1Id;
-    private String user1Nickname;
-    private String user1Pic;
+    private String user_id;
+    private String user_nickname;
 
-    private String user2Id;
-    private String user2Nickname;
-    private String user2Pic;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_pic_id")
+    private DBFile user_pic;
+
+    private String other_id;
+    private String other_nickname;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_pic_id")
+    private DBFile other_pic;
 
 //    private
 //    private String masterEmail;
