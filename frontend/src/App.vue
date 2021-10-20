@@ -1,5 +1,5 @@
 <template>
-  <Header />
+  <MainNav />
   <main>
     <router-view />
   </main>
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import Header from "@/components/common/Header.vue"
+import MainNav from "@/components/common/MainNav.vue"
 import BottomNav from "@/components/common/BottomNav.vue"
 import AlertMessageCenter from "@/components/common/AlertMessageCenter.vue"
 
 export default {
-  components: { Header, BottomNav, AlertMessageCenter },
+  components: { MainNav, BottomNav, AlertMessageCenter },
 }
 </script>
 

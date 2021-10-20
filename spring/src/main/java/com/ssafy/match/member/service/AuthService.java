@@ -2,7 +2,7 @@ package com.ssafy.match.member.service;
 
 import com.ssafy.match.member.dto.*;
 import com.ssafy.match.common.entity.*;
-import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
+import com.ssafy.match.member.dto.request.*;
 import com.ssafy.match.member.entity.EmailCheck;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;
@@ -14,7 +14,6 @@ import com.ssafy.match.common.repository.DetailPositionRepository;
 import com.ssafy.match.member.repository.EmailCheckRepository;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.member.repository.MemberTechstackRepository;
-import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -73,10 +72,10 @@ public class AuthService {
     }
 
     @Transactional
-    public Boolean certPassword(String email) {
+    public Long certPassword(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (!member.isPresent()) {
-            return Boolean.FALSE;
+            return -1L;
         } else {
             String key = certified_key();
             SimpleMailMessage message = new SimpleMailMessage();
@@ -92,7 +91,7 @@ public class AuthService {
 //            } else {
 //                emailCheck.get().updateKey(key);
 //            }
-            return Boolean.TRUE;
+            return check.getId();
         }
     }
 

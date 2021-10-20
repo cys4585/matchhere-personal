@@ -1,6 +1,10 @@
-package com.ssafy.match.member.dto;
+package com.ssafy.match.member.dto.response;
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
+import com.ssafy.match.member.dto.inter.CareerInterface;
+import com.ssafy.match.member.dto.inter.CertificationInterface;
+import com.ssafy.match.member.dto.inter.EducationInterface;
+import com.ssafy.match.member.dto.inter.MemberTechstackInterface;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberSns;
 import io.swagger.annotations.ApiModelProperty;

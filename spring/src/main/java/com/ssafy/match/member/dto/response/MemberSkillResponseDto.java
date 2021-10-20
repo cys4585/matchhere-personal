@@ -2,7 +2,7 @@ package com.ssafy.match.member.dto.response;
 
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
-import com.ssafy.match.member.dto.MemberTechstackInterface;
+import com.ssafy.match.member.dto.inter.MemberTechstackInterface;
 import com.ssafy.match.member.entity.Member;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

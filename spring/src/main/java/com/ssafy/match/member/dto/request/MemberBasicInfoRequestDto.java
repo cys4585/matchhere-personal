@@ -1,6 +1,7 @@
 package com.ssafy.match.member.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.City;
 import com.ssafy.match.member.entity.Member;
@@ -43,6 +44,7 @@ public class MemberBasicInfoRequestDto {
     @ApiParam(value = "자기소개", required = false)
     private String bio;
 
+    @JsonIgnore
     public void setMember(Member member) {
         member.setNickname(nickname);
         member.setName(name);

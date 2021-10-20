@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.entity;
 
 import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
@@ -84,7 +85,7 @@ public class Project {
     private Boolean applyDesigner;
 
     @Enumerated(EnumType.STRING)
-    private City city;
+    private GroupCity city;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
@@ -209,7 +210,7 @@ public class Project {
         setDeveloperMaxCount(dto.getDeveloperMaxCount());
         setPlannerMaxCount(dto.getPlannerMaxCount());
         setDesignerMaxCount(dto.getDesignerMaxCount());
-        this.city = City.from(dto.getCity());
+        this.city = GroupCity.from(dto.getCity());
         this.club = club;
         this.bio = dto.getBio();
     }
@@ -235,7 +236,7 @@ public class Project {
         this.designerCount = 0;
         this.designerMaxCount = dto.getDesignerMaxCount();
         this.applyDesigner = dto.getDesignerMaxCount() != 0;
-        this.city = City.from(dto.getCity());
+        this.city = GroupCity.from(dto.getCity());
         this.club = club;
         this.bio = dto.getBio();
         this.isActive = true;

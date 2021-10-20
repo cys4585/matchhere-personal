@@ -1,4 +1,4 @@
-package com.ssafy.match.member.dto;
+package com.ssafy.match.member.dto.request;
 
 import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.Authority;
