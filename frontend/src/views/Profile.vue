@@ -4,7 +4,7 @@
     <header class="page-header mb-0">
       <div class="flex items-center justify-between">
         <h2>프로필</h2>
-        <router-link to="/">
+        <router-link :to="{ name: 'EditProfile' }">
           <span class="material-icons">settings</span>
         </router-link>
       </div>

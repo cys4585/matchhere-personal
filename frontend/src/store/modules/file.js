@@ -6,9 +6,21 @@ export default {
   state: {},
   mutations: {},
   actions: {
-    async uploadFile(context, file) {
-      const uuid = await FileAPI.uploadFile(file)
-      return uuid
+    async uploadFile({ commit }, file) {
+      console.log(file)
+      try {
+        const uuid = await FileAPI.uploadFile(file)
+        return uuid
+      } catch (error) {
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "파일 업로드에 실패했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
     },
   },
   getters: {},

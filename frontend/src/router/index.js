@@ -7,6 +7,7 @@ import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
 
 import Profile from "@/views/Profile.vue"
+import EditProfile from "@/views/EditProfile.vue"
 
 import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
@@ -54,6 +55,11 @@ const routes = [
         name: "Profile",
         component: Profile,
         props: true,
+      },
+      {
+        path: "edit",
+        name: "EditProfile",
+        component: EditProfile,
       },
     ],
   },
