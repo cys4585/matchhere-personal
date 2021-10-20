@@ -2,23 +2,23 @@ package com.ssafy.match.chat.entity;
 
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.member.entity.Member;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
+@Entity(name = "matching.chat_message")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessage {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long message_id;
+
     private String message;
     private String sender;
-
-    private Long message_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id")
@@ -28,12 +28,11 @@ public class ChatMessage {
     private String nickname;
 //    private Boolean is_read;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "db_file")
     private DBFile dbFile;
 //    private String fileName;
 //    private String rawData;
-
-    public ChatMessage() {
-    }
 
     public ChatMessage(String message, String sender, ChatRoom chatRoom, LocalDateTime sentTime, String nickname) {
         this.message = message;
