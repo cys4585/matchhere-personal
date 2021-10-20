@@ -26,9 +26,9 @@ export default {
         console.log(id)
         return id
       } catch (error) {
-        console.log(`error.response: ${error.response}`)
+        console.log(error.response)
         const { status } = error.response
-        throw Error(`${status} 문제가 발생했어!`)
+        throw Error(`임시: ${status} 문제가 발생했어!`)
       }
     },
     async updateProject(context, { formData, projectId }) {
@@ -39,7 +39,7 @@ export default {
       } catch (error) {
         console.log(error.response)
         const { status } = error.response
-        throw Error(`${status} 문제가 발생했어!`)
+        throw Error(`임시: ${status} 문제가 발생했어!`)
       }
     },
     async getProject(context, projectId) {
@@ -51,10 +51,20 @@ export default {
       const projectInfo = await ProjectAPI.getInfoForUpdate(projectId)
       return projectInfo
     },
-    async applyForParticipation({ commit }, { position, introduce }) {
-      console.log(position)
-      console.log(introduce)
-      console.log(commit)
+    async applyForParticipation(context, { reqForm, projectId }) {
+      try {
+        const res = await ProjectAPI.projectApply(reqForm, projectId)
+        console.log(res.data)
+      } catch (error) {
+        console.log(error.response)
+        const { status } = error.response
+        switch (status) {
+          case 400:
+            throw Error("이미 신청을 완료했습니다!")
+          default:
+            throw Error(`임시: ${status} 문제가 발생했어~`)
+        }
+      }
     },
   },
   getters: {

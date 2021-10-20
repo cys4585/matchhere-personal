@@ -26,10 +26,16 @@ const getInfoForUpdate = async (projectId) => {
   return res.data
 }
 
+const projectApply = async (reqForm, projectId) => {
+  const res = await http.post(`/projectapplication/${projectId}`, reqForm)
+  return res.data
+}
+
 export default {
   getMyClubList,
   createProject,
   updateProject,
   getProject,
   getInfoForUpdate,
+  projectApply,
 }

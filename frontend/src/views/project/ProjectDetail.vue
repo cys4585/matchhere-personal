@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <nav>
     <button
       @click="handleClick"
       name="ProjectNotiBoard"
@@ -21,7 +21,7 @@
     >
       프로젝트 관리
     </button>
-  </header>
+  </nav>
   <hr />
   <router-view></router-view>
 </template>
@@ -49,7 +49,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-header {
+nav {
   @apply py-3 px-2;
   button {
     @apply py-2 px-4 text-gray-500;

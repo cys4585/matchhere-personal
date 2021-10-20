@@ -190,6 +190,7 @@
     <ApplyForParticipationModal
       v-if="isApplyModalActivation"
       @close="isApplyModalActivation = false"
+      :projectId="projectInfo.id"
     />
   </div>
 </template>
@@ -201,7 +202,7 @@ import { useStore } from "vuex"
 import ApplyForParticipationModal from "@/components/project/ApplyForParticipationModal.vue"
 
 export default {
-  name: "Project",
+  name: "ProjectArticle",
   components: { ApplyForParticipationModal },
   setup() {
     const route = useRoute()
@@ -240,9 +241,9 @@ export default {
       })
     }
 
-    const profilePic = ref(require("@/assets/test-profile.png"))
-    const javaPic = ref(require("@/assets/test-java.png"))
-    const pythonPic = ref(require("@/assets/test-python.png"))
+    const profilePic = ref(require("@/assets/images/test-profile.png"))
+    const javaPic = ref(require("@/assets/images/test-java.png"))
+    const pythonPic = ref(require("@/assets/images/test-python.png"))
 
     return {
       projectInfo,

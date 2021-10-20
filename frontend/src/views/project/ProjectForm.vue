@@ -183,13 +183,14 @@ export default {
           "project/getInfoForUpdate",
           projectId.value
         )
+        console.log(projectInfo)
         // 임시
         // 임시
         // 임시
         // 임시
         // 임시
         // 임시
-        projectInfo.hostPosition = "개발자"
+        // projectInfo.hostPosition = "개발자"
         // 임시
         // 임시
         // 임시
@@ -357,7 +358,7 @@ export default {
           label: "모집 상태",
           type: "radio",
           idList: ["rec-ing", "rec-done"],
-          stateList: ["모집 중", "프로젝트 종료"],
+          stateList: ["모집 중", "모집 마감"],
           value: "모집 중",
           notNull: true,
           errors: {},

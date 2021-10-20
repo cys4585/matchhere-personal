@@ -11,7 +11,7 @@ import Profile from "@/views/Profile.vue"
 import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
-import Project from "@/views/project/Project.vue"
+import ProjectDetail from "@/views/project/ProjectDetail.vue"
 import ProjectManage from "@/views/project/ProjectManage.vue"
 import ProjectBoard from "@/views/project/ProjectBoard.vue"
 import ProjectNotiBoard from "@/views/project/ProjectNotiBoard.vue"
@@ -110,9 +110,9 @@ const routes = [
         component: ProjectForm,
       },
       {
-        path: ":projectId",
-        name: "Project",
-        component: Project,
+        path: "detail/:projectId",
+        name: "ProjectDetail",
+        component: ProjectDetail,
         children: [
           {
             path: "manage",
