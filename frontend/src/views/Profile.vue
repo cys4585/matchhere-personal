@@ -1,13 +1,17 @@
 <template>
-  <nav>
-    <router-link to="/">프로필</router-link>
-    <router-link to="/">???</router-link>
-  </nav>
-  <main class="grid gap-6">
+  <ProfileNav :email="email" />
+  <main class="grid gap-6" v-if="!loading">
     <header class="page-header mb-0">
-      <h2>프로필</h2>
+      <div class="flex items-center justify-between">
+        <h2>프로필</h2>
+        <router-link :to="{ name: 'EditProfile' }">
+          <span class="material-icons">settings</span>
+        </router-link>
+      </div>
     </header>
-    <section class="basic-info-section grid gap-4">
+    <section
+      class="basic-info-section grid gap-4 pb-6 border-b border-gray-200"
+    >
       <div class="basic-info flex gap-4">
         <img src="https://picsum.photos/80" class="profile-img rounded-full" />
         <div class="infos grid gap-2">
@@ -32,19 +36,25 @@
       >
         메세지
       </button>
-      <div class="desc h-20 p-4 rounded border border-gray-400">
+      <div
+        class="desc h-20 p-4 rounded border border-gray-400"
+        v-if="profileData.bio"
+      >
         {{ profileData.bio }}
       </div>
     </section>
-    <hr />
-    <section class="position_stack-section grid gap-4">
+    <section
+      class="position_stack-section grid gap-4 pb-6 border-b border-gray-200"
+    >
       <h3 class="text-xl font-bold">직무/기술스택</h3>
       <div class="infos grid gap-4">
         <div class="position_dposition flex gap-2">
           <p class="position font-bold">{{ profileData.position }}</p>
-          <p class="dposition-list font-medium">
-            ({{ profileData.dpositionList }})
-          </p>
+          <div class="dposition-list font-medium">
+            (
+            {{ dpositionList }}
+            )
+          </div>
         </div>
         <div class="stack-list grid gap-2">
           <TeckStackListItem
@@ -56,8 +66,10 @@
         </div>
       </div>
     </section>
-    <hr />
-    <section class="career-section grid gap-4">
+    <section
+      class="career-section grid gap-4 pb-6 border-b border-gray-200"
+      v-if="profileData.careerList.length"
+    >
       <h3 class="text-xl font-bold">경력</h3>
       <div class="career-list grid gap-4">
         <div
@@ -75,8 +87,10 @@
         </div>
       </div>
     </section>
-    <hr />
-    <section class="certification-section grid gap-4">
+    <section
+      class="certification-section grid gap-4 pb-6 border-b border-gray-200"
+      v-if="profileData.certificationList.length"
+    >
       <h3 class="text-xl font-bold">자격증</h3>
       <div class="certification-list grid gap-4">
         <div
@@ -96,8 +110,10 @@
         </div>
       </div>
     </section>
-    <hr />
-    <section class="education-section grid gap-4">
+    <section
+      class="education-section grid gap-4 pb-6 border-b border-gray-200"
+      v-if="profileData.educationList.length"
+    >
       <h3 class="text-xl font-bold">학력</h3>
       <div class="education-list grid gap-4">
         <div
@@ -117,16 +133,20 @@
         </div>
       </div>
     </section>
-    <hr />
-    <section class="portfolio-section grid gap-4">
+    <section
+      class="portfolio-section grid gap-4 pb-6 border-b border-gray-200"
+      v-if="profileData.portfolio && profileData.portfolio_uri"
+    >
       <h3 class="text-xl font-bold">포트폴리오</h3>
       <div class="portfolio-list grid gap-4">
         <p>{{ profileData.portfolio }}</p>
         <p>{{ profileData.portfolio_uri }}</p>
       </div>
     </section>
-    <hr />
-    <section class="sns-section grid gap-4">
+    <section
+      class="sns-section grid gap-4 pb-6 border-b border-gray-200"
+      v-if="profileData.snsList.length"
+    >
       <h3 class="text-xl font-bold">SNS 링크</h3>
       <div class="sns-list grid gap-4">
         <div
@@ -143,8 +163,11 @@
 </template>
 
 <script>
-import { ref } from "vue"
+import { computed, onMounted, ref } from "vue"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 import TeckStackListItem from "@/components/common/TeckStackListItem.vue"
+import ProfileNav from "@/components/profile/ProfileNav.vue"
 const INFO = {
   bio: "let me introduce",
   careerList: [
@@ -218,12 +241,36 @@ const INFO = {
   },
 }
 export default {
-  components: { TeckStackListItem },
+  components: { TeckStackListItem, ProfileNav },
   name: "Profile",
-  setup() {
+  props: {
+    email: String,
+  },
+  setup(props) {
+    const store = useStore()
+    const router = useRouter()
+    const loading = ref(true)
     const profileData = ref(INFO)
+    const dpositionList = computed(() =>
+      profileData.value.dpositionList.map((dp) => dp.name).join(", ")
+    )
+
+    onMounted(async () => {
+      try {
+        profileData.value = await store.dispatch(
+          "member/getMypage",
+          props.email
+        )
+        loading.value = false
+      } catch (error) {
+        router.push({ name: "Home" })
+      }
+    })
+
     return {
+      loading,
       profileData,
+      dpositionList,
     }
   },
 }
