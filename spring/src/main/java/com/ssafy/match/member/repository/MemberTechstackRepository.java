@@ -1,7 +1,7 @@
 package com.ssafy.match.member.repository;
 
 import com.ssafy.match.common.entity.Techstack;
-import com.ssafy.match.member.dto.MemberTechstackInterface;
+import com.ssafy.match.member.dto.inter.MemberTechstackInterface;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.entity.MemberTechstack;
 import com.ssafy.match.member.entity.composite.CompositeMemberTechstack;

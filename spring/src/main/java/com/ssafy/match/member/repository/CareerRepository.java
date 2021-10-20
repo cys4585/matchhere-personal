@@ -1,6 +1,6 @@
 package com.ssafy.match.member.repository;
 
-import com.ssafy.match.member.dto.CareerInterface;
+import com.ssafy.match.member.dto.inter.CareerInterface;
 import com.ssafy.match.member.entity.Career;
 import com.ssafy.match.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

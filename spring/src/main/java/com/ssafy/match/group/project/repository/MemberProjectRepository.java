@@ -1,10 +1,9 @@
 package com.ssafy.match.group.project.repository;
 
-import com.ssafy.match.common.entity.ProjectProgressState;
-import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.entity.CompositeMemberProject;
 import com.ssafy.match.group.project.entity.MemberProject;
 import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,11 +19,6 @@ public interface MemberProjectRepository extends JpaRepository<MemberProject, Co
 
     // 특정 프로젝트에 속한 특정 멤버의 정보
     Optional<MemberProject> findMemberProjectByCompositeMemberProject(CompositeMemberProject compositeMemberProject);
-
-    // 특정 프로젝트에 속한 멤버의 정보
-    @Query(value = "select mp.compositeMemberProject.member from matching.member_project mp "
-        + "where mp.compositeMemberProject.project = :project and mp.isActive = true")
-    List<Member> findMemberInProject(@Param("project") Project project);
 
     // 특정 프로젝트의 활성화 되어있는 개발자들의 닉네임 정보
     @Query(value = "select mp.compositeMemberProject.member "

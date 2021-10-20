@@ -1,7 +1,9 @@
 package com.ssafy.match.jwt;
 
-import com.ssafy.match.member.dto.TokenDto;
+import com.ssafy.match.member.dto.request.TokenDto;
 
+import com.ssafy.match.member.entity.CustomUserDetails;
+import com.ssafy.match.member.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +38,19 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String getUserIdFromJwt(String jwt) {
+        return parseClaims(jwt).getSubject();
+    }
+
+    public ConcurrentHashMap<String, String> getUserDataFromJwt(String jwt) {
+        ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap();
+        Claims claims = parseClaims(jwt);
+        concurrentHashMap.put("userid", claims.getSubject());
+//        concurrentHashMap.put("email", claims.get("email").toString());
+        concurrentHashMap.put("nickname", claims.get("nickname").toString());
+        return concurrentHashMap;
+    }
+
     public TokenDto generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -42,10 +58,14 @@ public class TokenProvider {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
+        Object principal = authentication.getPrincipal();
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
+                .setIssuer("moonilmin")
+                .setIssuedAt(new Date(now))
+                .setClaims(createClaims(principal))
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
@@ -64,6 +84,17 @@ public class TokenProvider {
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private static Map<String, Object> createClaims(Object principal) {
+        Map<String, Object> claims = new HashMap<>();
+        CustomUserDetails customUserDetails = (CustomUserDetails)principal;
+//        if (principal instanceof CustomUserDetails) {
+        claims.put("email", customUserDetails.getEmail());
+        claims.put("nickname", customUserDetails.getNickname());
+//        claims.put("username", customUserDetails.getUsername());
+        return claims;
+//        }
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -91,15 +122,19 @@ public class TokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
+            log.error("잘못된 JWT 서명입니다.");
+            throw e;
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
+            log.error("만료된 JWT 토큰입니다.");
+            throw e;
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
+            log.error("지원되지 않는 JWT 토큰입니다.");
+            throw e;
         } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
+            log.error("JWT 토큰이 잘못되었습니다.");
+            throw e;
         }
-        return false;
+//        return false;
     }
 
     private Claims parseClaims(String accessToken) {

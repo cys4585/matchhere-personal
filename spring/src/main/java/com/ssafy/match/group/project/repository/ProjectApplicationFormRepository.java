@@ -17,8 +17,8 @@ public interface ProjectApplicationFormRepository extends
 
     // 모든 신청서 날짜 내림차순 조회
     @Query("select p.compositeMemberProject.project.id as projectId, p.compositeMemberProject.member.id as memberId"
-        + ", p.name as name, p.role as role from ProjectApplicationForm p where p.compositeMemberProject.project = :project")
-    Slice<ProjectFormSimpleInfoResponseDto> formByProjectId(@Param("project") Project project, Pageable pageable);
+        + ", p.name as name, p.role as role from ProjectApplicationForm p where p.compositeMemberProject.project = :project order by p.createDate DESC")
+    List<ProjectFormSimpleInfoResponseDto> formByProjectId(@Param("project") Project project);
 
     // 닉네임으로 신청서 조회
 //    @Query("select p from ProjectApplicationForm p "

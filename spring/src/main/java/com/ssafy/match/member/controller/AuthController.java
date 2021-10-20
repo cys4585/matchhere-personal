@@ -1,7 +1,8 @@
 package com.ssafy.match.member.controller;
 
 import com.ssafy.match.member.dto.*;
-import com.ssafy.match.member.dto.request.ForgetChangePasswordRequestDto;
+import com.ssafy.match.member.dto.request.*;
+import com.ssafy.match.member.dto.response.LoginResponseDto;
 import com.ssafy.match.member.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -33,7 +34,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) throws Exception {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) throws Exception {
         return ResponseEntity.ok(authService.login(loginRequestDto));
     }
 
@@ -72,8 +73,13 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공"),
     })
-    public ResponseEntity<Boolean> passwordCertEmail(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.certPassword(email));
+    public ResponseEntity<Long> passwordCertEmail(@PathVariable("email") String email) {
+        Long response = authService.certPassword(email);
+        if (response.equals(-1L)) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 
     @GetMapping("/check/nickname/{nickname}")

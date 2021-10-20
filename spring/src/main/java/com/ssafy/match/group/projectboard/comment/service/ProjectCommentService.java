@@ -11,7 +11,7 @@ public interface ProjectCommentService {
 
     List<ProjectArticleCommentResponseDto> allComment(Long articleId);
 
-    HttpStatus update(Long commentId, ProjectArticleCommentRequestDto dto) throws Exception;
+    HttpStatus update(Long commentId, ProjectArticleCommentRequestDto dto);
 
-    HttpStatus delete(Long commentId) throws Exception;
+    HttpStatus delete(Long commentId);
 }

@@ -1,6 +1,7 @@
 package com.ssafy.match.member.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.match.common.annotation.Enum;
 import com.ssafy.match.common.entity.State;
 import com.ssafy.match.member.entity.Education;
@@ -50,6 +51,7 @@ public class MemberEducationUpdateRequestDto {
     @ApiParam(value = "설명", required = false)
     private String description;
 
+    @JsonIgnore
     public void setEducation(Education education) {
         education.setInstitution(institution);
         education.setDegree(degree);

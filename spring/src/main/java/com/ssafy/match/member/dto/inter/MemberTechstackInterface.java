@@ -1,4 +1,4 @@
-package com.ssafy.match.member.dto;
+package com.ssafy.match.member.dto.inter;
 
 public interface MemberTechstackInterface {
     String getName();
