@@ -16,6 +16,7 @@ import ProjectDetail from "@/views/project/ProjectDetail.vue"
 import ProjectManage from "@/views/project/ProjectManage.vue"
 import ProjectBoard from "@/views/project/ProjectBoard.vue"
 import ProjectNotiBoard from "@/views/project/ProjectNotiBoard.vue"
+import ArticleForm from "@/views/project/ArticleForm.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -109,6 +110,11 @@ const routes = [
             path: "noti-board",
             name: "ProjectNotiBoard",
             component: ProjectNotiBoard,
+          },
+          {
+            path: "article/form",
+            name: "ArticleForm",
+            component: ArticleForm,
           },
         ],
       },

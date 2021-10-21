@@ -43,17 +43,6 @@
               <p class="label">{{ field.label }}</p>
               <div v-if="field.type === 'radio'">
                 <div v-for="(state, index, key) in field.stateList" :key="key">
-                  <!-- <input
-                    class="input-radio"
-                    :type="field.type"
-                    :id="field.idList[index]"
-                    :value="state"
-                    v-model="field.value"
-                    :disabled="
-                      state === '클럽 멤버에게만 공개' &&
-                      formFields.project.club.value === null
-                    "
-                  /> -->
                   <div v-if="state === '클럽 멤버에게만 공개'">
                     <input
                       class="input-radio"
