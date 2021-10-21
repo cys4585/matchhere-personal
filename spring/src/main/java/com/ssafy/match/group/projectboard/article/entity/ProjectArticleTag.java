@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,8 @@ public class ProjectArticleTag {
     @ManyToOne
     @JoinColumn(name = "project_article_id")
     private ProjectArticle projectArticle;
+
+    @NotBlank
     private String name;
 
     public static ProjectArticleTag of(ProjectArticle pa, String name){

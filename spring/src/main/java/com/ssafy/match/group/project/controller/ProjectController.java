@@ -13,8 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -23,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -71,7 +70,7 @@ public class ProjectController {
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
             + "TECHSTACK_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
-    public ResponseEntity<BasicResponseDto> createProject(@RequestBody ProjectCreateRequestDto dto) {
+    public ResponseEntity<BasicResponseDto> createProject(@Valid @RequestBody ProjectCreateRequestDto dto) {
         return new ResponseEntity<>(BasicResponseDto.from(projectService.create(dto)), HttpStatus.OK);
     }
 
@@ -84,7 +83,7 @@ public class ProjectController {
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
             + "\nTECHSTACK_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> updateProject(@RequestBody ProjectUpdateRequestDto dto,
+    public ResponseEntity<String> updateProject(@Valid @RequestBody ProjectUpdateRequestDto dto,
         @PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("수정되었습니다.", projectService.update(projectId, dto));
     }
@@ -199,4 +198,15 @@ public class ProjectController {
         @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
         return new ResponseEntity<>("권한이 변경되었습니다.", projectService.changeAuthority(projectId, memberId, authority));
     }
+
+    @GetMapping("/view-count/{projectId}")
+    @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 id</strong>로 조회수를 증가시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<String> plusViewCount(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>("처리되었습니다.", projectService.plusViewCount(projectId));
+    }
+
 }

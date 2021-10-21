@@ -13,6 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,11 +35,17 @@ public class ProjectArticleComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(max = 500)
     private String content;
-    @Column(name = "create_date")
+
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
-    @Column(name = "modified_date")
+    @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
+
+    @NotNull
     private int depth;
     @Column(name = "parent_id")
     private Long parentId;
@@ -44,11 +53,11 @@ public class ProjectArticleComment {
 //    @Column(name = "group_id") 뎁스가 1이 아니고 더 깊어진다면 필요
 //    private Long groupId;
 
-    @Column(name = "reply_count")
+    @Column(name = "reply_count", nullable = false)
     private int replyCount;
-    @Column(name = "is_modified")
+    @Column(name = "is_modified", nullable = false)
     private Boolean isModified;
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)

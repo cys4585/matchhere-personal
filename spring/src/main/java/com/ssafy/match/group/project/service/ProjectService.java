@@ -5,7 +5,6 @@ import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
-import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
@@ -15,9 +14,7 @@ import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.entity.Project;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 
 public interface ProjectService {
@@ -63,4 +60,7 @@ public interface ProjectService {
     HttpStatus approval(Long projectId, Long memberId);
 
     HttpStatus reject(Long projectId, Long memberId);
+
+    HttpStatus plusViewCount(Long projectId);
+
 }

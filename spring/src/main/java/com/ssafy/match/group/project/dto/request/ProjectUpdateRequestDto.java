@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
 import java.util.HashMap;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +16,13 @@ public class ProjectUpdateRequestDto {
 
     @ApiModelProperty(example = "매치히어")
     @ApiParam(value = "프로젝트명", required = true)
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
 
     @ApiModelProperty(example = "프로젝트 진행 중")
     @ApiParam(value = "프로젝트 진행 상태", required = true)
+    @NotBlank
     private String projectProgressState;
 
     @ApiModelProperty(example = "3fads23-fdfd13-23d2")
@@ -38,10 +43,12 @@ public class ProjectUpdateRequestDto {
 
     @ApiModelProperty(example = "서울")
     @ApiParam(value = "지역", required = true)
+    @NotBlank
     private String city;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "소속된 클럽 id")
+    @NotBlank
     private Long clubId;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
@@ -50,26 +57,32 @@ public class ProjectUpdateRequestDto {
 
     @ApiModelProperty(example = "전체 공개")
     @ApiParam(value = "공개 범위", required = true)
+    @NotBlank
     private String publicScope;
 
     @ApiModelProperty(example = "모집 중")
     @ApiParam(value = "모집 상태", required = true)
+    @NotBlank
     private String recruitmentState;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "개발자 모집 인원", required = true)
+    @NotBlank
     private int developerMaxCount;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "디자이너 모집 인원", required = true)
+    @NotBlank
     private int designerMaxCount;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "기획자 모집 인원", required = true)
+    @NotBlank
     private int plannerMaxCount;
 
     @ApiModelProperty(example = "개발자")
     @ApiParam(value = "호스트 역할")
+    @NotBlank
     private String hostPosition;
 
 }

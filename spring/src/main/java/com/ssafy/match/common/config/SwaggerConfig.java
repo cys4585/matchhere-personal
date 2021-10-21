@@ -140,7 +140,7 @@ public class SwaggerConfig {
             .apiInfo(apiInfo)
             .groupName("Project")
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.project"))
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.project.controller"))
 
             // api 필요한 클래스패스 추가하기
             .paths(
@@ -223,6 +223,25 @@ public class SwaggerConfig {
             // api 필요한 클래스패스 추가하기
             .paths(
                 PathSelectors.ant("/**/file/**")
+//                    .or(PathSelectors.ant("/**/projectform/**"))
+//                PathSelectors.any()
+            )
+            .build()
+            .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public Docket inviteApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+//            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
+            .globalRequestParameters(headers)
+            .apiInfo(apiInfo)
+            .groupName("Invite")
+            .select()
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.invite.controller"))
+            // api 필요한 클래스패스 추가하기
+            .paths(
+                PathSelectors.ant("/**/invite/**")
 //                    .or(PathSelectors.ant("/**/projectform/**"))
 //                PathSelectors.any()
             )

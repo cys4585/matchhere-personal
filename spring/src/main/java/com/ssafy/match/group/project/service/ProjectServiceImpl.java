@@ -1,6 +1,5 @@
 package com.ssafy.match.group.project.service;
 
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
@@ -43,7 +42,6 @@ import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepositor
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,7 +53,6 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -225,6 +222,8 @@ public class ProjectServiceImpl implements ProjectService {
             authority);
     }
 
+
+
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
         Project project = findProject(projectId);
@@ -261,6 +260,12 @@ public class ProjectServiceImpl implements ProjectService {
             .stream()
             .map(MemberSimpleInfoResponseDto::from)
             .collect(Collectors.toList());
+    }
+
+    // 프로젝트 조회수 증가
+    public HttpStatus plusViewCount(Long projectId){
+        findProject(projectId).plusViewCount();
+        return HttpStatus.OK;
     }
 
     // 기술 스택 추가

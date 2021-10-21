@@ -26,6 +26,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,24 +40,27 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cover_pic")
     private DBFile coverPic;
     @Enumerated(EnumType.STRING)
-    @Column(name = "project_progress_state")
+    @Column(name = "project_progress_state", nullable = false)
     private ProjectProgressState projectProgressState;
     @Enumerated(EnumType.STRING)
-    @Column(name = "public_scope")
+    @Column(name = "public_scope", nullable = false)
     private PublicScope publicScope;
     @Enumerated(EnumType.STRING)
-    @Column(name = "recruitment_state")
+    @Column(name = "recruitment_state", nullable = false)
     private RecruitmentState recruitmentState;
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private int viewCount;
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
-    @Column(name = "modify_date")
+    @Column(name = "modify_date", nullable = false)
     private LocalDateTime modifyDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id")
@@ -63,25 +68,25 @@ public class Project {
     private String schedule;
     private LocalDate period;
 
-    @Column(name = "developer_count")
+    @Column(name = "developer_count", nullable = false)
     private int developerCount;
-    @Column(name = "developer_max_count")
+    @Column(name = "developer_max_count", nullable = false)
     private int developerMaxCount;
-    @Column(name = "apply_developer")
+    @Column(name = "apply_developer", nullable = false)
     private Boolean applyDeveloper;
 
-    @Column(name = "planner_count")
+    @Column(name = "planner_count", nullable = false)
     private int plannerCount;
-    @Column(name = "planner_max_count")
+    @Column(name = "planner_max_count", nullable = false)
     private int plannerMaxCount;
-    @Column(name = "apply_planner")
+    @Column(name = "apply_planner", nullable = false)
     private Boolean applyPlanner;
 
-    @Column(name = "designer_count")
+    @Column(name = "designer_count", nullable = false)
     private int designerCount;
-    @Column(name = "designer_max_count")
+    @Column(name = "designer_max_count", nullable = false)
     private int designerMaxCount;
-    @Column(name = "apply_designer")
+    @Column(name = "apply_designer", nullable = false)
     private Boolean applyDesigner;
 
     @Enumerated(EnumType.STRING)
@@ -90,9 +95,12 @@ public class Project {
     @JoinColumn(name = "club_id")
     private Club club;
     private String bio;
-    @Column(name = "is_active")
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    public void plusViewCount(){
+        this.viewCount++;
+    }
     public void plusDeveloper() {
         if(Boolean.FALSE.equals(this.applyDeveloper)){
             throw new CustomException(ErrorCode.DEVELOPER_COUNT_OVER);

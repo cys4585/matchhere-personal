@@ -116,6 +116,12 @@ public class ProjectArticleService {
         projectContentRepository.save(ProjectContent.of(projectArticle, content));
     }
 
+    // 프로젝트 게시글 조회수 증가
+    public HttpStatus plusViewCount(Long projectArticleId){
+        findProjectArticle(projectArticleId).plusViewCount();
+        return HttpStatus.OK;
+    }
+
     public ProjectBoard findProjectBoard(int boardId){
         return projectBoardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
