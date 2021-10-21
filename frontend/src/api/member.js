@@ -39,6 +39,17 @@ const updateSkills = async (data) => {
   await http.put(`member/skills`, data)
 }
 
+const getCareerAll = async () => {
+  const res = await http.get(`member/careerall`)
+  return res.data
+}
+
+const createCareer = async (data) => {
+  // {company, description, start_date, end_date, is_incumbent, role}
+  // const start_date =
+  await http.post(`member/career`, data)
+}
+
 export default {
   getMypage,
   getMe,
@@ -46,4 +57,6 @@ export default {
   updateBasicInfo,
   getSkills,
   updateSkills,
+  getCareerAll,
+  createCareer,
 }

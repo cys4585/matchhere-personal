@@ -6,7 +6,14 @@ import {
 } from "./validator2"
 
 export class InputFormFieldMaker {
-  constructor(key, value = "", disabled = false) {
+  constructor(
+    key,
+    value = "",
+    disabled = false,
+    label = "라벨",
+    type = "string",
+    placeholder = ""
+  ) {
     this.key = key
     this.value = value
     this.errors = {}
@@ -54,6 +61,11 @@ export class InputFormFieldMaker {
         this.placeholder = "이름을 입력하세요"
         this.validators = [nameValidator]
         break
+      }
+      default: {
+        this.label = label
+        this.type = type
+        this.placeholder = placeholder
       }
     }
   }

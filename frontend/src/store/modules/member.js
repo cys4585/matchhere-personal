@@ -101,7 +101,7 @@ export default {
         )
       }
     },
-    async updateSkills({ commit }, data) {
+    async updateSkills({ commit, dispatch }, data) {
       try {
         await memberAPI.updateSkills(data)
         commit(
@@ -121,6 +121,44 @@ export default {
           },
           { root: true }
         )
+      }
+      dispatch("getSkills")
+    },
+    async getCareerAll({ commit }) {
+      try {
+        return await memberAPI.getCareerAll()
+      } catch (error) {
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "데이터를 가져오는 데 실패했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async createCareer({ commit }, data) {
+      try {
+        await memberAPI.createCareer(data)
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "경력이 추가되었습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+      } catch (error) {
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "추가 실패",
+            type: "error",
+          },
+          { root: true }
+        )
+        console.log(error)
       }
     },
   },
