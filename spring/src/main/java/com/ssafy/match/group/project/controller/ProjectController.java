@@ -6,6 +6,7 @@ import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectInviteLinkResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.project.service.ProjectService;
@@ -198,13 +199,23 @@ public class ProjectController {
         return new ResponseEntity<>("권한이 변경되었습니다.", projectService.changeAuthority(projectId, memberId, authority));
     }
 
-    @GetMapping("/view-count/{project-id}")
+    @GetMapping("/view-count/{projectId}")
     @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 id</strong>로 조회수를 증가시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "처리되었습니다."),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<String> plusViewCount(@PathVariable("project-id") Long projectId) {
+    public ResponseEntity<String> plusViewCount(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("처리되었습니다.", projectService.plusViewCount(projectId));
+    }
+
+    @GetMapping("/invite-link/{projectId}")
+    @ApiOperation(value = "초대 링크 생성", notes = "<strong>받은 프로젝트 id</strong> 해당 프로젝트 상세조회 링크를 보내준다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 404, message = ""),
+    })
+    public ResponseEntity<ProjectInviteLinkResponseDto> makeInviteLink(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.makeInviteLink(projectId), HttpStatus.OK);
     }
 }

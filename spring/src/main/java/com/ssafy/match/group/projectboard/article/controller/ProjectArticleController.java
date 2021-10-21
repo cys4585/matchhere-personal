@@ -31,24 +31,24 @@ public class ProjectArticleController {
 
     private final ProjectArticleService projectArticleService;
 
-    @GetMapping("/{board-id}/articles")
+    @GetMapping("/{boardId}/articles")
     @ApiOperation(value = "(프로젝트)게시글 리스트 조회", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시글들을 조회한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "게시글 리스트 조회"),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<Page<ProjectArticleSimpleInfoResponseDto>> getArticles(@PathVariable("board-id") Integer boardId,
+    public ResponseEntity<Page<ProjectArticleSimpleInfoResponseDto>> getArticles(@PathVariable("boardId") Integer boardId,
         @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return new ResponseEntity<>(projectArticleService.getProjectArticles(boardId, pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/article/{article-id}")
+    @GetMapping("/article/{articleId}")
     @ApiOperation(value = "(프로젝트)게시글 상세조회", notes = "<strong>받은 article id</strong>를 사용해서 게시글 상세 조회")
     @ApiResponses({
         @ApiResponse(code = 200, message = "게시글 상제 정보"),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<ProjectArticleInfoResponseDto> getArticleDetail(@PathVariable("article-id") Long articleId) {
+    public ResponseEntity<ProjectArticleInfoResponseDto> getArticleDetail(@PathVariable("articleId") Long articleId) {
         return new ResponseEntity<>(projectArticleService.getProjectArticleDetail(articleId), HttpStatus.OK);
     }
 
@@ -62,33 +62,33 @@ public class ProjectArticleController {
         return new ResponseEntity<>(projectArticleService.createArticle(dto), HttpStatus.OK);
     }
 
-    @PutMapping("/{article-id}")
+    @PutMapping("/{articleId}")
     @ApiOperation(value = "(프로젝트)게시판의 게시글 수정", notes = "<strong>받은 게시글 id</strong>를 사용해서 게시글을 수정한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "수정되었습니다."),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> updateArticle(@PathVariable("article-id") Long articleId, @RequestBody ProjectArticleRequestDto dto) {
+    public ResponseEntity<String> updateArticle(@PathVariable("articleId") Long articleId, @RequestBody ProjectArticleRequestDto dto) {
         return new ResponseEntity<>(projectArticleService.updateArticle(articleId, dto));
     }
 
-    @DeleteMapping("/{article-id}")
+    @DeleteMapping("/{articleId}")
     @ApiOperation(value = "(프로젝트)게시판의 게시글 삭제", notes = "<strong>받은 게시글 id</strong>를 사용해서 게시글을 삭제한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "수정되었습니다."),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> deleteArticle(@PathVariable("article-id") Long articleId) {
+    public ResponseEntity<String> deleteArticle(@PathVariable("articleId") Long articleId) {
         return new ResponseEntity<>("삭제되었습니다.", projectArticleService.deleteArticle(articleId));
     }
 
-    @GetMapping("/view-count/{project-article-id}")
+    @GetMapping("/view-count/{projectArticleId}")
     @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 게시글 id</strong>로 조회수를 증가시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "처리되었습니다."),
         @ApiResponse(code = 404, message = "ARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> plusViewCount(@PathVariable("project-article-id") Long projectArticleId) {
+    public ResponseEntity<String> plusViewCount(@PathVariable("projectArticleId") Long projectArticleId) {
         return new ResponseEntity<>("처리되었습니다.", projectArticleService.plusViewCount(projectArticleId));
     }
 }
