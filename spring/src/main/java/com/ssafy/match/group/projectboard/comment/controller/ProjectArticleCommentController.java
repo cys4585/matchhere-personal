@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class ProjectArticleCommentController {
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nCOMMENT_NOT_FOUND"),
     })
     public ResponseEntity<Long> create(@PathVariable("articleId") Long articleId,
-        @PathVariable("parentId") Long parentId, @RequestBody ProjectArticleCommentRequestDto dto) {
+        @PathVariable("parentId") Long parentId, @Valid @RequestBody ProjectArticleCommentRequestDto dto) {
         return new ResponseEntity<>(projectCommentService.create(articleId, parentId, dto), HttpStatus.OK);
     }
 
@@ -56,7 +57,7 @@ public class ProjectArticleCommentController {
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nCOMMENT_NOT_FOUND"),
     })
     public ResponseEntity<String> update(@PathVariable("commentId") Long commentId,
-        @RequestBody ProjectArticleCommentRequestDto dto) {
+        @Valid @RequestBody ProjectArticleCommentRequestDto dto) {
         return new ResponseEntity<>("수정되었습니다.", projectCommentService.update(commentId, dto));
     }
 

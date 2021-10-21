@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,13 +40,13 @@ public class ProjectArticle {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-    @NotEmpty
+    @NotBlank
     private String title;
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
-    @Column(name = "modified_date")
+    @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private int viewCount;
 
     public void plusViewCount(){

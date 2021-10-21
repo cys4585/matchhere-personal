@@ -7,6 +7,7 @@ import com.ssafy.match.group.projectboard.article.service.ProjectArticleService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +59,7 @@ public class ProjectArticleController {
         @ApiResponse(code = 200, message = "게시글의 Long타입 Id"),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND"),
     })
-    public ResponseEntity<Long> createArticle(@RequestBody ProjectArticleRequestDto dto) {
+    public ResponseEntity<Long> createArticle(@Valid @RequestBody ProjectArticleRequestDto dto) {
         return new ResponseEntity<>(projectArticleService.createArticle(dto), HttpStatus.OK);
     }
 
@@ -68,7 +69,7 @@ public class ProjectArticleController {
         @ApiResponse(code = 200, message = "수정되었습니다."),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> updateArticle(@PathVariable("articleId") Long articleId, @RequestBody ProjectArticleRequestDto dto) {
+    public ResponseEntity<String> updateArticle(@PathVariable("articleId") Long articleId, @Valid @RequestBody ProjectArticleRequestDto dto) {
         return new ResponseEntity<>(projectArticleService.updateArticle(articleId, dto));
     }
 
