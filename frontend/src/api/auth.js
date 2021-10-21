@@ -30,6 +30,7 @@ const login = async (formData) => {
 }
 
 const reissue = async (tokenData) => {
+  console.log(tokenData)
   const res = await http.post(`/auth/reissue`, tokenData)
   return res.data
 }
