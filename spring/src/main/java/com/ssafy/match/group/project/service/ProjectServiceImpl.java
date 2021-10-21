@@ -25,6 +25,7 @@ import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseD
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectInviteLinkResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
@@ -59,6 +60,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 @Transactional(readOnly = true, rollbackFor = Exception.class)
@@ -223,6 +225,13 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectInfoResponseDto.of(project, projectTechstackFull(project),
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
+    }
+
+    public ProjectInviteLinkResponseDto makeInviteLink(Long projectId){
+        return ProjectInviteLinkResponseDto.from(ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/project/")
+            .path(projectId.toString())
+            .toUriString());
     }
 
     // 현재 프로젝트 간편 정보 리턴

@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.service;
 
 import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
+import com.ssafy.match.group.project.dto.response.ProjectInviteLinkResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
@@ -65,4 +66,6 @@ public interface ProjectService {
     HttpStatus reject(Long projectId, Long memberId);
 
     HttpStatus plusViewCount(Long projectId);
+
+    ProjectInviteLinkResponseDto makeInviteLink(Long projectId);
 }
