@@ -1,6 +1,5 @@
 package com.ssafy.match.group.project.service;
 
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
@@ -25,7 +24,6 @@ import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseD
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForUpdateResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoResponseDto;
-import com.ssafy.match.group.project.dto.response.ProjectInviteLinkResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectTechstackResponseDto;
@@ -44,7 +42,6 @@ import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepositor
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,11 +53,9 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 @Transactional(readOnly = true, rollbackFor = Exception.class)
@@ -227,12 +222,7 @@ public class ProjectServiceImpl implements ProjectService {
             authority);
     }
 
-    public ProjectInviteLinkResponseDto makeInviteLink(Long projectId){
-        return ProjectInviteLinkResponseDto.from(ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/project/")
-            .path(projectId.toString())
-            .toUriString());
-    }
+
 
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
