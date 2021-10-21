@@ -19,10 +19,8 @@ export default {
     },
     async createProject(context, formData) {
       try {
-        // 임시로!
-        const resMessage = await ProjectAPI.createProject(formData)
-        console.log(resMessage)
-        const id = resMessage.replace(/[^0-9]/g, "")
+        const resData = await ProjectAPI.createProject(formData)
+        const id = resData.id
         console.log(id)
         return id
       } catch (error) {
@@ -53,8 +51,8 @@ export default {
     },
     async applyForParticipation(context, { reqForm, projectId }) {
       try {
-        const res = await ProjectAPI.projectApply(reqForm, projectId)
-        console.log(res.data)
+        const resData = await ProjectAPI.projectApply(reqForm, projectId)
+        console.log(resData)
       } catch (error) {
         console.log(error.response)
         const { status } = error.response
@@ -64,6 +62,25 @@ export default {
           default:
             throw Error(`임시: ${status} 문제가 발생했어~`)
         }
+      }
+    },
+    async getAllApplication(context, projectId) {
+      try {
+        const resData = await ProjectAPI.getAllApplication(projectId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status } = error.response
+        throw Error(`임시: ${status} 문제가 발생했어~`)
+      }
+    },
+    async getApplication(context, { projectId, memberId }) {
+      try {
+        const resData = await ProjectAPI.getApplication(projectId, memberId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        throw Error(`임시 문제 발생`)
       }
     },
   },

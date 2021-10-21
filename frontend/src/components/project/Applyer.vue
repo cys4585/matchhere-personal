@@ -5,17 +5,40 @@
       <span>4명</span>
     </header>
     <div class="member-list">
-      <ApplyerItem />
+      <ApplyerItem
+        v-for="applyer in applyerList"
+        :key="applyer.memberId"
+        :applyer="applyer"
+        :projectId="projectId"
+      />
     </div>
   </div>
 </template>
 <script>
 import ApplyerItem from "@/components/project/ApplyerItem.vue"
+import { onMounted, ref } from "vue"
+import { useStore } from "vuex"
 
 export default {
   name: "Applyer",
   components: {
     ApplyerItem,
+  },
+  props: {
+    projectId: Number,
+  },
+  setup(props) {
+    const store = useStore()
+
+    const applyerList = ref()
+    onMounted(async () => {
+      applyerList.value = await store.dispatch(
+        "project/getAllApplication",
+        props.projectId
+      )
+    })
+
+    return { applyerList }
   },
 }
 </script>

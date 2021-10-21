@@ -31,6 +31,15 @@ const projectApply = async (reqForm, projectId) => {
   return res.data
 }
 
+const getAllApplication = async (projectId) => {
+  const res = await http.get(`/projectapplication/all/${projectId}`)
+  return res.data
+}
+
+const getApplication = async (projectId, memberId) => {
+  const res = await http.get(`projectapplication/one/${projectId}/${memberId}`)
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -38,4 +47,6 @@ export default {
   getProject,
   getInfoForUpdate,
   projectApply,
+  getAllApplication,
+  getApplication,
 }

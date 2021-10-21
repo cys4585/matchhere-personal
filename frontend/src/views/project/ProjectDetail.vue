@@ -29,6 +29,7 @@
 <script>
 import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
+import { onMounted, onUpdated } from "@vue/runtime-core"
 export default {
   name: "ProjectDetail",
   setup() {
@@ -39,9 +40,16 @@ export default {
 
     const activedView = ref()
 
+    onMounted(() => {
+      activedView.value = route.name
+    })
+
+    onUpdated(() => {
+      activedView.value = route.name
+    })
+
     const handleClick = (e) => {
       const name = e.target.name
-      activedView.value = name
       router.push({ name, params: { projectId } })
     }
     return { handleClick, activedView }
