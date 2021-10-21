@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @Data
 public class ChatMessageResponseDto {
-    private String message;
+    private String content;
     private String nickname;
     private LocalDateTime sentTime;
     private DBFileDto dbFile;
 
     public static ChatMessageResponseDto of(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
-                .message(chatMessage.getContent())
+                .content(chatMessage.getContent())
                 .nickname(chatMessage.getNickname())
                 .sentTime(chatMessage.getSent_time())
                 .dbFile(DBFileDto.of(chatMessage.getDbFile()))
@@ -25,8 +25,8 @@ public class ChatMessageResponseDto {
     }
 
     @Builder
-    public ChatMessageResponseDto(String message, String nickname, LocalDateTime sentTime, DBFileDto dbFile) {
-        this.message = message;
+    public ChatMessageResponseDto(String content, String nickname, LocalDateTime sentTime, DBFileDto dbFile) {
+        this.content = content;
         this.nickname = nickname;
         this.sentTime = sentTime;
         this.dbFile = dbFile;

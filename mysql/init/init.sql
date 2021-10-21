@@ -405,6 +405,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`chat_message` (
   `is_read` BIT(1) NULL,
   `file_id` VARCHAR(255) NULL DEFAULT NULL,
   `chat_room_id` VARCHAR(255) NOT NULL,
+  `nickname` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_message_member1_idx` (`sender_id` ASC),
   INDEX `fk_chat_message_files2_idx` (`file_id` ASC),
@@ -878,7 +879,7 @@ ENGINE = InnoDB;
 -- Table `matching`.`chat_room`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`chat_room` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `id` VARCHAR(255) NOT NULL,
   `user_id` BIGINT NOT NULL,
   `other_id` BIGINT NOT NULL,
   `user_nickname` VARCHAR(10) NOT NULL,
