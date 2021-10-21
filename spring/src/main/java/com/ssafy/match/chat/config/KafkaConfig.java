@@ -2,8 +2,9 @@ package com.ssafy.match.chat.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.ssafy.match.chat.entity.ChatMessage;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
-import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -24,7 +25,8 @@ public class KafkaConfig {
     //Sender config
     @Bean
     public ProducerFactory<String, ChatMessage> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs(), null, new JsonSerializer<ChatMessage>());
+        return new DefaultKafkaProducerFactory<>(producerConfigurations(), null, new JsonSerializer<ChatMessage>());
+//        return new DefaultKafkaProducerFactory<>(producerConfigurations());
     }
 
     @Bean
@@ -33,15 +35,18 @@ public class KafkaConfig {
     }
 
     @Bean
-    public Map<String, Object> producerConfigs() {
+    public Map<String, Object> producerConfigurations() {
 
         return ImmutableMap.<String, Object>builder()
-                .put("bootstrap.servers", "localhost:9092")//kafka server ip & port
-                .put("key.serializer", IntegerSerializer.class)
-                .put("value.serializer", JsonSerializer.class)//Object json parser
-                .put("group.id", "spring-boot-test") // chatting  group id
+                .put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+//                .put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+                .put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class)
+                .put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class)
+//                .put("group.id", "spring-boot-test") // chatting  group id
+                .put(ConsumerConfig.GROUP_ID_CONFIG, "spring-boot-test")
                 .build();
     }
+
     //Receiver config
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ChatMessage> kafkaListenerContainerFactory() {
@@ -53,15 +58,18 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, ChatMessage> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs(), null, new JsonDeserializer<>(ChatMessage.class));
+//        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
     @Bean
     public Map<String, Object> consumerConfigs() {
         return ImmutableMap.<String, Object>builder()
-                .put("bootstrap.servers", "localhost:9092")
-                .put("key.deserializer", IntegerDeserializer.class)
-                .put("value.deserializer", JsonDeserializer.class)
-                .put("group.id", "spring-boot-test")
+                .put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+                .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class)
+//                .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                .put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class)
+                .put(ConsumerConfig.GROUP_ID_CONFIG, "spring-boot-test")
+//                .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest") // earliest : 최초 데이터부터, latest : 최신 데이터부터, none : 이전 오프셋이 없으면 오류 ( 잘 사용하지 않음)
                 .build();
     }
 }
