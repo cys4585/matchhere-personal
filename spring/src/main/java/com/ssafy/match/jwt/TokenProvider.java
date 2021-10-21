@@ -89,8 +89,6 @@ public class TokenProvider {
 
     private static Map<String, Object> createClaims(Object principal) {
         Map<String, Object> claims = new HashMap<>();
-        System.out.println("hereeeeeeeeeee");
-        System.out.println(principal);
         CustomUserDetails customUserDetails = (CustomUserDetails)principal;
 //        if (principal instanceof CustomUserDetails) {
         claims.put("email", customUserDetails.getEmail());
