@@ -15,8 +15,28 @@ const getBasicInfo = async () => {
   return res.data
 }
 
-const updateBasicInfo = async (submitData) => {
-  await http.put(`member/basicinfo`, submitData)
+const updateBasicInfo = async (data) => {
+  await http.put(`member/basicinfo`, data)
+}
+
+const getSkills = async () => {
+  const res = await http.get(`member/skills`)
+  const dpositionList = res.data.dpositionList.map((dp) => dp.name)
+  const techList = res.data.techList.reduce((acc, dp) => {
+    return {
+      ...acc,
+      [dp.name]: dp.level,
+    }
+  }, {})
+  return {
+    position: res.data.position,
+    dpositionList,
+    techList,
+  }
+}
+
+const updateSkills = async (data) => {
+  await http.put(`member/skills`, data)
 }
 
 export default {
@@ -24,4 +44,6 @@ export default {
   getMe,
   getBasicInfo,
   updateBasicInfo,
+  getSkills,
+  updateSkills,
 }

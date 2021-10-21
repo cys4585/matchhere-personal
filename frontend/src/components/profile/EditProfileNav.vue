@@ -11,7 +11,7 @@
         :class="{ active: activeSectionId === 2 }"
         @click="handleClick(2)"
       >
-        직무/기술스택
+        포지션/기술스택
       </button>
       <button
         :class="{ active: activeSectionId === 3 }"

@@ -2,11 +2,7 @@
   <div class="form">
     <div class="fields">
       <div class="grid gap-4">
-        <SelectFormField
-          :field="positionField"
-          v-model="positionField.value"
-          @update:modelValue="handleUpdatePosition"
-        />
+        <SelectFormField :field="positionField" v-model="positionField.value" />
         <div class="dplist">
           <DetailPositionButton
             v-for="dp in displayedDPList"
@@ -35,12 +31,12 @@
 </template>
 
 <script>
-import { computed, ref } from "vue"
+import { computed, reactive, ref, watch } from "vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
-import SelectFormField from "@/components/common/SelectFormField.vue"
-import DetailPositionButton from "@/components/common/DetailPositionButton.vue"
-import TeckStackField from "@/components/common/TeckStackField.vue"
-import TeckStackListItem from "@/components/common/TeckStackListItem.vue"
+import SelectFormField from "@/components/common/formField/SelectFormField.vue"
+import DetailPositionButton from "@/components/common/formField/DetailPositionButton.vue"
+import TeckStackField from "@/components/common/formField/TeckStackField.vue"
+import TeckStackListItem from "@/components/common/formField/TeckStackListItem.vue"
 import { detailPositionList } from "@/libs/data"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
@@ -58,8 +54,8 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
-    const dpList = ref({ ...detailPositionList })
-    const positionField = ref({
+    const dpList = reactive({ ...detailPositionList })
+    const positionField = reactive({
       label: "포지션",
       value: "개발자",
       placeholder: "포지션을 선택하세요",
@@ -67,44 +63,27 @@ export default {
     })
     const selectedTeckStackList = ref({})
 
-    const positionKey = computed(() => {
-      if (positionField.value.value === "개발자") {
-        return "developer"
-      } else if (positionField.value.value === "기획자") {
-        return "planner"
-      } else {
-        return "designer"
-      }
-    })
-
     const detailPositionListField = computed(() =>
-      dpList.value[positionKey.value]
+      dpList[positionField.value]
         .filter((dp) => dp.selected)
         .map((dp) => dp.value)
     )
 
     const displayedDPList = computed(() => {
-      switch (positionField.value.value) {
-        case "개발자": {
-          return dpList.value.developer
-        }
-        case "기획자": {
-          return dpList.value.planner
-        }
-        default: {
-          return dpList.value.designer
-        }
-      }
+      return dpList[positionField.value]
     })
 
-    const handleUpdatePosition = () => {
-      Object.keys(dpList.value).forEach((key) => {
-        dpList.value[key].forEach((dp) => (dp.selected = false))
-      })
-    }
+    watch(
+      () => positionField.value,
+      (_, prevPosition) => {
+        dpList[prevPosition].forEach((dp) => {
+          dp.selected = false
+        })
+      }
+    )
 
     const handleClickDP = (id) => {
-      dpList.value[positionKey.value].forEach((dp) => {
+      dpList[positionField.value].forEach((dp) => {
         if (dp.id === id) {
           dp.selected = !dp.selected
         }
@@ -144,12 +123,10 @@ export default {
 
     return {
       positionField,
-      positionKey,
       displayedDPList,
       selectedTeckStackList,
       detailPositionListField,
       handleClickDP,
-      handleUpdatePosition,
       handleSelectTeckStack,
       handleChangeUserLevel,
       handleRemoveTeckStack,

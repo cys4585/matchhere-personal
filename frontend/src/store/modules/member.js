@@ -63,10 +63,10 @@ export default {
         )
       }
     },
-    async updateBasicInfo({ commit }, submitData) {
+    async updateBasicInfo({ commit }, data) {
       // TODO: 닉네임 중복 에러 핸들링
       try {
-        await memberAPI.updateBasicInfo(submitData)
+        await memberAPI.updateBasicInfo(data)
         commit(
           "ADD_MESSAGES",
           {
@@ -85,6 +85,42 @@ export default {
           { root: true }
         )
         console.log(error)
+      }
+    },
+    async getSkills({ commit }) {
+      try {
+        return await memberAPI.getSkills()
+      } catch (error) {
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "내 스킬을 불러올 수 없습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async updateSkills({ commit }, data) {
+      try {
+        await memberAPI.updateSkills(data)
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "업데이트 성공!",
+            type: "success",
+          },
+          { root: true }
+        )
+      } catch (error) {
+        commit(
+          "ADD_MESSAGES",
+          {
+            text: "업데이트 실패",
+            type: "error",
+          },
+          { root: true }
+        )
       }
     },
   },
