@@ -35,11 +35,12 @@ public class ChatMessage {
 //    private String fileName;
 //    private String rawData;
 
-    public ChatMessage(String content, String sender, ChatRoom chatRoom, LocalDateTime sentTime, String nickname) {
+    @Builder
+    public ChatMessage(String content, String sender_id, ChatRoom chatRoom, LocalDateTime sent_time, String nickname) {
         this.content = content;
-        this.sender_id = sender;
+        this.sender_id = sender_id;
         this.chatRoom = chatRoom;
-        this.sent_time = sentTime;
+        this.sent_time = sent_time;
         this.nickname = nickname;
     }
 

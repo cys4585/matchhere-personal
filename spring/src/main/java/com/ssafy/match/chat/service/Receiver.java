@@ -24,10 +24,10 @@ public class Receiver {
     public void receive(ChatMessage message) throws Exception {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
-        msg.put("senttime", message.getSent_time().format(DateTimeFormatter.ISO_DATE_TIME));
+        msg.put("sent_time", message.getSent_time().format(DateTimeFormatter.ISO_DATE_TIME));
         msg.put("nickname", message.getNickname());
-        msg.put("message", message.getContent());
-        msg.put("sender", message.getSender_id());
+        msg.put("content", message.getContent());
+        msg.put("sender_id", message.getSender_id());
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(msg);
