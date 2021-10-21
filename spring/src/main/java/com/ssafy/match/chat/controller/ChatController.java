@@ -3,6 +3,7 @@ package com.ssafy.match.chat.controller;
 
 import com.ssafy.match.chat.dao.ChatHistoryDao;
 import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
+import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.service.ChatService;
 import com.ssafy.match.chat.service.Receiver;
@@ -27,8 +28,8 @@ public class ChatController {
     //// "url/app/message"로 들어오는 메시지를 "/topic/public"을 구독하고있는 사람들에게 송신
     @MessageMapping("/message/{id}")//@MessageMapping works for WebSocket protocol communication. This defines the URL mapping.
     @SendTo("/topic/public")//websocket subscribe topic& direct send
-    public void sendMessage(@Header("Authorization") String token, @DestinationVariable Long id) throws Exception {
-        chatService.sendMessage(token, id);
+    public void sendMessage(ChatMessageRequestDto chatMessageRequestDto, @Header("Authorization") String token, @DestinationVariable Long id) throws Exception {
+        chatService.sendMessage(chatMessageRequestDto, token, id);
     }
 
     @GetMapping("/{id}")

@@ -11,6 +11,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    @Query(value = "select mm.content, mm.sent_time, mm.nickname from matching.chat_message mm where mm.chatRoom = :chatRoom")
-    List<ChatMessageInterface> findAllByRoomId(@Param("chatRoom") ChatRoom chatRoom);
+    @Query(value = "select mm.content as content , mm.sent_time as sent_time, mm.nickname as nickname, mm.sender_id as sender_id from matching.chat_message mm where mm.chatRoom = :chatRoom")
+    List<ChatMessageInterface> findAllByRoom(@Param("chatRoom") ChatRoom chatRoom);
 }

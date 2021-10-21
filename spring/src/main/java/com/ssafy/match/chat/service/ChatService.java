@@ -4,6 +4,7 @@ package com.ssafy.match.chat.service;
 import com.ssafy.match.chat.dao.ChatHistoryDao;
 import com.ssafy.match.chat.dto.ChatMessageInterface;
 import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
+import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.entity.ChatRoom;
 import com.ssafy.match.chat.repository.ChatMessageRepository;
@@ -42,7 +43,7 @@ public class ChatService {
     private static String BOOT_TOPIC = "kafka-chat";
 
     @Transactional
-    public void sendMessage(String token, Long id) {
+    public void sendMessage(ChatMessageRequestDto chatMessageRequestDto, String token, Long id) {
         ConcurrentHashMap<String, String> concurrentHashMap = tokenProvider.getUserDataFromJwt(token);
         Member other = memberRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
         String roomid = getRoomId(Long.parseLong(concurrentHashMap.get("userid")), other.getId());
@@ -51,21 +52,10 @@ public class ChatService {
         if (chatRoom.isEmpty()) {
             ChatRoom inner_chatroom = createChatRoom(roomid, Long.parseLong(concurrentHashMap.get("userid")), concurrentHashMap.get("nickname"), other.getId(), other.getNickname());
             chatRoomRepository.save(inner_chatroom);
-            message = ChatMessage.builder()
-                    .sender_id(concurrentHashMap.get("userid"))
-                    .nickname(concurrentHashMap.get("nickname"))
-                    .sent_time(LocalDateTime.now())
-                    .chatRoom(inner_chatroom)
-                    .build();
+            message = chatMessageRequestDto.toChatMessage(concurrentHashMap, inner_chatroom);
         } else {
-            message = ChatMessage.builder()
-                    .sender_id(concurrentHashMap.get("userid"))
-                    .nickname(concurrentHashMap.get("nickname"))
-                    .sent_time(LocalDateTime.now())
-                    .chatRoom(chatRoom.get())
-                    .build();
+            message = chatMessageRequestDto.toChatMessage(concurrentHashMap, chatRoom.get());
         }
-        System.out.println(message);
         chatMessageRepository.save(message);
 //        chatHistoryDao.save(message);
         sender.send(BOOT_TOPIC, message);
@@ -96,7 +86,7 @@ public class ChatService {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
         String roomid = getRoomId(member.getId(), id);
         ChatRoom chatRoom = chatRoomRepository.findById(roomid).orElseThrow(() -> new NullPointerException("존재하지 않는 채팅방입니다!"));
-        List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoomId(chatRoom);
+        List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoom(chatRoom);
         ChatMessagesResponseDto chatMessagesResponseDto = ChatMessagesResponseDto.of(chatMessages);
         return chatMessagesResponseDto;
     }
