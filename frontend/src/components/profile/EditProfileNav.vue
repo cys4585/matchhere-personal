@@ -52,7 +52,7 @@ export default {
 nav {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-  @apply border-b border-gray-200 overflow-auto w-screen -mx-4 mb-6 lg:w-full;
+  @apply border-b border-gray-200 overflow-auto w-screen -mx-4 mb-6 sm:w-full sm:mx-0;
 
   &::-webkit-scrollbar {
     display: none;
