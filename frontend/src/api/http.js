@@ -18,10 +18,12 @@ http.interceptors.request.use(async (config) => {
     try {
       // token 재발급
       await store.dispatch("auth/reissue", tokenData)
+      console.log("try")
       tokenData = store.getters["autn/getToken"]
     } catch (error) {
       // refreshToken 유효기간 만료
       router.push({ name: "Login" })
+      console.log("RESET_TOKEN")
       store.commit("auth/RESET_TOKEN")
       return
     }

@@ -1,6 +1,5 @@
 package com.ssafy.match.chat.dto;
 
-import com.ssafy.match.common.dto.DetailPositionInterface;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 @Data
 public class ChatMessagesResponseDto {
-    private List<ChatMessageInterface> chatMessageInterfaces = new ArrayList<>();
+    private List<ChatMessageInterface> chatList = new ArrayList<>();
 
     public static ChatMessagesResponseDto of(List<ChatMessageInterface> chatMessageInterfaces) {
         return ChatMessagesResponseDto.builder()
@@ -19,6 +18,6 @@ public class ChatMessagesResponseDto {
 
     @Builder
     public ChatMessagesResponseDto(List<ChatMessageInterface> chatMessageInterfaces) {
-        this.chatMessageInterfaces = chatMessageInterfaces;
+        this.chatList = chatMessageInterfaces;
     }
 }
