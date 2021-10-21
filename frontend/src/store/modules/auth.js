@@ -68,6 +68,7 @@ export default {
       localStorage.setItem("token", JSON.stringify(tokenData))
     },
     RESET_TOKEN(state) {
+      console.log("RESET_TOKEN")
       state.token = {
         grantType: "",
         accessToken: "",
@@ -180,8 +181,11 @@ export default {
     },
     async login({ commit }, formData) {
       try {
-        const tokenData = await AuthAPI.login(formData)
-        commit("SET_TOKEN", tokenData)
+        const { email, id, name, nickname, tokenInfo } = await AuthAPI.login(
+          formData
+        )
+        commit("SET_TOKEN", tokenInfo)
+        commit("member/SET_USER", { email, id, name, nickname }, { root: true })
         commit("ADD_MESSAGES", { text: "안녕하세요 👍" }, { root: true })
       } catch (error) {
         commit(
@@ -214,8 +218,8 @@ export default {
         })
         commit("SET_TOKEN", newTokenData)
       } catch (error) {
-        alert(error)
         console.log(error)
+        throw new Error(error)
       }
     },
     async findPassword({ commit, getters }, { password }) {

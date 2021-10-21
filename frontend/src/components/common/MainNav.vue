@@ -10,7 +10,7 @@
           <router-link
             :to="{
               name: 'Profile',
-              params: { email: 'kepy1106@hanyang.ac.kr' },
+              params: { email: user.email },
             }"
           >
             프로필
@@ -31,6 +31,7 @@ export default {
   setup() {
     const store = useStore()
     const router = useRouter()
+    const user = computed(() => store.state.member.user)
     const isAuthenticated = computed(
       () => store.getters["auth/getIsAuthenticated"]
     )
@@ -41,6 +42,7 @@ export default {
     }
 
     return {
+      user,
       isAuthenticated,
       handleClickLogoutBtn,
     }

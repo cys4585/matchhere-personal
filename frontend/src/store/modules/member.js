@@ -3,9 +3,21 @@ import memberAPI from "@/api/member"
 export default {
   namespaced: true,
   state: {
+    user: {
+      email: "",
+      id: 0,
+      name: "",
+      nickname: "",
+    },
     basicInfo: {},
   },
   mutations: {
+    SET_USER(state, data) {
+      state.user = {
+        ...state.user,
+        ...data,
+      }
+    },
     SET_BASIC_INFO(state, basicInfo) {
       state.basicInfo = basicInfo
     },
@@ -25,6 +37,14 @@ export default {
           { root: true }
         )
         throw new Error()
+      }
+    },
+    async getMe({ commit }) {
+      try {
+        const user = await memberAPI.getMe()
+        commit("SET_USER", user)
+      } catch (error) {
+        console.log(error)
       }
     },
     async getBasicInfo({ commit }) {
@@ -68,5 +88,9 @@ export default {
       }
     },
   },
-  getters: {},
+  getters: {
+    getMyEmail(state) {
+      return state.user?.email
+    },
+  },
 }

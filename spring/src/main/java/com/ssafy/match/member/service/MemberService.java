@@ -52,6 +52,13 @@ public class MemberService {
     private final EducationRepository educationRepository;
 
     @Transactional(readOnly = true)
+    public MemberMeResponseDto getMe() {
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
+        MemberMeResponseDto memberMeResponseDto = MemberMeResponseDto.of(member);
+        return memberMeResponseDto;
+    }
+
+    @Transactional(readOnly = true)
     public Boolean checkPassword(MemberCheckPasswordDto memberCheckPasswordDto) {
         UsernamePasswordAuthenticationToken authenticationToken = memberCheckPasswordDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);

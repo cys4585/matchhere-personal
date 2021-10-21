@@ -18,6 +18,7 @@ if (localStorage.getItem("token")) {
   // 토큰 업데이트
   store
     .dispatch("auth/reissue", JSON.parse(localStorage.getItem("token")))
+    .then(() => store.dispatch("member/getMe"))
     .then(() => {
       createApp(App).use(store).use(router).mount("#app")
     })

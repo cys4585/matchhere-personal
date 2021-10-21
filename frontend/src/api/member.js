@@ -5,6 +5,11 @@ const getMypage = async (email = "") => {
   return res.data
 }
 
+const getMe = async () => {
+  const res = await http.get(`member/me`)
+  return res.data
+}
+
 const getBasicInfo = async () => {
   const res = await http.get(`member/basicinfo`)
   return res.data
@@ -16,6 +21,7 @@ const updateBasicInfo = async (submitData) => {
 
 export default {
   getMypage,
+  getMe,
   getBasicInfo,
   updateBasicInfo,
 }
