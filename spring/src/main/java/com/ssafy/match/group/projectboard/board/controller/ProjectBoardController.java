@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class ProjectBoardController {
         @ApiResponse(code = 200, message = "성공"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
     })
-    public ResponseEntity<Integer> create(@PathVariable("projectid") Long projectid, @RequestBody ProjectBoardCreateRequestDto dto) {
+    public ResponseEntity<Integer> create(@PathVariable("projectid") Long projectid, @Valid @RequestBody ProjectBoardCreateRequestDto dto) {
         return new ResponseEntity<>(projectBoardService.createBoard(projectid, dto), HttpStatus.OK);
     }
 
@@ -60,10 +61,10 @@ public class ProjectBoardController {
     @PutMapping("/boards/{boardid}")
     @ApiOperation(value = "(프로젝트)게시판 수정", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시판을 수정한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "변경 후 정보"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
     })
-    public ResponseEntity<String> updateBoard(@PathVariable("boardid") Integer boardid, @RequestBody ProjectBoardUpdateDto dto) {
-        return new ResponseEntity<>("수정되었습니다.", projectBoardService.updateBoard(boardid, dto));
+    public ResponseEntity<ProjectBoardInfoDto> updateBoard(@PathVariable("boardid") Integer boardid, @Valid @RequestBody ProjectBoardUpdateDto dto) {
+        return new ResponseEntity<>(projectBoardService.updateBoard(boardid, dto), HttpStatus.OK);
     }
 }

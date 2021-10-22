@@ -15,6 +15,11 @@ public class ControllerExceptionHandler {
 //        return ErrorResponse.toResponseEntity(DUPLICATE_RESOURCE);
 //    }
 
+//    @ExceptionHandler(value = {ConstraintViolationException.class})
+//    protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
+//        return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+//    }
+
     @ExceptionHandler(value = { CustomException.class })
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         log.error("handleCustomException throw CustomException : {}", e.getErrorCode());

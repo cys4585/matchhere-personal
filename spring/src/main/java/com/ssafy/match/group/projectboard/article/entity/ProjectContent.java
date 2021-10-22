@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,8 @@ public class ProjectContent {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_article_id")
     private ProjectArticle projectArticle;
+
+    @NotBlank
     private String content;
 
     public void setContent(String content){

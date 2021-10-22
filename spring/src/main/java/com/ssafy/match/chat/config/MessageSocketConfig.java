@@ -20,17 +20,18 @@ public class MessageSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/room");
+        registry.setApplicationDestinationPrefixes("/message");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
-                .setAllowedOriginPatterns("*").withSockJS();
-//            .setAllowedOriginPatterns("*").withSockJS();
-//            .setAllowedOrigins("https://localhost:8080", "https://i5d204.p.ssafy.io",
-//                "http://localhost:8080").withSockJS();
+                .setAllowedOriginPatterns("http://localhost:8080", "http://jxy.me")
+                .withSockJS()
+                .setStreamBytesLimit(512 * 1024)
+                .setHttpMessageCacheSize(1000)
+                .setDisconnectDelay(30 * 1000);
 //        registry.addEndpoint("/msgServer").setAllowedOrigins("*");
     }
 

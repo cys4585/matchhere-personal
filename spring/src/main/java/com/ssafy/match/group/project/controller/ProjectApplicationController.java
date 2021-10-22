@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -51,7 +52,7 @@ public class ProjectApplicationController {
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId,
-        @RequestBody ProjectApplicationRequestDto dto) {
+        @Valid @RequestBody ProjectApplicationRequestDto dto) {
         return new ResponseEntity<>("신청되었습니다", projectService.applyProject(projectId, dto));
     }
 
