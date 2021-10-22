@@ -31,7 +31,7 @@
     <CertificationFormModal
       v-if="modalOpen"
       :certificationId="certification.id"
-      type="Edit"
+      type="EDIT"
       @closeModal="handleToggleModal"
     />
   </div>
@@ -49,12 +49,16 @@ export default {
       type: Object,
     },
   },
-  setup() {
+  emits: ["updateCertification"],
+  setup(_, { emit }) {
     const store = useStore()
     const modalOpen = ref(false)
-    const handleToggleModal = () => {
+    const handleToggleModal = ({ action, data }) => {
       modalOpen.value = !modalOpen.value
       store.commit("SET_MODAL_OPEN", modalOpen)
+      if (action === "update") {
+        emit("updateCertification", data)
+      }
     }
     return {
       modalOpen,

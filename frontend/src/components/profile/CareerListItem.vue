@@ -43,7 +43,7 @@ export default {
     },
   },
   emits: ["updateCareer"],
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const store = useStore()
     const careerModalOpen = ref(false)
     const handleToggleModal = (payload) => {

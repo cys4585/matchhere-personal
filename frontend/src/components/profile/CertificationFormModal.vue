@@ -75,7 +75,7 @@ import { onMounted } from "@vue/runtime-core"
 export default {
   name: "CertificationFormModal",
   components: { Modal, InputFormField },
-  emits: ["closeModal", "updateCertification"],
+  emits: ["closeModal"],
   props: {
     certificationId: Number,
     type: String,
@@ -157,7 +157,7 @@ export default {
     const checkStartexpiredDate = () => {
       if (isExpire.value && issuedDate.value > expiredDate.value) {
         store.commit("ADD_MESSAGE", {
-          text: "입사일이 퇴사일보다 늦을 수는 없어요",
+          text: "취득일이 만료일보다 늦을 수는 없어요",
           type: "warning",
         })
         return false
@@ -165,8 +165,8 @@ export default {
       return true
     }
 
-    const handleCloseModal = () => {
-      emit("closeModal", "certification")
+    const handleCloseModal = (payload = {}) => {
+      emit("closeModal", { ...payload, type: "certification" })
     }
 
     onMounted(async () => {
@@ -207,11 +207,20 @@ export default {
                 certificationId: props.certificationId,
               }
             )
+            if (certification) {
+              handleCloseModal({ data: certification, action: "update" })
+            }
             console.log(certification)
             break
           }
           case "CREATE": {
-            await store.dispatch("member/createCertification", submitData)
+            const certification = await store.dispatch(
+              "member/createCertification",
+              submitData
+            )
+            if (certification) {
+              handleCloseModal({ data: certification, action: "create" })
+            }
             break
           }
         }

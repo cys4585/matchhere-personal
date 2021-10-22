@@ -13,7 +13,7 @@
             transition-colors
             hover:text-white hover:bg-blue-600
           "
-          @click="handleOpenModal({ type: 'career' })"
+          @click="handleToggleModal({ type: 'career' })"
         >
           + 추가
         </button>
@@ -40,7 +40,7 @@
             transition-colors
             hover:text-white hover:bg-blue-600
           "
-          @click="handleOpenModal({ type: 'certification' })"
+          @click="handleToggleModal({ type: 'certification' })"
         >
           + 추가
         </button>
@@ -50,6 +50,7 @@
           v-for="certification in certificationList"
           :key="certification.id"
           :certification="certification"
+          @updateCertification="handleUpdateCertification"
         />
       </div>
     </section>
@@ -99,12 +100,12 @@
   <CareerFormModal
     v-if="careerModalOpen"
     type="CREATE"
-    @closeModal="handleOpenModal"
+    @closeModal="handleToggleModal"
   />
   <CertificationFormModal
     v-if="certificationModalOpen"
     type="CREATE"
-    @closeModal="handleOpenModal"
+    @closeModal="handleToggleModal"
   />
   <!-- <AddCareerModal /> -->
 </template>
@@ -134,7 +135,10 @@ export default {
     const eduModalOpen = ref(false)
 
     const addNewCareer = (data) => {
-      careerList.value.push({ ...data })
+      careerList.value = [...careerList.value, { ...data }]
+    }
+    const addNewCertification = (data) => {
+      certificationList.value = [...certificationList.value, { ...data }]
     }
 
     const handleUpdateCareer = (data) => {
@@ -142,8 +146,13 @@ export default {
         return c.id === data.id ? data : c
       })
     }
+    const handleUpdateCertification = (data) => {
+      certificationList.value = certificationList.value.map((c) => {
+        return c.id === data.id ? data : c
+      })
+    }
 
-    const handleOpenModal = ({ type, action, data }) => {
+    const handleToggleModal = ({ type, action, data }) => {
       switch (type) {
         case "career": {
           careerModalOpen.value = !careerModalOpen.value
@@ -153,14 +162,17 @@ export default {
           }
           break
         }
-        case "education": {
-          eduModalOpen.value = !eduModalOpen.value
-          store.commit("SET_MODAL_OPEN", eduModalOpen.value)
-          break
-        }
         case "certification": {
           certificationModalOpen.value = !certificationModalOpen.value
           store.commit("SET_MODAL_OPEN", certificationModalOpen.value)
+          if (action === "create") {
+            addNewCertification(data)
+          }
+          break
+        }
+        case "education": {
+          eduModalOpen.value = !eduModalOpen.value
+          store.commit("SET_MODAL_OPEN", eduModalOpen.value)
           break
         }
       }
@@ -181,7 +193,8 @@ export default {
       certificationModalOpen,
       eduModalOpen,
       handleUpdateCareer,
-      handleOpenModal,
+      handleUpdateCertification,
+      handleToggleModal,
     }
   },
 }

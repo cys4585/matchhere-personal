@@ -78,7 +78,7 @@ import { onMounted } from "@vue/runtime-core"
 export default {
   name: "CareerFormModal",
   components: { Modal, InputFormField },
-  emits: ["closeModal", "updateCareer"],
+  emits: ["closeModal"],
   props: {
     careerId: Number,
     type: String,
