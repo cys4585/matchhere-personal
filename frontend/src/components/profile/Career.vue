@@ -19,26 +19,11 @@
         </button>
       </header>
       <div class="grid gap-4">
-        <div class="flex">
-          <div class="grid gap-2 flex-1">
-            <p class="text-lg font-medium">부서</p>
-            <p class="text-sm text-gray-700">회사</p>
-            <p class="text-xs text-gray-700">시작 일 - 종료 일</p>
-            <p class="truncate">
-              설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명
-            </p>
-          </div>
-          <div>
-            <button>
-              <span
-                class="material-icons text-gray-300 hover:text-blue-500"
-                style="font-size: 1rem"
-              >
-                edit
-              </span>
-            </button>
-          </div>
-        </div>
+        <CareerListItem
+          v-for="career in careerList"
+          :key="career.id"
+          :career="career"
+        />
       </div>
     </section>
     <section class="grid gap-4">
@@ -54,28 +39,17 @@
             transition-colors
             hover:text-white hover:bg-blue-600
           "
+          @click="handleOpenModal('certification')"
         >
           + 추가
         </button>
       </header>
       <div class="grid gap-4">
-        <div class="flex">
-          <div class="grid gap-2 flex-1">
-            <p class="text-lg font-medium">자격증 이름</p>
-            <p class="text-sm text-gray-700">발급기관</p>
-            <p class="text-xs text-gray-700">취득일 - 만료일</p>
-          </div>
-          <div>
-            <button>
-              <span
-                class="material-icons text-gray-300 hover:text-blue-500"
-                style="font-size: 1rem"
-              >
-                edit
-              </span>
-            </button>
-          </div>
-        </div>
+        <CertificationListItem
+          v-for="certification in certificationList"
+          :key="certification.id"
+          :certification="certification"
+        />
       </div>
     </section>
     <section class="grid gap-4">
@@ -121,27 +95,41 @@
       </div>
     </section>
   </div>
-  <AddCareerModal v-if="careerModalOpen" @closeModal="handleOpenModal" />
-  <!-- <AddCareerModal /> -->
+  <CareerFormModal
+    v-if="careerModalOpen"
+    type="Create"
+    @closeModal="handleOpenModal"
+  />
+  <CertificationFormModal
+    v-if="certificationModalOpen"
+    type="Create"
+    @closeModal="handleOpenModal"
+  />
   <!-- <AddCareerModal /> -->
 </template>
 
 <script>
-import AddCareerModal from "@/components/profile/AddCareerModal.vue"
-// import AddCareerModal from "@/components/profile/AddCareerModal.vue"
-// import AddCareerModal from "@/components/profile/AddCareerModal.vue"
+import CareerFormModal from "@/components/profile/CareerFormModal.vue"
+import CertificationFormModal from "@/components/profile/CertificationFormModal.vue"
+import CareerListItem from "@/components/profile/CareerListItem.vue"
+import CertificationListItem from "@/components/profile/CertificationListItem.vue"
 import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
 export default {
   name: "Career",
-  components: { AddCareerModal },
+  components: {
+    CareerFormModal,
+    CertificationFormModal,
+    CareerListItem,
+    CertificationListItem,
+  },
   setup() {
     const store = useStore()
     const careerList = ref([])
     const certificationList = ref([])
     const educationList = ref([])
     const careerModalOpen = ref(false)
-    const certModalOpen = ref(false)
+    const certificationModalOpen = ref(false)
     const eduModalOpen = ref(false)
 
     const handleOpenModal = (type) => {
@@ -157,8 +145,8 @@ export default {
           break
         }
         case "certification": {
-          certModalOpen.value = !certModalOpen.value
-          store.commit("SET_MODAL_OPEN", certModalOpen.value)
+          certificationModalOpen.value = !certificationModalOpen.value
+          store.commit("SET_MODAL_OPEN", certificationModalOpen.value)
           break
         }
       }
@@ -176,7 +164,7 @@ export default {
       certificationList,
       educationList,
       careerModalOpen,
-      certModalOpen,
+      certificationModalOpen,
       eduModalOpen,
       handleOpenModal,
     }

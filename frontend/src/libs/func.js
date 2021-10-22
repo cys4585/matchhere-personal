@@ -66,6 +66,7 @@ export class InputFormFieldMaker {
         this.label = label
         this.type = type
         this.placeholder = placeholder
+        this.validators = []
       }
     }
   }
