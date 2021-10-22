@@ -45,10 +45,10 @@ public class ProjectBoardService {
     }
 
     @Transactional
-    public HttpStatus updateBoard(Integer boardId, ProjectBoardUpdateDto projectBoardUpdateDto) {
+    public ProjectBoardInfoDto updateBoard(Integer boardId, ProjectBoardUpdateDto projectBoardUpdateDto) {
         ProjectBoard projectBoard = findBoard(boardId);
         projectBoard.setName(projectBoardUpdateDto.getName());
-        return HttpStatus.OK;
+        return ProjectBoardInfoDto.from(projectBoard);
     }
 
     // 프로젝트 찾기

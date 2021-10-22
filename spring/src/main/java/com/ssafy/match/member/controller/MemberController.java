@@ -101,7 +101,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
+    public ResponseEntity<CareerResponseDto> createMemberCareer(@RequestBody @Valid MemberCareerRequestDto memberCareerRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberCareer(memberCareerRequestDto));
     }
 
@@ -110,7 +110,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> updateMemberCareer(@PathVariable("id") Long id, @RequestBody @Valid MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+    public ResponseEntity<CareerResponseDto> updateMemberCareer(@PathVariable("id") Long id, @RequestBody @Valid MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
         return ResponseEntity.ok(memberService.updateMemberCareer(id, memberCareerUpdateRequestDto));
     }
 
@@ -137,7 +137,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
+    public ResponseEntity<CertificationResponseDto> createMemberCertification(@RequestBody @Valid MemberCertificationRequestDto memberCertificationRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberCertification(memberCertificationRequestDto));
     }
 
@@ -146,7 +146,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> updateMemberCertification(@PathVariable("id") Long id, @RequestBody @Valid MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+    public ResponseEntity<CertificationResponseDto> updateMemberCertification(@PathVariable("id") Long id, @RequestBody @Valid MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
         return ResponseEntity.ok(memberService.updateMemberCertification(id, memberCertificationUpdateRequestDto));
     }
 
@@ -167,7 +167,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> createMemberCertification(@RequestBody @Valid MemberEducationRequestDto memberEducationRequestDto) throws Exception {
+    public ResponseEntity<EducationResponseDto> createMemberCertification(@RequestBody @Valid MemberEducationRequestDto memberEducationRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.createMemberEducation(memberEducationRequestDto));
     }
 
@@ -176,7 +176,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> updateMemberEducation(@PathVariable("id") Long id, @RequestBody @Valid MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+    public ResponseEntity<EducationResponseDto> updateMemberEducation(@PathVariable("id") Long id, @RequestBody @Valid MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
         return ResponseEntity.ok(memberService.updateMemberEducation(id, memberEducationUpdateRequestDto));
     }
 
@@ -206,7 +206,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+    public ResponseEntity<PortfolioResponseDto> updateMemberPortfolio(@RequestBody @Valid MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberPortfolio(memberPortfolioRequestDto));
     }
 
@@ -221,7 +221,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공")
     })
-    public ResponseEntity<HttpStatus> updateMemberSns(@RequestBody @Valid MemberSnsRequestDto memberSnsRequestDto) throws Exception {
+    public ResponseEntity<MemberSnsResponseDto> updateMemberSns(@RequestBody @Valid MemberSnsRequestDto memberSnsRequestDto) throws Exception {
         return ResponseEntity.ok(memberService.updateMemberSns(memberSnsRequestDto));
     }
 
