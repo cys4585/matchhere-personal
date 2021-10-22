@@ -30,7 +30,7 @@ export default {
 
 <style lang="scss" scoped>
 .message-container {
-  @apply fixed top-20 right-6;
+  @apply fixed z-50 top-20 right-6;
 
   .messages {
     @apply grid;

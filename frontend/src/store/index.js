@@ -11,7 +11,7 @@ export default createStore({
     modalOpen: false,
   },
   mutations: {
-    ADD_MESSAGES(state, message) {
+    ADD_MESSAGE(state, message) {
       const key = Date.now()
       state.alertMessages[key] = message
       setTimeout(() => {

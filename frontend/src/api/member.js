@@ -45,9 +45,34 @@ const getCareerAll = async () => {
 }
 
 const createCareer = async (data) => {
-  // {company, description, start_date, end_date, is_incumbent, role}
-  // const start_date =
   await http.post(`member/career`, data)
+}
+
+const getCareer = async (careerId) => {
+  const res = await http.get(`member/career/${careerId}`)
+  return res.data
+}
+
+const updateCareer = async ({ submitData, careerId }) => {
+  const res = await http.put(`member/career/${careerId}`, submitData)
+  return res.data
+}
+
+const createCertification = async (data) => {
+  await http.post(`member/certification`, data)
+}
+
+const getCertification = async (certificationId) => {
+  const res = await http.get(`member/certification/${certificationId}`)
+  return res.data
+}
+
+const updateCertification = async ({ submitData, certificationId }) => {
+  const res = await http.put(
+    `member/certification/${certificationId}`,
+    submitData
+  )
+  return res.data
 }
 
 export default {
@@ -59,4 +84,9 @@ export default {
   updateSkills,
   getCareerAll,
   createCareer,
+  getCareer,
+  updateCareer,
+  createCertification,
+  getCertification,
+  updateCertification,
 }
