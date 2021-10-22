@@ -45,7 +45,8 @@ const getCareerAll = async () => {
 }
 
 const createCareer = async (data) => {
-  await http.post(`member/career`, data)
+  const res = await http.post(`member/career`, data)
+  return res.data
 }
 
 const getCareer = async (careerId) => {
@@ -59,7 +60,8 @@ const updateCareer = async ({ submitData, careerId }) => {
 }
 
 const createCertification = async (data) => {
-  await http.post(`member/certification`, data)
+  const res = await http.post(`member/certification`, data)
+  return res.data
 }
 
 const getCertification = async (certificationId) => {

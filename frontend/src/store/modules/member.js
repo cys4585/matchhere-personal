@@ -140,7 +140,7 @@ export default {
     },
     async createCareer({ commit }, data) {
       try {
-        await memberAPI.createCareer(data)
+        const career = await memberAPI.createCareer(data)
         commit(
           "ADD_MESSAGE",
           {
@@ -149,6 +149,7 @@ export default {
           },
           { root: true }
         )
+        return career
       } catch (error) {
         commit(
           "ADD_MESSAGE",
@@ -200,7 +201,7 @@ export default {
     },
     async createCertification({ commit }, data) {
       try {
-        await memberAPI.createCertification(data)
+        const certification = await memberAPI.createCertification(data)
         commit(
           "ADD_MESSAGE",
           {
@@ -209,6 +210,7 @@ export default {
           },
           { root: true }
         )
+        return certification
       } catch (error) {
         commit(
           "ADD_MESSAGE",

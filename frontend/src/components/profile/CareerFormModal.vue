@@ -147,13 +147,13 @@ export default {
       return true
     }
 
-    const handleCloseModal = () => {
-      emit("closeModal", "career")
+    const handleCloseModal = (payload = {}) => {
+      emit("closeModal", { ...payload, type: "career" })
     }
 
     onMounted(async () => {
       switch (props.type) {
-        case "Edit": {
+        case "EDIT": {
           const careerData = await store.dispatch(
             "member/getCareer",
             props.careerId
@@ -179,16 +179,24 @@ export default {
           description: description.value,
         }
         switch (props.type) {
-          case "Edit": {
+          case "EDIT": {
             const careerData = await store.dispatch("member/updateCareer", {
               submitData,
               careerId: props.careerId,
             })
-            console.log(careerData)
+            if (careerData) {
+              handleCloseModal({ data: careerData, action: "update" })
+            }
             break
           }
-          case "Create": {
-            await store.dispatch("member/createCareer", submitData)
+          case "CREATE": {
+            const careerData = await store.dispatch(
+              "member/createCareer",
+              submitData
+            )
+            if (careerData) {
+              handleCloseModal({ data: careerData, action: "create" })
+            }
             break
           }
         }

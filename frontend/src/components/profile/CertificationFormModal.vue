@@ -171,7 +171,7 @@ export default {
 
     onMounted(async () => {
       switch (props.type) {
-        case "Edit": {
+        case "EDIT": {
           const certificationData = await store.dispatch(
             "member/getCertification",
             props.certificationId
@@ -199,7 +199,7 @@ export default {
           is_expire: isExpire.value,
         }
         switch (props.type) {
-          case "Edit": {
+          case "EDIT": {
             const certification = await store.dispatch(
               "member/updateCertification",
               {
@@ -210,7 +210,7 @@ export default {
             console.log(certification)
             break
           }
-          case "Create": {
+          case "CREATE": {
             await store.dispatch("member/createCertification", submitData)
             break
           }

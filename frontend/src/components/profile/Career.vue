@@ -13,7 +13,7 @@
             transition-colors
             hover:text-white hover:bg-blue-600
           "
-          @click="handleOpenModal('career')"
+          @click="handleOpenModal({ type: 'career' })"
         >
           + 추가
         </button>
@@ -23,6 +23,7 @@
           v-for="career in careerList"
           :key="career.id"
           :career="career"
+          @updateCareer="handleUpdateCareer"
         />
       </div>
     </section>
@@ -39,7 +40,7 @@
             transition-colors
             hover:text-white hover:bg-blue-600
           "
-          @click="handleOpenModal('certification')"
+          @click="handleOpenModal({ type: 'certification' })"
         >
           + 추가
         </button>
@@ -97,12 +98,12 @@
   </div>
   <CareerFormModal
     v-if="careerModalOpen"
-    type="Create"
+    type="CREATE"
     @closeModal="handleOpenModal"
   />
   <CertificationFormModal
     v-if="certificationModalOpen"
-    type="Create"
+    type="CREATE"
     @closeModal="handleOpenModal"
   />
   <!-- <AddCareerModal /> -->
@@ -132,11 +133,24 @@ export default {
     const certificationModalOpen = ref(false)
     const eduModalOpen = ref(false)
 
-    const handleOpenModal = (type) => {
+    const addNewCareer = (data) => {
+      careerList.value.push({ ...data })
+    }
+
+    const handleUpdateCareer = (data) => {
+      careerList.value = careerList.value.map((c) => {
+        return c.id === data.id ? data : c
+      })
+    }
+
+    const handleOpenModal = ({ type, action, data }) => {
       switch (type) {
         case "career": {
           careerModalOpen.value = !careerModalOpen.value
           store.commit("SET_MODAL_OPEN", careerModalOpen.value)
+          if (action === "create") {
+            addNewCareer(data)
+          }
           break
         }
         case "education": {
@@ -166,6 +180,7 @@ export default {
       careerModalOpen,
       certificationModalOpen,
       eduModalOpen,
+      handleUpdateCareer,
       handleOpenModal,
     }
   },

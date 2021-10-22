@@ -24,7 +24,7 @@
     <CareerFormModal
       v-if="careerModalOpen"
       :careerId="career.id"
-      type="Edit"
+      type="EDIT"
       @closeModal="handleToggleModal"
     />
   </div>
@@ -42,12 +42,16 @@ export default {
       type: Object,
     },
   },
-  setup() {
+  emits: ["updateCareer"],
+  setup(props, { emit }) {
     const store = useStore()
     const careerModalOpen = ref(false)
-    const handleToggleModal = () => {
+    const handleToggleModal = (payload) => {
       careerModalOpen.value = !careerModalOpen.value
       store.commit("SET_MODAL_OPEN", careerModalOpen)
+      if (payload.action === "update") {
+        emit("updateCareer", payload.data)
+      }
     }
     return {
       careerModalOpen,
