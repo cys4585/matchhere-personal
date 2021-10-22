@@ -141,19 +141,19 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
+    public CareerResponseDto createMemberCareer(MemberCareerRequestDto memberCareerRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Career career = memberCareerRequestDto.toCareer(member);
         careerRepository.save(career);
-        return HttpStatus.OK;
+        return CareerResponseDto.of(career);
     }
 
     @Transactional
-    public HttpStatus updateMemberCareer(Long id, MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
+    public CareerResponseDto updateMemberCareer(Long id, MemberCareerUpdateRequestDto memberCareerUpdateRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Career career = careerRepository.findByMemberAndId(member,id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 경력입니다!"));
         memberCareerUpdateRequestDto.setCareer(career);
-        return HttpStatus.OK;
+        return CareerResponseDto.of(career);
     }
 
     @Transactional
@@ -171,19 +171,19 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus createMemberCertification(MemberCertificationRequestDto memberCertificationRequestDto) {
+    public CertificationResponseDto createMemberCertification(MemberCertificationRequestDto memberCertificationRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Certification certification = memberCertificationRequestDto.toCertification(member);
         certificationRepository.save(certification);
-        return HttpStatus.OK;
+        return CertificationResponseDto.of(certification);
     }
 
     @Transactional
-    public HttpStatus updateMemberCertification(Long id, MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
+    public CertificationResponseDto updateMemberCertification(Long id, MemberCertificationUpdateRequestDto memberCertificationUpdateRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Certification certification = certificationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 자격증입니다!"));
         memberCertificationUpdateRequestDto.setCertification(certification);
-        return HttpStatus.OK;
+        return CertificationResponseDto.of(certification);
     }
 
     @Transactional
@@ -201,11 +201,11 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus createMemberEducation(MemberEducationRequestDto memberEducationRequestDto) {
+    public EducationResponseDto createMemberEducation(MemberEducationRequestDto memberEducationRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Education education = memberEducationRequestDto.toCareer(member);
         educationRepository.save(education);
-        return HttpStatus.OK;
+        return EducationResponseDto.of(education);
     }
 
     @Transactional
@@ -217,11 +217,11 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus updateMemberEducation(Long id, MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
+    public EducationResponseDto updateMemberEducation(Long id, MemberEducationUpdateRequestDto memberEducationUpdateRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         Education education = educationRepository.findByMemberAndId(member, id).orElseThrow(() -> new NullPointerException("잘못된 사용자이거나 혹은 존재하지 않는 교육입니다!"));
         memberEducationUpdateRequestDto.setEducation(education);
-        return HttpStatus.OK;
+        return EducationResponseDto.of(education);
     }
 
     @Transactional(readOnly = true)
@@ -272,19 +272,19 @@ public class MemberService {
     }
 
     @Transactional
-    public HttpStatus updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
+    public PortfolioResponseDto updateMemberPortfolio(MemberPortfolioRequestDto memberPortfolioRequestDto) throws Exception {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
         setPortfolioUuid(member, memberPortfolioRequestDto.getPortfolio_uuid());
 //        updateSns(member, memberPortfolioRequestDto.getSnsHashMap());
         member.setPortfolio_uri(memberPortfolioRequestDto.getPortfolio_uri());
-        return HttpStatus.OK;
+        return PortfolioResponseDto.of(member);
     }
 
     @Transactional
-    public HttpStatus updateMemberSns(MemberSnsRequestDto memberSnsRequestDto) {
+    public MemberSnsResponseDto updateMemberSns(MemberSnsRequestDto memberSnsRequestDto) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("토큰이 잘못되었거나 존재하지 않는 사용자입니다."));
-        updateSns(member, memberSnsRequestDto.getSnsList());
-        return HttpStatus.OK;
+        List<MemberSns> memberSns = updateSns(member, memberSnsRequestDto.getSnsList());
+        return MemberSnsResponseDto.of(member, memberSns);
     }
 
     @Transactional
@@ -374,8 +374,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateSns(Member member, HashMap<String, String> snsList) {
+    public List<MemberSns> updateSns(Member member, HashMap<String, String> snsList) {
         List<MemberSns> memberSns = memberSnsRepository.findAllByMember(member);
+        List<MemberSns> output = new ArrayList<>();;
         if (!memberSns.isEmpty()) {
             memberSnsRepository.deleteAll(memberSns);
         }
@@ -388,8 +389,10 @@ public class MemberService {
                         .snsAccount(entry.getValue())
                         .build();
                 memberSnsRepository.save(inner_memberSns);
+                output.add(inner_memberSns);
             }
         }
+        return output;
     }
 
     @Transactional

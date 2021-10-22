@@ -20,7 +20,7 @@ public class Receiver {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @KafkaListener(topics = "kafka-chat", groupId = "${kafka.group.id:${random.uuid}}")
+    @KafkaListener( topics = "kafka-chat", groupId = "${kafka.group.id:${random.uuid}}")
     public void receive(ChatMessage message) throws Exception {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
@@ -32,7 +32,7 @@ public class Receiver {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(msg);
 
-        this.template.convertAndSend("/topic/" + message.getChatRoom().getId(), json);
+        this.template.convertAndSend("/room/" + message.getChatRoom().getId(), json);
     }
 
 //    @KafkaListener(id = "main-listener", topics = "kafka-chat")
