@@ -108,7 +108,7 @@ export default {
 
     const handleSubmit = async () => {
       const formData = {
-        position: positionField.value.value,
+        position: positionField.value,
         dpositionList: [...detailPositionListField.value],
         techList: selectedTeckStackList.value,
       }
