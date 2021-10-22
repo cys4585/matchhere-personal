@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.controller;
 
 import com.ssafy.match.common.dto.BasicResponseDto;
+import com.ssafy.match.file.dto.DBFileSimpleDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
@@ -83,9 +84,9 @@ public class ProjectController {
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
             + "\nTECHSTACK_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> updateProject(@Valid @RequestBody ProjectUpdateRequestDto dto,
+    public ResponseEntity<ProjectInfoResponseDto> updateProject(@Valid @RequestBody ProjectUpdateRequestDto dto,
         @PathVariable("projectId") Long projectId) {
-        return new ResponseEntity<>("수정되었습니다.", projectService.update(projectId, dto));
+        return new ResponseEntity<>(projectService.update(projectId, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{projectId}")
@@ -207,6 +208,16 @@ public class ProjectController {
     })
     public ResponseEntity<String> plusViewCount(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>("처리되었습니다.", projectService.plusViewCount(projectId));
+    }
+
+    @GetMapping("/cover-pic/{projectId}")
+    @ApiOperation(value = "프로젝트 사진 정보", notes = "<strong>받은 프로젝트 id</strong>로 프로젝트 사진을 가져온다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "다운로드 uri"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<DBFileSimpleDto> getCoverPicUri(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.getCoverPicUri(projectId), HttpStatus.OK);
     }
 
 }

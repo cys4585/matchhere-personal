@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
 import java.util.HashMap;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -48,7 +49,6 @@ public class ProjectUpdateRequestDto {
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "소속된 클럽 id")
-    @NotBlank
     private Long clubId;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
@@ -67,17 +67,17 @@ public class ProjectUpdateRequestDto {
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "개발자 모집 인원", required = true)
-    @NotBlank
+    @NotNull
     private int developerMaxCount;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "디자이너 모집 인원", required = true)
-    @NotBlank
+    @NotNull
     private int designerMaxCount;
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "기획자 모집 인원", required = true)
-    @NotBlank
+    @NotNull
     private int plannerMaxCount;
 
     @ApiModelProperty(example = "개발자")

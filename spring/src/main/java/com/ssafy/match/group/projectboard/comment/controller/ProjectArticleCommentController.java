@@ -52,13 +52,13 @@ public class ProjectArticleCommentController {
     @PutMapping("/{commentId}")
     @ApiOperation(value = "댓글 수정", notes = "<strong>받은 댓글 정보</strong>를 사용해서 댓글을 수정한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "수정되었습니다."),
+        @ApiResponse(code = 200, message = "수정 후 정보"),
         @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nCOMMENT_NOT_FOUND"),
     })
-    public ResponseEntity<String> update(@PathVariable("commentId") Long commentId,
+    public ResponseEntity<ProjectArticleCommentResponseDto> update(@PathVariable("commentId") Long commentId,
         @Valid @RequestBody ProjectArticleCommentRequestDto dto) {
-        return new ResponseEntity<>("수정되었습니다.", projectCommentService.update(commentId, dto));
+        return new ResponseEntity<>(projectCommentService.update(commentId, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")

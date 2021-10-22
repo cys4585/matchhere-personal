@@ -105,42 +105,54 @@ public class Project {
         if(Boolean.FALSE.equals(this.applyDeveloper)){
             throw new CustomException(ErrorCode.DEVELOPER_COUNT_OVER);
         }
-        this.developerCount++;
+        if(++this.developerCount == this.developerMaxCount){
+            this.applyDeveloper = false;
+        }
     }
 
     public void plusPlanner() {
         if(Boolean.FALSE.equals(this.applyPlanner)){
             throw new CustomException(ErrorCode.PLANNER_COUNT_OVER);
         }
-        this.plannerCount++;
+        if(++this.plannerCount == this.plannerMaxCount){
+            this.applyPlanner = false;
+        }
     }
 
     public void plusDesigner() {
         if(Boolean.FALSE.equals(this.applyDesigner)){
             throw new CustomException(ErrorCode.DESIGNER_COUNT_OVER);
         }
-        this.designerCount++;
+        if(++this.designerCount == this.designerMaxCount){
+            this.applyDesigner = false;
+        }
     }
 
     public void minusDeveloper() {
         if(this.developerCount == 0){
             throw new CustomException(ErrorCode.DEVELOPER_COUNT_BELOW_ZERO);
         }
-        this.developerCount--;
+        if(--this.developerCount < this.developerMaxCount){
+            this.applyDeveloper = true;
+        }
     }
 
     public void minusPlanner() {
         if(this.plannerCount == 0){
             throw new CustomException(ErrorCode.PLANNER_COUNT_BELOW_ZERO);
         }
-        this.plannerCount--;
+        if(--this.plannerCount < this.plannerMaxCount){
+            this.applyPlanner = true;
+        }
     }
 
     public void minusDesigner() {
         if(this.designerCount == 0){
             throw new CustomException(ErrorCode.DESIGNER_COUNT_BELOW_ZERO);
         }
-        this.designerCount--;
+        if(--this.designerCount < this.designerMaxCount){
+            this.applyDesigner = true;
+        }
     }
 
     public void setDeveloperMaxCount(int count){
