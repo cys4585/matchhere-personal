@@ -26,8 +26,8 @@ public class ChatController {
     private final ChatService chatService;
 
     //// "url/app/message"로 들어오는 메시지를 "/topic/public"을 구독하고있는 사람들에게 송신
-    @MessageMapping("/message/user/{id}")//@MessageMapping works for WebSocket protocol communication. This defines the URL mapping.
-    @SendTo("/topic/1")//websocket subscribe topic& direct send
+    @MessageMapping("/user/{id}")//@MessageMapping works for WebSocket protocol communication. This defines the URL mapping.
+    @SendTo("/room/{id}")//websocket subscribe topic& direct send
     public void sendMessage(ChatMessageRequestDto chatMessageRequestDto, @Header("Authorization") String token, @DestinationVariable Long id) throws Exception {
         chatService.sendMessage(chatMessageRequestDto, token, id);
     }
