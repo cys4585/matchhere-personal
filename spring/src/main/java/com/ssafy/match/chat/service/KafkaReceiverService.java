@@ -9,18 +9,18 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 @Service
-public class Receiver {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Receiver.class);
+public class KafkaReceiverService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaReceiverService.class);
 
     @Autowired
     private SimpMessagingTemplate template;
 
-    @KafkaListener( topics = "kafka-chat", groupId = "${kafka.group.id:${random.uuid}}")
+//    @KafkaListener( topics = "kafka-chat", groupId = "${kafka.group.id:${random.uuid}}")
+    @KafkaListener(id = "main-listener", topics = "kafka-chat")
     public void receive(ChatMessage message) throws Exception {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
