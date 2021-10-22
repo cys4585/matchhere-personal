@@ -1,7 +1,7 @@
 package com.ssafy.match.group.project.controller;
 
 import com.ssafy.match.common.dto.BasicResponseDto;
-import com.ssafy.match.file.dto.DBFileSimpleDto;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.project.dto.request.ProjectCreateRequestDto;
 import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.dto.response.ProjectInfoForCreateResponseDto;
@@ -216,7 +216,7 @@ public class ProjectController {
         @ApiResponse(code = 200, message = "다운로드 uri"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
     })
-    public ResponseEntity<DBFileSimpleDto> getCoverPicUri(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<DBFileDto> getCoverPicUri(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>(projectService.getCoverPicUri(projectId), HttpStatus.OK);
     }
 

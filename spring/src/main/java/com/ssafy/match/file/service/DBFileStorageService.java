@@ -57,8 +57,8 @@ public class DBFileStorageService {
     }
 
     @Transactional
-    public HttpStatus deleteFile(String fileDownloadUri){
-        dbFileRepository.deleteByFileDownloadUri(fileDownloadUri);
+    public HttpStatus deleteFile(String uuid){
+        dbFileRepository.deleteById(uuid);
         return HttpStatus.OK;
     }
 }
