@@ -10,6 +10,7 @@ import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.common.repository.TechstackRepository;
+import com.ssafy.match.file.dto.DBFileSimpleDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
@@ -221,8 +222,10 @@ public class ProjectServiceImpl implements ProjectService {
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
     }
-
-
+    // DB Uri만 가져오기
+    public DBFileSimpleDto getCoverPicUri(Long projectId) {
+        return DBFileSimpleDto.from(findProject(projectId).getCoverPic());
+    }
 
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
