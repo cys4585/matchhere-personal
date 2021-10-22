@@ -1,6 +1,6 @@
 package com.ssafy.match.group.project.service;
 
-import com.ssafy.match.file.dto.DBFileSimpleDto;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectMemberResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
@@ -64,6 +64,6 @@ public interface ProjectService {
 
     HttpStatus plusViewCount(Long projectId);
 
-    DBFileSimpleDto getCoverPicUri(Long projectId);
+    DBFileDto getCoverPicUri(Long projectId);
 
 }
