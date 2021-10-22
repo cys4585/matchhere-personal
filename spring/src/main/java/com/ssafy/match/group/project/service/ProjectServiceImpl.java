@@ -129,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 업데이트
     @Transactional
-    public HttpStatus update(Long projectId, ProjectUpdateRequestDto dto) {
+    public ProjectInfoResponseDto update(Long projectId, ProjectUpdateRequestDto dto) {
         validCity(dto.getCity());
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
@@ -146,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
-        return HttpStatus.OK;
+        return getOneProject(projectId);
     }
 
     // 프로젝트 삭제
@@ -508,7 +508,7 @@ public class ProjectServiceImpl implements ProjectService {
     public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
-
+        checkAlreadyJoin(project, member);
         CompositeMemberProject cmp = new CompositeMemberProject(member, project);
 
         Optional<ProjectApplicationForm> form = projectApplicationFormRepository.findById(cmp);

@@ -86,7 +86,7 @@ public class ProjectArticleService {
     }
 
     @Transactional
-    public HttpStatus updateArticle(Long articleId, ProjectArticleRequestDto dto) {
+    public ProjectArticleInfoResponseDto updateArticle(Long articleId, ProjectArticleRequestDto dto) {
         // 게시글
         ProjectArticle projectArticle = findProjectArticle(articleId);
         if(dto.getContent() == null){
@@ -98,7 +98,10 @@ public class ProjectArticleService {
 
         projectArticle.update(dto, findProjectBoard(dto.getProjectBoardId()));
         addTags(projectArticle, dto.getTags());
-        return HttpStatus.OK;
+
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.from(projectArticle);
+        projectArticleInfoResponseDto.setContent(projectContent.getContent());
+        return projectArticleInfoResponseDto;
     }
 
     @Transactional

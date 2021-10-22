@@ -66,11 +66,11 @@ public class ProjectArticleController {
     @PutMapping("/{articleId}")
     @ApiOperation(value = "(프로젝트)게시판의 게시글 수정", notes = "<strong>받은 게시글 id</strong>를 사용해서 게시글을 수정한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "수정되었습니다."),
+        @ApiResponse(code = 200, message = "수정 후 정보"),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
     })
-    public ResponseEntity<String> updateArticle(@PathVariable("articleId") Long articleId, @Valid @RequestBody ProjectArticleRequestDto dto) {
-        return new ResponseEntity<>(projectArticleService.updateArticle(articleId, dto));
+    public ResponseEntity<ProjectArticleInfoResponseDto> updateArticle(@PathVariable("articleId") Long articleId, @Valid @RequestBody ProjectArticleRequestDto dto) {
+        return new ResponseEntity<>(projectArticleService.updateArticle(articleId, dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{articleId}")

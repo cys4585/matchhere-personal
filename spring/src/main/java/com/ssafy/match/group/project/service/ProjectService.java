@@ -23,7 +23,7 @@ public interface ProjectService {
 
     Long create(ProjectCreateRequestDto dto);
 
-    HttpStatus update(Long projectId, ProjectUpdateRequestDto dto);
+    ProjectInfoResponseDto update(Long projectId, ProjectUpdateRequestDto dto);
 
     HttpStatus delete(Long projectId);
 
