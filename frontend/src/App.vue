@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'modal-open': modalOpen }">
+  <div class="min-h-screen flex flex-col" :class="{ 'modal-open': modalOpen }">
     <MainNav />
     <main>
       <router-view />
