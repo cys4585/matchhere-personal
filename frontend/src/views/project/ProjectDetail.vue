@@ -9,8 +9,8 @@
     </button>
     <button
       @click="handleClick"
-      name="ProjectBoard"
-      :class="{ active: activedView === 'ProjectBoard' }"
+      name="BoardArticleList"
+      :class="{ active: activedView === 'BoardArticleList' }"
     >
       게시판
     </button>

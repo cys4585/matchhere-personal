@@ -43,9 +43,10 @@
             </div>
             <div class="grid gap-2">
               <h6 class="font-bold text-sm text-gray-900">자기 소개</h6>
-              <div class="border border-gray-100 p-2">
-                {{ application.bio }}
-              </div>
+              <div
+                class="border border-gray-100 p-2"
+                v-html="application.bio.replace(/(?:\r\n|\r|\n)/g, '<br />')"
+              ></div>
             </div>
             <div class="flex justify-center gap-4">
               <button class="text-white rounded-lg py-2 px-6 bg-blue-500">

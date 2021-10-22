@@ -17,6 +17,8 @@ import ProjectManage from "@/views/project/ProjectManage.vue"
 import ProjectBoard from "@/views/project/ProjectBoard.vue"
 import ProjectNotiBoard from "@/views/project/ProjectNotiBoard.vue"
 import ArticleForm from "@/views/project/ArticleForm.vue"
+import BoardArticleList from "@/views/project/BoardArticleList.vue"
+import BoardDetail from "@/views/project/BoardDetail.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -103,8 +105,19 @@ const routes = [
           },
           {
             path: "board",
-            name: "ProjectBoard",
             component: ProjectBoard,
+            children: [
+              {
+                path: "",
+                name: "BoardArticleList",
+                component: BoardArticleList,
+              },
+              {
+                path: "detail/:articleId",
+                name: "BoardDetail",
+                component: BoardDetail,
+              },
+            ],
           },
           {
             path: "noti-board",

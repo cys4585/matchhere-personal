@@ -1,7 +1,7 @@
 <template>
   <div class="py-10 px-4 grid gap-10">
     <div class="grid gap-4">
-      <header>게시글 작성</header>
+      <h3 class="font-bold text-xl text-gray-900">게시글 작성</h3>
       <InputFormField :field="title" v-model="title.value" />
       <SelectFormField :field="boardChoice" v-model="boardChoice.value" />
       <TextAreaFormField :field="content" v-model="content.value" />
