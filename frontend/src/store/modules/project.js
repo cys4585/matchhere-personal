@@ -139,7 +139,24 @@ export default {
         const resData = await ProjectAPI.getBoardList(projectId)
         return resData
       } catch (error) {
-        console.log(error)
+        console.log(error.response)
+      }
+    },
+    async getBoardArticleList(context, boardId) {
+      try {
+        const resData = await ProjectAPI.getBoardArticleList(boardId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
+    async createBoardArticle(context, reqForm) {
+      try {
+        console.log(reqForm)
+        const resData = await ProjectAPI.createBoardArticle(reqForm)
+        return resData
+      } catch (error) {
+        console.log(error.response)
       }
     },
   },

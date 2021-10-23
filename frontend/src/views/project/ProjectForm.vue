@@ -399,13 +399,21 @@ export default {
     watch(
       () => formFields.value.member.hostPosition.value,
       (newVal, oldVal) => {
-        Object.values(formFields.value.member).find(
-          (obj) => obj.label === newVal
-        ).value += 1
-        if (oldVal) {
+        // 수정일 때 최초
+        if (projectId.value && !oldVal) {
+          console.log(newVal)
+          console.log(oldVal)
+        } else {
+          console.log(newVal)
+          console.log(oldVal)
           Object.values(formFields.value.member).find(
-            (obj) => obj.label === oldVal
-          ).value -= 1
+            (obj) => obj.label === newVal
+          ).value += 1
+          if (oldVal) {
+            Object.values(formFields.value.member).find(
+              (obj) => obj.label === oldVal
+            ).value -= 1
+          }
         }
       }
     )

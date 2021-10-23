@@ -37,30 +37,42 @@ const getAllApplication = async (projectId) => {
 }
 
 const getApplication = async (projectId, memberId) => {
-  const res = await http.get(`projectapplication/one/${projectId}/${memberId}`)
+  const res = await http.get(`/projectapplication/one/${projectId}/${memberId}`)
   return res.data
 }
 
 const getProjectMemberList = async (projectId) => {
-  const res = await http.get(`project/member/${projectId}`)
+  const res = await http.get(`/project/member/${projectId}`)
   return res.data
 }
 
 const acceptApplication = async (projectId, memberId) => {
   const res = await http.post(
-    `projectapplication/approval/${projectId}/${memberId}`
+    `/projectapplication/approval/${projectId}/${memberId}`
   )
   return res
 }
 const refuseApplication = async (projectId, memberId) => {
-  const res = await http.delete(`projectapplication/${projectId}/${memberId}`)
+  const res = await http.delete(`/projectapplication/${projectId}/${memberId}`)
   return res.data
 }
 
 const getBoardList = async (projectId) => {
-  const res = await http.get(`project/${projectId}/boards`)
-  return res
+  const res = await http.get(`/project/${projectId}/boards`)
+  return res.data
 }
+
+const getBoardArticleList = async (boardId) => {
+  const res = await http.get(`/projectboards/${boardId}/articles`)
+  return res.data
+}
+
+const createBoardArticle = async (reqForm) => {
+  console.log(reqForm)
+  const res = await http.post(`/projectboards`, reqForm)
+  return res.data
+}
+
 export default {
   getMyClubList,
   createProject,
@@ -74,4 +86,6 @@ export default {
   refuseApplication,
   acceptApplication,
   getBoardList,
+  getBoardArticleList,
+  createBoardArticle,
 }

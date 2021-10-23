@@ -30,17 +30,23 @@
 import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
 import { onMounted, onUpdated } from "@vue/runtime-core"
+import { useStore } from "vuex"
 export default {
   name: "ProjectDetail",
   setup() {
     const route = useRoute()
     const router = useRouter()
+    const store = useStore()
 
     const projectId = route.params.projectId
 
+    const boardList = ref()
+
     const activedView = ref()
 
-    onMounted(() => {
+    onMounted(async () => {
+      const resData = await store.dispatch("project/getBoardList", projectId)
+      boardList.value = resData
       activedView.value = route.name
     })
 
@@ -50,7 +56,10 @@ export default {
 
     const handleClick = (e) => {
       const name = e.target.name
-      router.push({ name, params: { projectId } })
+      let boardId
+      if (name === "NotiBoardArticleList") boardId = boardList.value[0].id
+      else if (name === "BoardArticleList") boardId = boardList.value[1].id
+      router.push({ name, params: { projectId, boardId } })
     }
     return { handleClick, activedView }
   },

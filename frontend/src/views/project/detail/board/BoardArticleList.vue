@@ -21,19 +21,23 @@ export default {
   components: { BoardArticleItem, AddBoardArticleButton },
   setup() {
     const route = useRoute()
-    const router = useRouter()
     const store = useStore()
+    console.log(route.params)
 
-    const projectId = route.params.projectId
+    const router = useRouter()
+
+    onMounted(async () => {
+      const boardId = route.params.boardId
+      const resData = await store.dispatch(
+        "project/getBoardArticleList",
+        boardId
+      )
+      console.log(resData)
+    })
 
     const handleAddClick = () => {
       router.push({ name: "ArticleForm" })
     }
-
-    onMounted(async () => {
-      const resData = await store.dispatch("project/getBoardList", projectId)
-      console.log(resData)
-    })
 
     return { handleAddClick }
   },

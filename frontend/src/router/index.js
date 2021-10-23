@@ -105,7 +105,7 @@ const routes = [
             component: ProjectManage,
           },
           {
-            path: "board",
+            path: "board/:boardId",
             component: ProjectBoard,
             children: [
               {
@@ -121,7 +121,7 @@ const routes = [
             ],
           },
           {
-            path: "noti-board",
+            path: "noti-board/:boardId",
             component: ProjectNotiBoard,
             children: [
               {
