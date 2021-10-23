@@ -60,6 +60,10 @@ public class ProjectSimpleInfoResponseDto {
     @ApiParam(value = "지역")
     private String city;
 
+    @ApiModelProperty(example = "소유자")
+    @ApiParam(value = "조회한 사람의 권한")
+    private String authority;
+
     public static ProjectSimpleInfoResponseDto of(Project project,
         List<ProjectTechstackResponseDto> techstacks) {
         return ProjectSimpleInfoResponseDto.builder()
@@ -75,6 +79,25 @@ public class ProjectSimpleInfoResponseDto {
             .techstacks(techstacks)
             .period(project.getPeriod())
             .city(project.getCity().toString())
+            .build();
+    }
+
+    public static ProjectSimpleInfoResponseDto from(Project project,
+        List<ProjectTechstackResponseDto> techstacks, String authority) {
+        return ProjectSimpleInfoResponseDto.builder()
+            .id(project.getId())
+            .name(project.getName())
+            .projectProgressState(project.getProjectProgressState().getState())
+            .coverPicUri(
+                (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
+            .recruitmentState(project.getRecruitmentState().getState())
+            .viewCount(project.getViewCount())
+            .createDate(project.getCreateDate())
+            .host(MemberSimpleInfoResponseDto.from(project.getMember()))
+            .techstacks(techstacks)
+            .period(project.getPeriod())
+            .city(project.getCity().toString())
+            .authority(authority)
             .build();
     }
 

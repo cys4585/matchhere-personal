@@ -230,7 +230,17 @@ public class ProjectServiceImpl implements ProjectService {
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
         Project project = findProject(projectId);
-        return ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project));
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberProject> mps = memberProjectRepository.findMemberRelationInProject(project);
+
+        String authority = "게스트";
+        for (MemberProject mp : mps) {
+            if (mp.getCompositeMemberProject().getMember().getId().equals(member.getId())) {
+                authority = mp.getAuthority().toString();
+                break;
+            }
+        }
+        return ProjectSimpleInfoResponseDto.from(project, projectTechstackSimple(project), authority);
     }
 
     // 프로젝트 기술 스택 간단한 정보
