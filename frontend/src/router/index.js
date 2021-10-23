@@ -13,13 +13,13 @@ import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
 import ProjectDetail from "@/views/project/ProjectDetail.vue"
-import ProjectManage from "@/views/project/detail/ProjectManage.vue"
-import ProjectBoard from "@/views/project/detail/ProjectBoard.vue"
-import ProjectNotiBoard from "@/views/project/detail/ProjectNotiBoard.vue"
-import ArticleForm from "@/views/project/detail/ArticleForm.vue"
-import BoardArticleList from "@/views/project/detail/BoardArticleList.vue"
-import BoardDetail from "@/views/project/detail/BoardDetail.vue"
-import NotiBoardArticleList from "@/views/project/detail/NotiBoardArticleList.vue"
+import ProjectManage from "@/views/project/detail/manage/ProjectManage.vue"
+import ProjectBoard from "@/views/project/detail/board/ProjectBoard.vue"
+import ProjectNotiBoard from "@/views/project/detail/notiboard/ProjectNotiBoard.vue"
+import ArticleForm from "@/views/project/detail/articleform/ArticleForm.vue"
+import BoardArticleList from "@/views/project/detail/board/BoardArticleList.vue"
+import ArticleDetail from "@/views/project/detail/ArticleDetail.vue"
+import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArticleList.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -115,8 +115,8 @@ const routes = [
               },
               {
                 path: "detail/:articleId",
-                name: "BoardDetail",
-                component: BoardDetail,
+                name: "ArticleDetail",
+                component: ArticleDetail,
               },
             ],
           },
@@ -131,8 +131,8 @@ const routes = [
               },
               {
                 path: "detail/:articleId",
-                name: "BoardDetail",
-                component: BoardDetail,
+                name: "ArticleDetail",
+                component: ArticleDetail,
               },
             ],
           },
