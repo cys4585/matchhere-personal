@@ -1,21 +1,20 @@
 package com.ssafy.match.group.study.service;
 
-import com.ssafy.match.common.entity.City;
-import com.ssafy.match.group.club.entity.Club;
-import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
-import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
-import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.MemberSns;
-import com.ssafy.match.common.entity.ProjectProgressState;
+import com.ssafy.match.common.entity.GroupAuthority;
+import com.ssafy.match.common.entity.GroupCity;
+import com.ssafy.match.common.entity.Level;
 import com.ssafy.match.common.entity.Techstack;
-import com.ssafy.match.group.club.repository.MemberClubRepository;
-import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.common.repository.TechstackRepository;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.club.repository.ClubRepository;
+import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.project.entity.CompositeMemberProject;
+import com.ssafy.match.group.project.entity.MemberProject;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
@@ -25,31 +24,36 @@ import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
-import com.ssafy.match.group.study.entity.CompositeStudyTechstack;
 import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
-import com.ssafy.match.group.club.repository.ClubRepository;
+import com.ssafy.match.group.study.entity.StudyTopic;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.group.study.repository.StudyApplicationFormRepository;
 import com.ssafy.match.group.study.repository.StudyRepository;
-import com.ssafy.match.group.study.repository.StudySubjectRepository;
+import com.ssafy.match.group.study.repository.StudyTopicRepository;
+import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
+import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
+import com.ssafy.match.member.entity.Member;
+import com.ssafy.match.member.entity.MemberSns;
+import com.ssafy.match.member.repository.MemberRepository;
+import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true, rollbackFor = Exception.class)
-// https://velog.io/@kdhyo/JavaTransactional-Annotation-%EC%95%8C%EA%B3%A0-%EC%93%B0%EC%9E%90-26her30h
 @RequiredArgsConstructor
 public class StudyServiceImpl implements StudyService {
 
@@ -60,81 +64,107 @@ public class StudyServiceImpl implements StudyService {
     private final MemberClubRepository memberClubRepository;
     private final StudyApplicationFormRepository studyApplicationFormRepository;
     private final TechstackRepository techstackRepository;
-    private final StudySubjectRepository studySubjectRepository;
     private final DBFileRepository dbFileRepository;
     private final MemberSnsRepository memberSnsRepository;
     private final StudyBoardRepository studyBoardRepository;
+    private final StudyTopicRepository studyTopicRepository;
 
     // 스터디 생성을 위한 정보(호스트의 클럽 정보)
-    public StudyInfoForCreateResponseDto getInfoForCreate() throws Exception {
-        return StudyInfoForCreateResponseDto.builder()
-            .hostClub(makeClubDtos(memberClubRepository
-                .findClubByMember(findMember(SecurityUtil.getCurrentMemberId()))))
-            .build();
+    public StudyInfoForCreateResponseDto getInfoForCreate() {
+        return StudyInfoForCreateResponseDto.from(makeClubSimpleInfoResponseDtos(
+            findClubInMember(findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
     @Transactional
-    public Long create(StudyCreateRequestDto dto) throws Exception {
+    public Long create(StudyCreateRequestDto dto) {
         validCity(dto.getCity());
-        validTechstack(dto.getTechList());
-
-        Study study = new Study(dto);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
-        study.setMember(member);
-        study.setClub(findClub(dto.getClubId()));
-        study.setDBFile(findDBFile(dto.getCoverpic_uuid()));
-
+        Study study = Study.of(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()), member);
         studyRepository.save(study);
+
         makeBasicBoards(study);
-        addTechstack(study, dto.getTechList());
-        addMember(study, member);
+        addTopics(study, dto.getTopics());
+
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+        MemberStudy memberStudy = memberStudyRepository
+            .findById(compositeMemberStudy)
+            .orElseGet(() -> MemberStudy.builder()
+                .compositeMemberStudy(compositeMemberStudy)
+                .isActive(true)
+                .registerDate(LocalDateTime.now())
+                .authority(GroupAuthority.소유자)
+                .build());
+
+        study.addMember();
+        memberStudyRepository.save(memberStudy);
 
         return study.getId();
     }
 
-    @Transactional
-    public HttpStatus update(Long studyId, StudyUpdateRequestDto dto) throws Exception {
-        validCity(dto.getCity());
-        validTechstack(dto.getAddStackList());
-        validTechstack(dto.getRemoveStackList());
-        validStatus(dto.getStatus());
-
+    // 스터디 업데이트를 위한 정보
+    public StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId) {
         Study study = findStudy(studyId);
-        Long memberId = SecurityUtil.getCurrentMemberId();
-        if (!study.getMember().getId().equals(memberId)) {
-            throw new Exception("권한이 없습니다.");
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        if (!SecurityUtil.getCurrentMemberId().equals(study.getMember().getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
-        study.update(dto);
-        study.setMember(findMember(dto.getHostId()));
-        study.setClub(findClub(dto.getClubId()));
-        study.setDBFile(findDBFile(dto.getUuid()));
-        addTechstack(study, dto.getAddStackList());
-//        removeTechstack(study, dto.getRemoveStackList());
+        return StudyInfoForUpdateResponseDto.of(study, getStudyTopics(study),
+            makeClubSimpleInfoResponseDtos(findClubInMember(member)));
+    }
 
-        return HttpStatus.OK;
+    private HashMap<String, String> getStudyTopics(Study study) {
+        List<StudyTopic> sts = studyTopicRepository.findAllByStudy(study);
+        HashMap<String, String> topics = new HashMap<>();
+        for (StudyTopic st: sts) {
+            topics.put(st.getName(), st.getLevel().toString());
+        }
+        return topics;
     }
 
     @Transactional
-    public HttpStatus delete(Long studyId) throws Exception {
+    public StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto) {
+        validCity(dto.getCity());
         Study study = findStudy(studyId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
 
-        if (!study.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new Exception("권한이 없습니다.");
+        // 권한 체크
+        checkAuthority(member, study);
+
+        study.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
+        addTopics(study, dto.getTopics());
+
+        return getOneStudy(studyId);
+    }
+
+    // 권한 체크
+    public void checkAuthority(Member member, Study study){
+        MemberStudy ms = memberStudyRepository.findById(
+                new CompositeMemberStudy(member, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+
+        if (!ms.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
+    }
 
-        List<MemberStudy> memberStudys = memberStudyRepository.findMemberRelationInStudy(study);
-        for (MemberStudy mem : memberStudys) {
+    @Transactional
+    public HttpStatus delete(Long studyId) {
+        Study study = findStudy(studyId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        checkAuthority(member, study);
+        // 스터디 멤버 비활성화
+        List<MemberStudy> memberStudies = memberStudyRepository.findMemberRelationInStudy(study);
+        for (MemberStudy mem : memberStudies) {
             mem.deActivation();
         }
+        // 스터디 Cover 제거
+        if (study.getCoverPic().getId() != null) {
+            dbFileRepository.delete(study.getCoverPic());
+        }
+        studyTopicRepository.deleteAllByStudy(study);
 
-//        List<StudySubject> sts = studySubjectRepository.findStudyTechstackByStudy(study);
-//        for (StudySubject st: sts) {
-//            studySubjectRepository.delete(st);
-//        }
-
-        study.setIsActive(false);
-
+        study.deActivation();
         return HttpStatus.OK;
     }
 
@@ -156,68 +186,27 @@ public class StudyServiceImpl implements StudyService {
             && !study.getIsPublic()) {
             throw new Exception("비공개된 스터디입니다.");
         }
-        StudyInfoResponseDto studyInfoResponseDto = studyRepository.findById(studyId).map(StudyInfoResponseDto::of).orElseThrow(() -> new NullPointerException("스터디가 없습니다."));
-        studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
+        StudyInfoResponseDto studyInfoResponseDto = studyRepository.findById(studyId)
+            .map(StudyInfoResponseDto::of)
+            .orElseThrow(() -> new NullPointerException("스터디가 없습니다."));
+        studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(
+            memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
 //        studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
         return studyInfoResponseDto;
     }
 
-    // 스터디 업데이트를 위한 정보(기존 정보 + 기술 스택 리스트, 호스트의 클럽 정보, 지역 리스트)
-    public StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId) throws Exception {
-        Study study = findStudy(studyId);
-        if (!SecurityUtil.getCurrentMemberId().equals(study.getMember().getId())) {
-            throw new Exception("권한이 없습니다");
-        }
-
-        StudyInfoForUpdateResponseDto dto = new StudyInfoForUpdateResponseDto(study);
-//        dto.setStudyTechstack(studyTechstackName(study));
-        dto.setClubList(makeClubDtos(memberClubRepository.findClubByMember(study.getMember())));
-        dto.setMemberSimpleInfoResponseDtos(makeMemberDtos(findMemberInStudy(study)));
-//        dto.setHost(new MemberSimpleInfoResponseDto(study.getMember()));
-
-        return dto;
-    }
-
-    // 모든 기술스택의 이름 리스트
-    public List<String> allTechstackName() {
-        return techstackRepository.findAllName();
-    }
-
-//    // 현재 스터디 기술 스택의 이름 리스트
-//    public List<String> studyTechstackName(Study study) {
-//        return studySubjectRepository.findByStudyTechstackName(study);
-//    }
-
-    public Techstack findTechstack(String techName) {
-        return techstackRepository.findByName(techName)
-            .orElseThrow(() -> new NullPointerException("기술 스택 정보가 없습니다."));
-    }
-
     @Transactional
-    public void addTechstack(Study study, List<String> techName) {
-        for (String name : techName) {
-            Techstack techstack = findTechstack(name);
-            CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
-                study);
+    public void addTopics(Study study, HashMap<String, String> topics) {
+        studyTopicRepository.deleteAllByStudy(study);
+        if(topics.isEmpty()){
+            return;
+        }
 
-//            studySubjectRepository.save(new StudySubject(compositeStudyTechstack));
+        for (Map.Entry<String, String> entry : topics.entrySet()) {
+            Level level = Level.from(entry.getValue());
+            studyTopicRepository.save(StudyTopic.of(study, entry.getKey(), level));
         }
     }
-
-//    @Transactional
-//    public void removeTechstack(Study study, List<String> techName) {
-//        for (String name : techName) {
-//            Techstack techstack = findTechstack(name);
-//            CompositeStudyTechstack compositeStudyTechstack = new CompositeStudyTechstack(techstack,
-//                study);
-//
-//            StudySubject studySubject = studySubjectRepository
-//                .findById(compositeStudyTechstack)
-//                .orElseThrow(() -> new NullPointerException("제거할 기술 스택이 존재하지 않습니다."));
-//
-//            studySubjectRepository.delete(studySubject);
-//        }
-//    }
 
     @Transactional
     public void addMember(Study study, Member member) {
@@ -228,19 +217,20 @@ public class StudyServiceImpl implements StudyService {
             .findById(compositeMemberStudy)
             .orElseGet(() -> MemberStudy.builder()
                 .compositeMemberStudy(compositeMemberStudy)
+                .isActive(true)
                 .registerDate(LocalDateTime.now())
+                .authority(GroupAuthority.팀원)
                 .build());
 
-        memberStudy.activation();
         study.addMember();
-
         memberStudyRepository.save(memberStudy);
     }
 
     @Transactional
-    public HttpStatus removeMember(Long studyId) throws Exception {
+    public HttpStatus removeMember(Long studyId) {
         Study study = findStudy(studyId);
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 입니다.(사용자 없음)"));
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId())
+            .orElseThrow(() -> new NullPointerException("잘못된 사용자 입니다.(사용자 없음)"));
         if (study.getMember().getId().equals(member.getId())) {
             throw new Exception("스터디장은 탈퇴할 수 없습니다.");
         }
@@ -253,28 +243,28 @@ public class StudyServiceImpl implements StudyService {
     }
 
     @Transactional
-    public void makeBasicBoards(Study study){
+    public void makeBasicBoards(Study study) {
         studyBoardRepository.save(new StudyBoard("공지사항", study));
         studyBoardRepository.save(new StudyBoard("게시판", study));
     }
 
-    public Study findStudy(Long studyId) throws Exception {
+    public Study findStudy(Long studyId) {
         Study study = studyRepository.findById(studyId)
-            .orElseThrow(() -> new NullPointerException("스터디 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
-        if (!study.getIsActive()) {
-            throw new Exception("삭제된 스터디입니다.");
+        if (Boolean.FALSE.equals(study.getIsActive())) {
+            throw new CustomException(ErrorCode.DELETED_STUDY);
         }
 
         return study;
     }
 
-    public Member findMember(Long memberId) throws Exception {
+    public Member findMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NullPointerException("회원 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (!member.getIs_active()) {
-            throw new Exception("삭제된 멤버입니다.");
+        if (Boolean.FALSE.equals(member.getIs_active())) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         return member;
@@ -285,7 +275,7 @@ public class StudyServiceImpl implements StudyService {
             return null;
         }
         return clubRepository.findById(clubId)
-            .orElseThrow(() -> new NullPointerException("클럽 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.CLUB_NOT_FOUND));
     }
 
     public DBFile findDBFile(String uuid) {
@@ -293,7 +283,12 @@ public class StudyServiceImpl implements StudyService {
             return null;
         }
         return dbFileRepository.findById(uuid)
-            .orElseThrow(() -> new NullPointerException("파일 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+    }
+
+    // 멤버가 가진 클럽 리스트
+    public List<Club> findClubInMember(Member member){
+        return memberClubRepository.findClubByMember(member);
     }
 
     // 현재 스터디에 속한 멤버 리스트
@@ -306,45 +301,18 @@ public class StudyServiceImpl implements StudyService {
         return memberStudyRepository.studyInMember(member);
     }
 
-    public void validCity(String city) throws Exception {
-        if(!Stream.of(City.values()).map(Enum::name)
-            .collect(Collectors.toList()).contains(city)){
-            throw new Exception("존재하지 않는 지역입니다");
-        }
-    }
-    public void validStatus(String status) throws Exception {
-        if(!Stream.of(ProjectProgressState.values()).map(Enum::name)
-            .collect(Collectors.toList()).contains(status)){
-            throw new Exception("존재하지 않는 상태입니다");
-        }
-    }
-    public void validTechstack(List<String> techstacks) throws Exception {
-        for (String inTech: techstacks) {
-            if(!techstackRepository.findAllName().contains(inTech)){
-                throw new Exception("존재하지 않는 기술 스택입니다");
-            }
+    public void validCity(String city) {
+        if (!Stream.of(GroupCity.values()).map(Enum::name)
+            .collect(Collectors.toList()).contains(city)) {
+            throw new CustomException(ErrorCode.CITY_NOT_FOUND);
         }
     }
 
-    public List<ClubSimpleInfoResponseDto> makeClubDtos(List<Club> hostClub) {
-        List<ClubSimpleInfoResponseDto> clubSimpleInfoResponseDtos = new ArrayList<>();
-
-//        for (Club club : hostClub) {
-//            clubSimpleInfoResponseDtos.add(new ClubSimpleInfoResponseDto(club));
-//        }
-
-        return clubSimpleInfoResponseDtos;
-    }
-
-
-    public List<MemberSimpleInfoResponseDto> makeMemberDtos(List<Member> members) {
-        List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
-
-//        for (Member member : members) {
-//            memberSimpleInfoResponseDtos.add(new MemberSimpleInfoResponseDto(member));
-//        }
-
-        return memberSimpleInfoResponseDtos;
+    // 클럽 정보 요약
+    public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
+        return clubs.stream()
+            .map(ClubSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     // 신청 버튼 클릭시 관련 정보 및 권한 체크
@@ -415,7 +383,7 @@ public class StudyServiceImpl implements StudyService {
         if (dto.getFacebook() != null) {
             studyApplicationForm.setFacebook(dto.getFacebook());
         }
-        if(dto.getBackjoon() != null){
+        if (dto.getBackjoon() != null) {
             studyApplicationForm.setBackjoon(dto.getBackjoon());
         }
 

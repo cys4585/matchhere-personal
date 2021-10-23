@@ -18,36 +18,36 @@ import org.springframework.http.HttpStatus;
 
 public interface StudyService {
 
-    StudyInfoForCreateResponseDto getInfoForCreate() throws Exception;
+    StudyInfoForCreateResponseDto getInfoForCreate();
 
-    Long create(StudyCreateRequestDto dto) throws Exception;
+    Long create(StudyCreateRequestDto dto);
 
-    HttpStatus update(Long studyId, StudyUpdateRequestDto dto) throws Exception;
+    StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto) ;
 
-    HttpStatus delete(Long studyId) throws Exception;
+    HttpStatus delete(Long studyId);
 
 //    Page<StudyInfoResponseDto> getAllStudy(Pageable pageable);
 
-    StudyInfoResponseDto getOneStudy(Long studyId) throws Exception;
+    StudyInfoResponseDto getOneStudy(Long studyId);
 
-    StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId) throws Exception;
+    StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId);
 
-    void addMember(Study study, Member member) throws Exception;
+    void addMember(Study study, Member member);
 
-    HttpStatus removeMember(Long studyId) throws Exception;
+    HttpStatus removeMember(Long studyId);
 
-    InfoForApplyStudyFormResponseDto getInfoForApply(Long studyId) throws Exception;
+    InfoForApplyStudyFormResponseDto getInfoForApply(Long studyId);
 
-    HttpStatus applyStudy(Long studyId, StudyApplicationRequestDto dto) throws Exception;
+    HttpStatus applyStudy(Long studyId, StudyApplicationRequestDto dto);
 
-    List<StudyFormInfoResponseDto> getAllStudyForm(Long studyId) throws Exception;
+    List<StudyFormInfoResponseDto> getAllStudyForm(Long studyId);
 
-    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname) throws Exception;
+    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname);
 
-    StudyFormInfoResponseDto getOneStudyForm(Long studyId, Long memberId) throws Exception;
+    StudyFormInfoResponseDto getOneStudyForm(Long studyId, Long memberId);
 
-    HttpStatus approval(Long studyId, Long memberId) throws Exception;
+    HttpStatus approval(Long studyId, Long memberId);
 
-    HttpStatus reject(Long studyId, Long memberId) throws Exception;
+    HttpStatus reject(Long studyId, Long memberId);
 
 }

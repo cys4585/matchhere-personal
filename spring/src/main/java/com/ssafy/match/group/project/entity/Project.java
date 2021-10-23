@@ -1,6 +1,5 @@
 package com.ssafy.match.group.project.entity;
 
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
@@ -25,7 +24,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;

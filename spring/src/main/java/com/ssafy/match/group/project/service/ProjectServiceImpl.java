@@ -222,8 +222,9 @@ public class ProjectServiceImpl implements ProjectService {
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
     }
+
     // 현 사용자의 권한 확인
-    public String getMemberAuthority(Long projectId){
+    public String getMemberAuthority(Long projectId) {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         List<MemberProject> mps = memberProjectRepository.findMemberRelationInProject(project);
@@ -237,6 +238,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return authority;
     }
+
     // 사진 정보만 가져오기
     public DBFileDto getCoverPicUri(Long projectId) {
         return DBFileDto.of(findProject(projectId).getCoverPic());
@@ -281,7 +283,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 조회수 증가
-    public HttpStatus plusViewCount(Long projectId){
+    public HttpStatus plusViewCount(Long projectId) {
         findProject(projectId).plusViewCount();
         return HttpStatus.OK;
     }

@@ -2,7 +2,11 @@ package com.ssafy.match.group.study.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
+import io.swagger.annotations.ApiParam;
+import java.time.LocalDate;
+import java.util.HashMap;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,34 +16,56 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyCreateRequestDto {
 
-    @ApiModelProperty(name = "name", example = "매칭 스터디")
+    @ApiModelProperty(example = "매칭 스터디")
+    @ApiParam(value = "스터디명", required = true)
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
 
-    @ApiModelProperty(name = "techList", example = "[\"java\", \"python\"]")
-    private List<String> techList;
+    @ApiModelProperty(example = "스터디 준비 중")
+    @ApiParam(value = "스터디 진행 상태", required = true)
+    @NotBlank
+    private String studyProgressState;
 
-    @ApiModelProperty(name = "schedule", example = "매주 화, 수 6시")
+    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
+    @ApiParam(value = "사진 고유 uuid")
+    private String uuid;
+
+    @ApiModelProperty(example = "{\"OS\":\"중\", \"데이터베이스\":\"상\"}")
+    @ApiParam(value = "주제, 난이도")
+    private HashMap<String, String> topics;
+
+    @ApiModelProperty(example = "주말 10시 ~ 18시 / 평일 논의")
+    @ApiParam(value = "스터디 작업 시간")
     private String schedule;
 
-    @ApiModelProperty(name = "period", example = "7")
-    private int period;
+    @ApiModelProperty(example = "2020-05-22")
+    @ApiParam(value = "스터디 마감 예정일")
+    private LocalDate period;
+
+    @ApiModelProperty(example = "서울")
+    @ApiParam(value = "지역", required = true)
+    @NotBlank
+    private String city;
+
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "소속된 클럽 id")
+    private Long clubId;
+
+    @ApiModelProperty(example = "Git 매칭 스터디입니다.")
+    @ApiParam(value = "스터디 소개")
+    private String bio;
+
+    @ApiModelProperty(example = "전체 공개")
+    @ApiParam(value = "공개 범위", required = true)
+    @NotBlank
+    private String publicScope;
+
+    @ApiModelProperty(example = "모집 중")
+    @ApiParam(value = "모집 상태", required = true)
+    @NotBlank
+    private String recruitmentState;
 
     @ApiModelProperty(name = "maxCount", example = "3")
     private int maxCount;
-
-    @ApiModelProperty(name = "city", example = "서울")
-    private String city;
-
-    @ApiModelProperty(name = "isPublic", example = "false")
-    private Boolean isPublic;
-
-    @ApiModelProperty(name = "club_id", example = "3")
-    private Long clubId;
-
-    @ApiModelProperty(name = "coverpic_uuid", example = "3fads23-fdfd13-23d2")
-    private String coverpic_uuid;
-
-    @ApiModelProperty(name = "bio", example = "알고리즘 스터디입니다.")
-    private String bio;
-
 }
