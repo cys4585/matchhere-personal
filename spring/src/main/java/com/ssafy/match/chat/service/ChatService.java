@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,10 +26,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class ChatService {
     @Autowired
-    private Sender sender;
+    private KafkaSenderService kafkaSenderService;
 
     @Autowired
-    private Receiver receiver;
+    private KafkaReceiverService kafkaReceiverService;
 
     @Autowired
     private ChatHistoryDao chatHistoryDao;
@@ -58,7 +57,7 @@ public class ChatService {
         }
         chatMessageRepository.save(message);
 //        chatHistoryDao.save(message);
-        sender.send(BOOT_TOPIC, message);
+        kafkaSenderService.send(BOOT_TOPIC, message);
     }
 
     @Transactional

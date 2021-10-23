@@ -9,8 +9,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Sender {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
+public class KafkaSenderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaSenderService.class);
 
     @Autowired
     private KafkaTemplate<String, ChatMessage> kafkaTemplate;
