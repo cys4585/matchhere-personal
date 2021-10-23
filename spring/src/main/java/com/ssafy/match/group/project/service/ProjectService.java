@@ -66,4 +66,6 @@ public interface ProjectService {
 
     DBFileDto getCoverPicUri(Long projectId);
 
+    String getMemberAuthority(Long projectId);
+
 }

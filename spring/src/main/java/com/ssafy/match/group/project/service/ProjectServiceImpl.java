@@ -222,6 +222,21 @@ public class ProjectServiceImpl implements ProjectService {
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
     }
+    // 현 사용자의 권한 확인
+    public String getMemberAuthority(Long projectId){
+        Project project = findProject(projectId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberProject> mps = memberProjectRepository.findMemberRelationInProject(project);
+
+        String authority = "게스트";
+        for (MemberProject mp : mps) {
+            if (mp.getCompositeMemberProject().getMember().getId().equals(member.getId())) {
+                authority = mp.getAuthority().toString();
+                break;
+            }
+        }
+        return authority;
+    }
     // 사진 정보만 가져오기
     public DBFileDto getCoverPicUri(Long projectId) {
         return DBFileDto.of(findProject(projectId).getCoverPic());
