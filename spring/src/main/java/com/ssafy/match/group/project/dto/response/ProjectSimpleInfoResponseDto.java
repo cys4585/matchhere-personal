@@ -60,6 +60,10 @@ public class ProjectSimpleInfoResponseDto {
     @ApiParam(value = "지역")
     private String city;
 
+    @ApiModelProperty(example = "소유자")
+    @ApiParam(value = "조회한 사람의 권한")
+    private String authority;
+
     public static ProjectSimpleInfoResponseDto of(Project project,
         List<ProjectTechstackResponseDto> techstacks) {
         return ProjectSimpleInfoResponseDto.builder()
