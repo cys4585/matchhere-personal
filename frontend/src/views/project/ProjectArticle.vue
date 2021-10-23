@@ -176,12 +176,17 @@
         </div>
         <div class="flex flex-col items-center gap-2 px-7">
           <button
+            v-if="projectInfo.authority === '게스트'"
             class="w-full text-white py-4 rounded-full bg-blue-500"
             @click="isApplyModalActivation = true"
           >
             프로젝트 참가 신청
           </button>
-          <button class="py-2 px-6" @click="editProject">
+          <button
+            v-if="projectInfo.authority === '소유자'"
+            class="py-2 px-6"
+            @click="editProject"
+          >
             <p class="text-gray-600 font-medium text-sm">수정</p>
           </button>
         </div>

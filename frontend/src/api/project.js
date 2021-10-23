@@ -40,6 +40,27 @@ const getApplication = async (projectId, memberId) => {
   const res = await http.get(`projectapplication/one/${projectId}/${memberId}`)
   return res.data
 }
+
+const getProjectMemberList = async (projectId) => {
+  const res = await http.get(`project/member/${projectId}`)
+  return res.data
+}
+
+const acceptApplication = async (projectId, memberId) => {
+  const res = await http.post(
+    `projectapplication/approval/${projectId}/${memberId}`
+  )
+  return res
+}
+const refuseApplication = async (projectId, memberId) => {
+  const res = await http.delete(`projectapplication/${projectId}/${memberId}`)
+  return res.data
+}
+
+const getBoardList = async (projectId) => {
+  const res = await http.get(`project/${projectId}/boards`)
+  return res
+}
 export default {
   getMyClubList,
   createProject,
@@ -49,4 +70,8 @@ export default {
   projectApply,
   getAllApplication,
   getApplication,
+  getProjectMemberList,
+  refuseApplication,
+  acceptApplication,
+  getBoardList,
 }

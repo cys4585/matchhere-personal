@@ -81,10 +81,11 @@ export default {
 
     const submit = async () => {
       try {
-        await store.dispatch("project/applyForParticipation", {
+        const resData = await store.dispatch("project/applyForParticipation", {
           reqForm: formFields.value,
           projectId: props.projectId,
         })
+        store.commit("ADD_MESSAGES", { text: resData })
       } catch (error) {
         store.commit("ADD_MESSAGES", {
           text: error.message,

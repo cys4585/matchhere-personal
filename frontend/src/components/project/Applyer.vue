@@ -1,8 +1,8 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="applyerList">
     <header>
       <h3>지원자</h3>
-      <span>4명</span>
+      <span>{{ applyerList.length }}명</span>
     </header>
     <div class="member-list">
       <ApplyerItem
@@ -10,6 +10,8 @@
         :key="applyer.memberId"
         :applyer="applyer"
         :projectId="projectId"
+        @refuse="handleRefuse"
+        @accept="handleAccept"
       />
     </div>
   </div>
@@ -31,14 +33,46 @@ export default {
     const store = useStore()
 
     const applyerList = ref()
+
     onMounted(async () => {
       applyerList.value = await store.dispatch(
         "project/getAllApplication",
         props.projectId
       )
+      console.log(applyerList.value)
     })
 
-    return { applyerList }
+    const handleAccept = async (applyer) => {
+      try {
+        const projectId = props.projectId
+        const resData = await store.dispatch("project/acceptApplication", {
+          projectId,
+          applyer,
+        })
+        console.log(resData)
+        applyerList.value = applyerList.value.filter(
+          (item) => item.memberId !== applyer.memberId
+        )
+      } catch (error) {
+        store.commit("ADD_MESSAGES", {
+          text: error.message,
+          type: "error",
+        })
+      }
+    }
+    const handleRefuse = async (memberId) => {
+      const projectId = props.projectId
+      const resData = await store.dispatch("project/refuseApplication", {
+        projectId,
+        memberId,
+      })
+      console.log(resData)
+      applyerList.value = applyerList.value.filter(
+        (applyer) => applyer.memberId !== memberId
+      )
+    }
+
+    return { applyerList, handleRefuse, handleAccept }
   },
 }
 </script>

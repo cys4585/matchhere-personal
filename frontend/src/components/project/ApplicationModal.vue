@@ -49,10 +49,16 @@
               ></div>
             </div>
             <div class="flex justify-center gap-4">
-              <button class="text-white rounded-lg py-2 px-6 bg-blue-500">
+              <button
+                @click="$emit('accept')"
+                class="text-white rounded-lg py-2 px-6 bg-blue-500"
+              >
                 수락
               </button>
-              <button class="text-white rounded-lg py-2 px-6 bg-red-400">
+              <button
+                @click="$emit('refuse')"
+                class="text-white rounded-lg py-2 px-6 bg-red-400"
+              >
                 거절
               </button>
             </div>
@@ -68,7 +74,7 @@ import { onMounted, ref } from "@vue/runtime-core"
 import { useStore } from "vuex"
 export default {
   name: "ApplicationModal",
-  emits: ["close"],
+  emits: ["close", "accept", "refuse"],
   props: {
     projectId: Number,
     memberId: Number,

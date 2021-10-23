@@ -5,10 +5,18 @@ export default {
   namespaced: true,
   state: {
     myClubList: [],
+    acceptedApplyers: [],
   },
   mutations: {
     SET_MY_CLUB_LIST(state, myClubList) {
       state.myClubList = myClubList
+    },
+    ADD_MEMBER(state, acceptedApplyer) {
+      console.log("add member")
+      acceptedApplyer.authority = "팀원"
+      acceptedApplyer.id = acceptedApplyer.memberId
+      state.acceptedApplyers.push(acceptedApplyer)
+      console.log(state.acceptedApplyers)
     },
   },
   actions: {
@@ -46,19 +54,28 @@ export default {
       return projectInfo
     },
     async getInfoForUpdate(context, projectId) {
-      const projectInfo = await ProjectAPI.getInfoForUpdate(projectId)
-      return projectInfo
+      try {
+        const projectInfo = await ProjectAPI.getInfoForUpdate(projectId)
+        return projectInfo
+      } catch (error) {
+        const { status, message } = error.response.data
+        console.log(error.response)
+        switch (status) {
+          case 401:
+            throw Error(message)
+        }
+      }
     },
     async applyForParticipation(context, { reqForm, projectId }) {
       try {
         const resData = await ProjectAPI.projectApply(reqForm, projectId)
-        console.log(resData)
+        return resData
       } catch (error) {
         console.log(error.response)
-        const { status } = error.response
+        const { status, message } = error.response.data
         switch (status) {
           case 400:
-            throw Error("이미 신청을 완료했습니다!")
+            throw Error(message)
           default:
             throw Error(`임시: ${status} 문제가 발생했어~`)
         }
@@ -83,10 +100,55 @@ export default {
         throw Error(`임시 문제 발생`)
       }
     },
+    async getProjectMemberList(context, projectId) {
+      try {
+        const resData = await ProjectAPI.getProjectMemberList(projectId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
+    async acceptApplication({ commit }, { projectId, applyer }) {
+      try {
+        console.log(projectId, applyer)
+        const resData = await ProjectAPI.acceptApplication(
+          projectId,
+          applyer.memberId
+        )
+        commit("ADD_MEMBER", applyer)
+        return resData
+      } catch (error) {
+        const { status, message } = error.response.data
+        switch (status) {
+          case 400: {
+            throw Error(message)
+          }
+        }
+      }
+    },
+    async refuseApplication(context, { projectId, memberId }) {
+      try {
+        const resData = await ProjectAPI.refuseApplication(projectId, memberId)
+        return resData
+      } catch (error) {
+        console.log(error.resopnse)
+      }
+    },
+    async getBoardList(context, projectId) {
+      try {
+        const resData = await ProjectAPI.getBoardList(projectId)
+        return resData
+      } catch (error) {
+        console.log(error)
+      }
+    },
   },
   getters: {
     getMyClubList(state) {
       return state.myClubList
+    },
+    getAcceptedApplyers(state) {
+      return state.acceptedApplyers
     },
   },
 }

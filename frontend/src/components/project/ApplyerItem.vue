@@ -15,6 +15,8 @@
   </div>
   <ApplicationModal
     @close="isApplicationModalActivation = false"
+    @accept="handleAccept"
+    @refuse="handleRefuse"
     v-if="isApplicationModalActivation"
     :projectId="projectId"
     :memberId="applyer.memberId"
@@ -32,14 +34,25 @@ export default {
     applyer: Object,
     projectId: Number,
   },
-  setup() {
+  emits: ["accept", "refuse"],
+  setup(props, { emit }) {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
     const isApplicationModalActivation = ref(false)
 
+    const handleAccept = () => {
+      emit("accept", props.applyer)
+      isApplicationModalActivation.value = false
+    }
+    const handleRefuse = async () => {
+      emit("refuse", props.applyer.memberId)
+      isApplicationModalActivation.value = false
+    }
     return {
       profilePic,
       isApplicationModalActivation,
+      handleAccept,
+      handleRefuse,
     }
   },
 }

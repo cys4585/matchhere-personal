@@ -168,50 +168,47 @@ export default {
     onBeforeMount(async () => {
       projectId.value = route.params.projectId
       if (projectId.value) {
-        const projectInfo = await store.dispatch(
-          "project/getInfoForUpdate",
-          projectId.value
-        )
-        console.log(projectInfo)
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // projectInfo.hostPosition = "개발자"
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        console.log(projectInfo)
-        for (let form in formFields.value) {
-          for (let field in formFields.value[form]) {
-            const backendKey = formFields.value[form][field].backendKey
-            console.log(backendKey)
-            console.log(projectInfo[backendKey])
-            if (backendKey === "techstacks") {
-              projectInfo.techstacks.forEach(
-                (item) =>
-                  (formFields.value.project.techStacks.value[item.name] =
-                    item.level)
-              )
-            } else if (backendKey === "clubId") {
-              formFields.value.project.club.clubList = projectInfo.clubs
-              formFields.value.project.club.options = [
-                "선택 안함",
-                ...formFields.value.project.club.clubList.map(
-                  (club) => club.name
-                ),
-              ]
-            } else {
-              formFields.value[form][field].value = projectInfo[backendKey]
+        try {
+          const projectInfo = await store.dispatch(
+            "project/getInfoForUpdate",
+            projectId.value
+          )
+          console.log(projectInfo)
+          for (let form in formFields.value) {
+            for (let field in formFields.value[form]) {
+              const backendKey = formFields.value[form][field].backendKey
+              console.log(backendKey)
+              console.log(projectInfo[backendKey])
+              if (backendKey === "techstacks") {
+                projectInfo.techstacks.forEach(
+                  (item) =>
+                    (formFields.value.project.techStacks.value[item.name] =
+                      item.level)
+                )
+              } else if (backendKey === "clubId") {
+                formFields.value.project.club.clubList = projectInfo.clubs
+                formFields.value.project.club.options = [
+                  "선택 안함",
+                  ...formFields.value.project.club.clubList.map(
+                    (club) => club.name
+                  ),
+                ]
+              } else {
+                formFields.value[form][field].value = projectInfo[backendKey]
+              }
             }
           }
+          console.log(formFields.value)
+        } catch (error) {
+          store.commit("ADD_MESSAGES", {
+            text: error.message,
+            type: "error",
+          })
+          router.push({
+            name: "ProjectArticle",
+            params: { projectId: projectId.value },
+          })
         }
-        console.log(formFields.value)
       } else {
         await store.dispatch("project/getMyClubList")
         formFields.value.project.club.clubList =

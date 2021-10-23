@@ -1,19 +1,23 @@
 <template>
   <div class="project-card">
-    <img :src="coverPic" alt="" class="rounded-t-md" />
+    <div class="flex justify-center">
+      <img :src="projectInfo.coverPicUri" alt="" class="rounded-t-md h-40" />
+    </div>
     <div class="info">
-      <h4>백준 알고리즘 스터디 하실 분</h4>
+      <h4>{{ projectInfo.name }}</h4>
       <div class="content">
-        <p class="text-gray-900 text-sm">
-          주요 기술 스택: Python, Java, Holololo, Javas...
-        </p>
+        <p class="text-gray-900 text-sm">주요 기술 스택: {{ techStacks }}</p>
         <div class="flex justify-between">
-          <span class="text-xs text-gray-600">지역: 무관</span>
-          <span class="text-xs text-gray-600">2021-12-25 까지</span>
+          <span class="text-xs text-gray-600"
+            >지역: {{ projectInfo.city }}</span
+          >
+          <span class="text-xs text-gray-600"
+            >{{ projectInfo.period }} 까지</span
+          >
         </div>
         <div class="flex gap-2">
-          <span class="state-common">프로젝트 진행 중</span>
-          <span class="state-common">팀원 모집 중</span>
+          <ProjectProgressState :state="projectInfo.projectProgressState" />
+          <RecruitmentState :state="projectInfo.recruitmentState" />
         </div>
       </div>
     </div>
@@ -22,8 +26,10 @@
       <div class="flex gap-2 items-center">
         <img :src="profilePic" alt="" class="w-6 h-6" />
         <div class="flex gap-1">
-          <span class="text-gray-900 text-xs">김병훈</span>
-          <span class="text-gray-500 text-xs">5일 전</span>
+          <span class="text-gray-900 text-xs">{{ projectInfo.host.name }}</span>
+          <span class="text-gray-500 text-xs">
+            {{ projectInfo.createDate.slice(0, 10) }}
+          </span>
         </div>
       </div>
       <span class="material-icons text-gray-400"> more_vert </span>
@@ -32,14 +38,26 @@
 </template>
 
 <script>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
+import ProjectProgressState from "@/components/project/ProjectProgressState.vue"
+import RecruitmentState from "@/components/project/RecruitmentState.vue"
+
 export default {
   name: "ProjectCard",
-  setup() {
+  components: { ProjectProgressState, RecruitmentState },
+  props: ["projectInfo"],
+  setup(props) {
     const coverPic = ref(require("@/assets/images/test-card.png"))
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
-    return { coverPic, profilePic }
+    const techStacks = ref()
+    onMounted(() => {
+      techStacks.value = props.projectInfo.techstacks
+        .map((techstack) => techstack.name)
+        .join(", ")
+    })
+
+    return { coverPic, profilePic, techStacks }
   },
 }
 </script>
@@ -55,10 +73,6 @@ export default {
     }
     .content {
       @apply grid gap-4;
-
-      .state-common {
-        @apply py-1 px-2 rounded font-bold text-sm;
-      }
     }
   }
 
