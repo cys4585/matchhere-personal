@@ -82,23 +82,4 @@ public class ProjectSimpleInfoResponseDto {
             .build();
     }
 
-    public static ProjectSimpleInfoResponseDto from(Project project,
-        List<ProjectTechstackResponseDto> techstacks, String authority) {
-        return ProjectSimpleInfoResponseDto.builder()
-            .id(project.getId())
-            .name(project.getName())
-            .projectProgressState(project.getProjectProgressState().getState())
-            .coverPicUri(
-                (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
-            .recruitmentState(project.getRecruitmentState().getState())
-            .viewCount(project.getViewCount())
-            .createDate(project.getCreateDate())
-            .host(MemberSimpleInfoResponseDto.from(project.getMember()))
-            .techstacks(techstacks)
-            .period(project.getPeriod())
-            .city(project.getCity().toString())
-            .authority(authority)
-            .build();
-    }
-
 }
