@@ -1,16 +1,24 @@
 <template>
   <div class="flex border-b pb-4">
     <div class="grid gap-2 flex-1">
-      <p class="text-lg font-medium">{{ career.role }}</p>
-      <p class="font-medium">{{ career.company }}</p>
+      <span class="text-lg font-medium">{{ education.institution }}</span>
+      <div class="flex items-center gap-1 font-medium">
+        <span class="text-sm font-medium">{{ education.major }}</span>
+        <span v-if="education.degree" class="text-sm">
+          ({{ education.degree }})
+        </span>
+      </div>
+      <!-- <p class="font-medium">{{ education.organization }}</p> -->
       <p class="text-sm text-gray-700">
-        {{ career.start_date }} - {{ career.end_date || "재직 중" }}
+        {{ education.start_date }}
+        {{ education.end_date && `- ${education.end_date}` }} |
+        {{ education.state }}
       </p>
-      <p class="truncate">
-        {{ career.description }}
+      <p class="truncate" v-if="education.description">
+        {{ education.description }}
       </p>
     </div>
-    <div class="btns flex flex-col gap-1">
+    <div class="btns flex flex-col gap-2">
       <button @click="handleToggleModal">
         <span
           class="material-icons text-gray-300 hover:text-blue-500"
@@ -28,9 +36,9 @@
         </span>
       </button>
     </div>
-    <CareerFormModal
-      v-if="careerModalOpen"
-      :careerId="career.id"
+    <EduFormModal
+      v-if="modalOpen"
+      :educationId="education.id"
       type="EDIT"
       @closeModal="handleToggleModal"
     />
@@ -38,42 +46,41 @@
 </template>
 
 <script>
-import CareerFormModal from "@/components/profile/CareerFormModal.vue"
+import EduFormModal from "@/components/profile/EduFormModal.vue"
 import { ref } from "vue"
 import { useStore } from "vuex"
 export default {
-  name: "CareerListItem",
-  components: { CareerFormModal },
+  name: "EduListItem",
+  components: { EduFormModal },
   props: {
-    career: {
+    education: {
       type: Object,
     },
   },
-  emits: ["updateCareer"],
+  emits: ["updateEducation"],
   setup(props, { emit }) {
     const store = useStore()
-    const careerModalOpen = ref(false)
-
+    const modalOpen = ref(false)
     const handleToggleModal = ({ action, data }) => {
-      careerModalOpen.value = !careerModalOpen.value
-      store.commit("SET_MODAL_OPEN", careerModalOpen)
+      modalOpen.value = !modalOpen.value
+      store.commit("SET_MODAL_OPEN", modalOpen)
       if (action === "update") {
-        emit("updateCareer", { action, data })
+        emit("updateEducation", { action, data })
       }
     }
 
     const handleDelete = async () => {
       const ok = confirm("삭제하시겠습니까?")
       if (!ok) return
-      await store.dispatch("member/deleteCareer", props.career.id)
-      emit("updateCareer", {
+      await store.dispatch("member/deleteEdu", props.education.id)
+      emit("updateEducation", {
         action: "delete",
-        data: { ...props.career },
+        data: { ...props.education },
       })
     }
 
     return {
-      careerModalOpen,
+      modalOpen,
       handleToggleModal,
       handleDelete,
     }

@@ -59,6 +59,10 @@ const updateCareer = async ({ submitData, careerId }) => {
   return res.data
 }
 
+const deleteCareer = async (careerId) => {
+  await http.delete(`member/career/${careerId}`)
+}
+
 const createCertification = async (data) => {
   const res = await http.post(`member/certification`, data)
   return res.data
@@ -77,6 +81,29 @@ const updateCertification = async ({ submitData, certificationId }) => {
   return res.data
 }
 
+const deleteCertification = async (certificationId) => {
+  await http.delete(`member/certification/${certificationId}`)
+}
+
+const createEdu = async (data) => {
+  const res = await http.post(`member/education`, data)
+  return res.data
+}
+
+const getEdu = async (eduId) => {
+  const res = await http.get(`member/education/${eduId}`)
+  return res.data
+}
+
+const updateEdu = async ({ submitData, eduId }) => {
+  const res = await http.put(`member/education/${eduId}`, submitData)
+  return res.data
+}
+
+const deleteEdu = async (eduId) => {
+  await http.delete(`member/education/${eduId}`)
+}
+
 export default {
   getMypage,
   getMe,
@@ -88,7 +115,13 @@ export default {
   createCareer,
   getCareer,
   updateCareer,
+  deleteCareer,
   createCertification,
   getCertification,
   updateCertification,
+  deleteCertification,
+  createEdu,
+  getEdu,
+  updateEdu,
+  deleteEdu,
 }

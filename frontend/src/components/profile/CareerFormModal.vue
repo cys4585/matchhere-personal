@@ -1,6 +1,6 @@
 <template>
   <Modal @closeModal="handleCloseModal">
-    <h4 class="mb-4">경력 추가</h4>
+    <h4 class="mb-4">{{ type === "CREATE" ? "경력 추가" : "경력 수정" }}</h4>
     <div class="grid gap-4 mb-10">
       <InputFormField :field="companyField" v-model="companyField.value" />
       <InputFormField :field="roleField" v-model="roleField.value" />

@@ -199,6 +199,28 @@ export default {
         )
       }
     },
+    async deleteCareer({ commit }, careerId) {
+      try {
+        await memberAPI.deleteCareer(careerId)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "경력을 삭제했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "경력을 삭제하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
     async createCertification({ commit }, data) {
       try {
         const certification = await memberAPI.createCertification(data)
@@ -254,6 +276,111 @@ export default {
           "ADD_MESSAGE",
           {
             text: "자격증을 업데이트하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async deleteCertification({ commit }, certificationId) {
+      try {
+        await memberAPI.deleteCertification(certificationId)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "자격증을 삭제했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "자격증을 삭제하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async createEdu({ commit }, data) {
+      try {
+        const edu = await memberAPI.createEdu(data)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력이 추가되었습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+        return edu
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "추가 실패",
+            type: "error",
+          },
+          { root: true }
+        )
+        console.log(error)
+      }
+    },
+    async getEdu({ commit }, eduId) {
+      try {
+        return await memberAPI.getEdu(eduId)
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력을 불러오지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async updateEdu({ commit }, data) {
+      try {
+        const edu = await memberAPI.updateEdu(data)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력을 업데이트했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+        return edu
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력을 업데이트하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async deleteEdu({ commit }, eduId) {
+      try {
+        await memberAPI.deleteEdu(eduId)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력을 삭제했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "학력을 삭제하지 못했습니다",
             type: "error",
           },
           { root: true }

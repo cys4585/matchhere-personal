@@ -1,99 +1,60 @@
 <template>
-  <div class="container grid gap-10">
-    <section class="grid gap-4">
-      <header class="flex items-center justify-between">
+  <div class="grid gap-10">
+    <section>
+      <header>
         <h3>경력</h3>
         <button
-          class="
-            text-blue-600
-            font-medium
-            py-1
-            px-2
-            rounded
-            transition-colors
-            hover:text-white hover:bg-blue-600
-          "
+          class="add-button"
           @click="handleToggleModal({ type: 'career' })"
         >
           + 추가
         </button>
       </header>
-      <div class="grid gap-4">
+      <div class="article-list">
         <CareerListItem
           v-for="career in careerList"
           :key="career.id"
           :career="career"
-          @updateCareer="handleUpdateCareer"
+          @updateCareer="handleCareer"
         />
       </div>
     </section>
-    <section class="grid gap-4">
-      <header class="flex items-center justify-between">
+    <section>
+      <header>
         <h3>자격증</h3>
         <button
-          class="
-            text-blue-600
-            font-medium
-            py-1
-            px-2
-            rounded
-            transition-colors
-            hover:text-white hover:bg-blue-600
-          "
+          class="add-button"
           @click="handleToggleModal({ type: 'certification' })"
         >
           + 추가
         </button>
       </header>
-      <div class="grid gap-4">
+      <div class="article-list">
         <CertificationListItem
           v-for="certification in certificationList"
           :key="certification.id"
           :certification="certification"
-          @updateCertification="handleUpdateCertification"
+          @updateCertification="handleCertification"
         />
       </div>
     </section>
-    <section class="grid gap-4">
-      <header class="flex items-center justify-between">
+    <section>
+      <header>
         <h3>학력</h3>
         <button
-          class="
-            text-blue-600
-            font-medium
-            py-1
-            px-2
-            rounded
-            transition-colors
-            hover:text-white hover:bg-blue-600
-          "
+          class="add-button"
+          @click="handleToggleModal({ type: 'education' })"
         >
           + 추가
         </button>
       </header>
-      <div class="grid gap-4">
-        <div class="flex">
-          <div class="grid gap-2 flex-1">
-            <p class="text-lg font-medium">교육기관 이름</p>
-            <p class="text-sm text-gray-700">전공</p>
-            <p class="text-xs text-gray-700">
-              시작 일 - 종료 일 | 상태(졸업, 재학, 휴학, 중퇴)
-            </p>
-            <p class="truncate">
-              설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명설명
-            </p>
-          </div>
-          <div>
-            <button>
-              <span
-                class="material-icons text-gray-300 hover:text-blue-500"
-                style="font-size: 1rem"
-              >
-                edit
-              </span>
-            </button>
-          </div>
-        </div>
+      <div class="article-list">
+        <EduListItem
+          v-for="education in educationList"
+          :key="education.id"
+          :education="education"
+          @updateEducation="handleEducation"
+        />
       </div>
     </section>
   </div>
@@ -107,14 +68,20 @@
     type="CREATE"
     @closeModal="handleToggleModal"
   />
-  <!-- <AddCareerModal /> -->
+  <EduFormModal
+    v-if="eduModalOpen"
+    type="CREATE"
+    @closeModal="handleToggleModal"
+  />
 </template>
 
 <script>
 import CareerFormModal from "@/components/profile/CareerFormModal.vue"
 import CertificationFormModal from "@/components/profile/CertificationFormModal.vue"
+import EduFormModal from "@/components/profile/EduFormModal.vue"
 import CareerListItem from "@/components/profile/CareerListItem.vue"
 import CertificationListItem from "@/components/profile/CertificationListItem.vue"
+import EduListItem from "@/components/profile/EduListItem.vue"
 import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
 export default {
@@ -122,8 +89,10 @@ export default {
   components: {
     CareerFormModal,
     CertificationFormModal,
+    EduFormModal,
     CareerListItem,
     CertificationListItem,
+    EduListItem,
   },
   setup() {
     const store = useStore()
@@ -134,22 +103,65 @@ export default {
     const certificationModalOpen = ref(false)
     const eduModalOpen = ref(false)
 
-    const addNewCareer = (data) => {
-      careerList.value = [...careerList.value, { ...data }]
+    const handleCareer = ({ action, data }) => {
+      switch (action) {
+        case "create": {
+          careerList.value = [...careerList.value, data]
+          break
+        }
+        case "update": {
+          careerList.value = careerList.value.map((c) => {
+            return c.id === data.id ? data : c
+          })
+          break
+        }
+        case "delete": {
+          careerList.value = careerList.value.filter((c) => {
+            return c.id !== data.id
+          })
+          break
+        }
+      }
     }
-    const addNewCertification = (data) => {
-      certificationList.value = [...certificationList.value, { ...data }]
+    const handleCertification = ({ action, data }) => {
+      switch (action) {
+        case "create": {
+          certificationList.value = [...certificationList.value, { ...data }]
+          break
+        }
+        case "update": {
+          certificationList.value = certificationList.value.map((c) => {
+            return c.id === data.id ? data : c
+          })
+          break
+        }
+        case "delete": {
+          certificationList.value = certificationList.value.filter(
+            (c) => c.id !== data.id
+          )
+          break
+        }
+      }
     }
-
-    const handleUpdateCareer = (data) => {
-      careerList.value = careerList.value.map((c) => {
-        return c.id === data.id ? data : c
-      })
-    }
-    const handleUpdateCertification = (data) => {
-      certificationList.value = certificationList.value.map((c) => {
-        return c.id === data.id ? data : c
-      })
+    const handleEducation = ({ action, data }) => {
+      switch (action) {
+        case "create": {
+          educationList.value = [...educationList.value, { ...data }]
+          break
+        }
+        case "update": {
+          educationList.value = educationList.value.map((e) => {
+            return e.id === data.id ? { ...data } : e
+          })
+          break
+        }
+        case "delete": {
+          educationList.value = educationList.value.filter(
+            (e) => e.id !== data.id
+          )
+          break
+        }
+      }
     }
 
     const handleToggleModal = ({ type, action, data }) => {
@@ -157,22 +169,19 @@ export default {
         case "career": {
           careerModalOpen.value = !careerModalOpen.value
           store.commit("SET_MODAL_OPEN", careerModalOpen.value)
-          if (action === "create") {
-            addNewCareer(data)
-          }
+          handleCareer({ action, data })
           break
         }
         case "certification": {
           certificationModalOpen.value = !certificationModalOpen.value
           store.commit("SET_MODAL_OPEN", certificationModalOpen.value)
-          if (action === "create") {
-            addNewCertification(data)
-          }
+          handleCertification({ action, data })
           break
         }
         case "education": {
           eduModalOpen.value = !eduModalOpen.value
           store.commit("SET_MODAL_OPEN", eduModalOpen.value)
+          handleEducation({ action, data })
           break
         }
       }
@@ -192,11 +201,28 @@ export default {
       careerModalOpen,
       certificationModalOpen,
       eduModalOpen,
-      handleUpdateCareer,
-      handleUpdateCertification,
+      handleCareer,
+      handleCertification,
+      handleEducation,
       handleToggleModal,
     }
   },
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+section {
+  @apply grid gap-4;
+
+  header {
+    @apply flex items-center justify-between;
+
+    .add-button {
+      @apply text-blue-600 font-medium py-1 px-2 rounded transition-colors hover:text-white hover:bg-blue-600;
+    }
+  }
+
+  .article-list {
+    @apply grid gap-4;
+  }
+}
+</style>
