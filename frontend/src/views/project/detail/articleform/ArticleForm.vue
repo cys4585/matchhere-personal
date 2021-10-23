@@ -26,7 +26,7 @@ import TextAreaFormField from "@/components/common/TextAreaFormField.vue"
 import { computed, ref } from "@vue/reactivity"
 import { onMounted } from "@vue/runtime-core"
 import { useStore } from "vuex"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 export default {
   name: "ArticleForm",
@@ -34,11 +34,16 @@ export default {
   setup() {
     const route = useRoute()
     const store = useStore()
+    const router = useRouter()
 
     const boardList = ref()
+    const projectId = ref()
     onMounted(async () => {
-      const projectId = route.params.projectId
-      const resData = await store.dispatch("project/getBoardList", projectId)
+      projectId.value = route.params.projectId
+      const resData = await store.dispatch(
+        "project/getBoardList",
+        projectId.value
+      )
       boardList.value = resData
     })
 
@@ -76,12 +81,26 @@ export default {
         tags: tagList,
         title: title.value.value,
       }
+      try {
+        const resData = await store.dispatch(
+          "project/createBoardArticle",
+          reqForm
+        )
+        console.log(resData)
 
-      const resData = await store.dispatch(
-        "project/createBoardArticle",
-        reqForm
-      )
-      console.log(resData)
+        let name
+        let boardId
+        if (board.name === "공지사항") {
+          name = "NotiBoardArticleList"
+          boardId = boardList.value[0].id
+        } else if (board.name === "게시판") {
+          name = "BoardArticleList"
+          boardId = boardList.value[1].id
+        }
+        router.push({ name, params: { projectId: projectId.value, boardId } })
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     return { title, boardChoice, tags, content, canSubmit, handleSubmit }

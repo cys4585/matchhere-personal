@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper" @mousedown="handleMousedown">
     <div class="article-info">
-      <div>[회의록] 1주차 회의내용</div>
+      <div>{{ article.title }}</div>
       <div class="flex gap-2">
         <span class="tag"> 회의록 </span>
         <span class="tag"> 회의록 </span>
@@ -9,9 +9,11 @@
       <div class="other-info">
         <div class="user">
           <img :src="profilePic" alt="" class="w-6 h-6" />
-          <span class="text-gray-600">김병훈</span>
+          <span class="text-gray-600">{{ article.createdMember }}</span>
         </div>
-        <span class="text-gray-600">2021. 10. 10.</span>
+        <span class="text-gray-600">{{
+          article.createdDate.slice(0, 10)
+        }}</span>
       </div>
     </div>
     <div class="icon-wrapper">
@@ -36,6 +38,7 @@ import { ref } from "vue"
 
 export default {
   name: "BoardItem",
+  props: ["article"],
   setup() {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="p-4 grid gap-6">
-    <BoardArticleItem />
-    <BoardArticleItem />
-    <BoardArticleItem />
-    <BoardArticleItem />
-    <BoardArticleItem />
+  <div class="p-4 grid gap-6" v-if="boardArticleList">
+    <BoardArticleItem
+      v-for="article in boardArticleList"
+      :key="article.articleId"
+      :article="article"
+    />
   </div>
   <AddBoardArticleButton @addClick="handleAddClick()" />
 </template>
@@ -13,7 +13,7 @@
 import BoardArticleItem from "@/components/project/BoardArticleItem.vue"
 import AddBoardArticleButton from "@/components/common/AddBoardArticleButton.vue"
 import { useRoute, useRouter } from "vue-router"
-import { onMounted } from "@vue/runtime-core"
+import { onMounted, ref } from "@vue/runtime-core"
 import { useStore } from "vuex"
 
 export default {
@@ -22,10 +22,9 @@ export default {
   setup() {
     const route = useRoute()
     const store = useStore()
-    console.log(route.params)
-
     const router = useRouter()
 
+    const boardArticleList = ref()
     onMounted(async () => {
       const boardId = route.params.boardId
       const resData = await store.dispatch(
@@ -33,13 +32,14 @@ export default {
         boardId
       )
       console.log(resData)
+      boardArticleList.value = resData.content
     })
 
     const handleAddClick = () => {
       router.push({ name: "ArticleForm" })
     }
 
-    return { handleAddClick }
+    return { handleAddClick, boardArticleList }
   },
 }
 </script>

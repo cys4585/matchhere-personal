@@ -68,7 +68,6 @@ const getBoardArticleList = async (boardId) => {
 }
 
 const createBoardArticle = async (reqForm) => {
-  console.log(reqForm)
   const res = await http.post(`/projectboards`, reqForm)
   return res.data
 }

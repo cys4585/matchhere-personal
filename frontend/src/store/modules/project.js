@@ -152,7 +152,6 @@ export default {
     },
     async createBoardArticle(context, reqForm) {
       try {
-        console.log(reqForm)
         const resData = await ProjectAPI.createBoardArticle(reqForm)
         return resData
       } catch (error) {
