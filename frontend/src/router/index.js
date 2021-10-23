@@ -13,12 +13,13 @@ import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
 import ProjectDetail from "@/views/project/ProjectDetail.vue"
-import ProjectManage from "@/views/project/ProjectManage.vue"
-import ProjectBoard from "@/views/project/ProjectBoard.vue"
-import ProjectNotiBoard from "@/views/project/ProjectNotiBoard.vue"
-import ArticleForm from "@/views/project/ArticleForm.vue"
-import BoardArticleList from "@/views/project/BoardArticleList.vue"
-import BoardDetail from "@/views/project/BoardDetail.vue"
+import ProjectManage from "@/views/project/detail/ProjectManage.vue"
+import ProjectBoard from "@/views/project/detail/ProjectBoard.vue"
+import ProjectNotiBoard from "@/views/project/detail/ProjectNotiBoard.vue"
+import ArticleForm from "@/views/project/detail/ArticleForm.vue"
+import BoardArticleList from "@/views/project/detail/BoardArticleList.vue"
+import BoardDetail from "@/views/project/detail/BoardDetail.vue"
+import NotiBoardArticleList from "@/views/project/detail/NotiBoardArticleList.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -121,8 +122,19 @@ const routes = [
           },
           {
             path: "noti-board",
-            name: "ProjectNotiBoard",
             component: ProjectNotiBoard,
+            children: [
+              {
+                path: "",
+                name: "NotiBoardArticleList",
+                component: NotiBoardArticleList,
+              },
+              {
+                path: "detail/:articleId",
+                name: "BoardDetail",
+                component: BoardDetail,
+              },
+            ],
           },
           {
             path: "article/form",

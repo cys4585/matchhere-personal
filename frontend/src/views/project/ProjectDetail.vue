@@ -2,8 +2,8 @@
   <nav>
     <button
       @click="handleClick"
-      name="ProjectNotiBoard"
-      :class="{ active: activedView === 'ProjectNotiBoard' }"
+      name="NotiBoardArticleList"
+      :class="{ active: activedView === 'NotiBoardArticleList' }"
     >
       공지사항
     </button>

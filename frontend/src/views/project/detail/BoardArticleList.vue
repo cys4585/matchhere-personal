@@ -1,14 +1,12 @@
 <template>
-  <div>
-    <div class="p-4 grid gap-6">
-      <BoardArticleItem />
-      <BoardArticleItem />
-      <BoardArticleItem />
-      <BoardArticleItem />
-      <BoardArticleItem />
-    </div>
-    <AddBoardArticleButton @addClick="handleAddClick()" />
+  <div class="p-4 grid gap-6">
+    <BoardArticleItem />
+    <BoardArticleItem />
+    <BoardArticleItem />
+    <BoardArticleItem />
+    <BoardArticleItem />
   </div>
+  <AddBoardArticleButton @addClick="handleAddClick()" />
 </template>
 
 <script>
@@ -17,7 +15,7 @@ import AddBoardArticleButton from "@/components/common/AddBoardArticleButton.vue
 import { useRouter } from "vue-router"
 
 export default {
-  name: "ProjectNotiBoard",
+  name: "BoardArticleList",
   components: { BoardArticleItem, AddBoardArticleButton },
   setup() {
     const router = useRouter()
