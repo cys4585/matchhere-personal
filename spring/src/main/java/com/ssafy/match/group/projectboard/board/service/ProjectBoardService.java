@@ -33,8 +33,8 @@ public class ProjectBoardService {
     }
 
     @Transactional
-    public Integer createBoard(Long projectId, ProjectBoardCreateRequestDto dto) {
-        return projectBoardRepository.save(ProjectBoard.of(dto, findProject(projectId))).getId();
+    public ProjectBoardInfoDto createBoard(Long projectId, ProjectBoardCreateRequestDto dto) {
+        return ProjectBoardInfoDto.from(projectBoardRepository.save(ProjectBoard.of(dto, findProject(projectId))));
     }
 
     @Transactional

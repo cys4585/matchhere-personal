@@ -22,7 +22,7 @@ public interface ProjectService {
 
     ProjectInfoForCreateResponseDto getInfoForCreate();
 
-    Long create(ProjectCreateRequestDto dto);
+    ProjectInfoResponseDto create(ProjectCreateRequestDto dto);
 
     ProjectInfoResponseDto update(Long projectId, ProjectUpdateRequestDto dto);
 
@@ -52,7 +52,7 @@ public interface ProjectService {
 
     HttpStatus checkCanApply(Long projectId);
 
-    HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto);
+    ProjectFormInfoResponseDto applyProject(Long projectId, ProjectApplicationRequestDto dto);
 
     List<ProjectFormSimpleInfoResponseDto> allProjectForm(Long projectId);
 
