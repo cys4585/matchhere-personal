@@ -6,11 +6,18 @@ import {
 } from "./validator2"
 
 export class InputFormFieldMaker {
-  constructor(key, value = "") {
+  constructor(
+    key,
+    value = "",
+    disabled = false,
+    label = "라벨",
+    type = "string",
+    placeholder = ""
+  ) {
     this.key = key
     this.value = value
     this.errors = {}
-    this.disabled = false
+    this.disabled = disabled
 
     switch (key) {
       case "email": {
@@ -24,7 +31,6 @@ export class InputFormFieldMaker {
         this.label = "비밀번호"
         this.type = "password"
         this.placeholder = "대소문자, 숫자, 특수문자 포함 8자 이상"
-        this.errors = {}
         this.validators = [passwordValidator]
         break
       }
@@ -32,7 +38,6 @@ export class InputFormFieldMaker {
         this.label = "비밀번호 확인"
         this.type = "password"
         this.placeholder = "동일한 비밀번호를 입력하세요"
-        this.errors = {}
         this.validators = []
         break
       }
@@ -40,7 +45,6 @@ export class InputFormFieldMaker {
         this.label = "인증코드"
         this.type = "string"
         this.placeholder = "인증코드를 입력하세요"
-        this.errors = {}
         this.validators = [requiredValidator]
         break
       }
@@ -48,7 +52,6 @@ export class InputFormFieldMaker {
         this.label = "닉네임"
         this.type = "string"
         this.placeholder = "닉네임을 입력하세요"
-        this.errors = {}
         this.validators = [requiredValidator]
         break
       }
@@ -56,9 +59,14 @@ export class InputFormFieldMaker {
         this.label = "이름"
         this.type = "string"
         this.placeholder = "이름을 입력하세요"
-        this.errors = {}
         this.validators = [nameValidator]
         break
+      }
+      default: {
+        this.label = label
+        this.type = type
+        this.placeholder = placeholder
+        this.validators = []
       }
     }
   }

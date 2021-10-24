@@ -19,7 +19,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/me")
-    @ApiOperation(value = "다른사람의 마이페이지")
+    @ApiOperation(value = "내 정보")
     public ResponseEntity<MemberMeResponseDto> getMe() {
         return ResponseEntity.ok(memberService.getMe());
     }

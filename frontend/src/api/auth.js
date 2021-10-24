@@ -10,8 +10,8 @@ const sendEmailForFindPW = async (email) => {
   return res.data
 }
 
-const confirmEmailAuthCode = async (payload) => {
-  const res = await http.post(`/auth/cert/authcode}`, payload)
+const confirmEmailAuthCode = async ({ requestData, id }) => {
+  const res = await http.post(`/auth/cert/authcode/${id}`, requestData)
   return res.data
 }
 
@@ -30,8 +30,13 @@ const login = async (formData) => {
 }
 
 const reissue = async (tokenData) => {
+  console.log(tokenData)
   const res = await http.post(`/auth/reissue`, tokenData)
   return res.data
+}
+
+const findPassword = async ({ email, id, password }) => {
+  await http.post(`auth/findpassword`, { email, id, password })
 }
 
 export default {
@@ -42,4 +47,5 @@ export default {
   signup,
   login,
   reissue,
+  findPassword,
 }

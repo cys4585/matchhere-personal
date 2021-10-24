@@ -43,6 +43,10 @@ export default {
       type: String,
       required: true,
     },
+    forSignup: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["update:modelValue", "onShow:authCodeField"],
   setup(props, { emit }) {
@@ -62,15 +66,17 @@ export default {
       props.field.updateButtonLabel("메일 전송 중")
       props.field.updateButtonDisabled(true)
       props.field.updateInputDisabled(true)
-      const isAlreadySignup = await store.dispatch(
-        "auth/sendEmailForSignup",
-        props.field.value
-      )
-      if (isAlreadySignup) {
+
+      let actionName = "auth/sendEmailForSignup"
+      if (!props.forSignup) {
+        actionName = "auth/sendEmailForFindPW"
+      }
+      try {
+        await store.dispatch(actionName, props.field.value)
         props.field.updateButtonLabel("재전송")
         props.field.updateButtonDisabled(false)
         emit("onShow:authCodeField")
-      } else {
+      } catch (error) {
         props.field.updateButtonLabel("메일 인증")
         props.field.updateButtonDisabled(false)
         props.field.updateInputDisabled(false)
@@ -113,7 +119,7 @@ export default {
       }
 
       button {
-        @apply flex items-center justify-center w-20 rounded text-sm font-medium border border-gray-400 text-gray-900;
+        @apply flex items-center justify-center w-24 rounded text-sm font-medium border border-gray-400 text-gray-900;
 
         &.disabled {
           @apply bg-gray-100 border-gray-400 text-gray-400 cursor-not-allowed;
