@@ -157,10 +157,13 @@ public class Project {
         if(this.developerCount > count){
             throw new CustomException(ErrorCode.DEVELOPER_COUNT_MORE_THAN_MAX);
         }
-        if(this.developerCount == count){
+        if(this.developerCount == count) {
             this.applyDeveloper = false;
         }
-        this.developerMaxCount = count;
+        if(this.developerCount < count) {
+            this.developerMaxCount = count;
+            this.applyDeveloper = true;
+        }
     }
 
     public void setPlannerMaxCount(int count){
@@ -170,7 +173,10 @@ public class Project {
         if(this.plannerCount == count){
             this.applyPlanner = false;
         }
-        this.plannerMaxCount = count;
+        if(this.plannerCount < count) {
+            this.plannerMaxCount = count;
+            this.applyPlanner = true;
+        }
     }
 
     public void setDesignerMaxCount(int count){
@@ -180,7 +186,10 @@ public class Project {
         if(this.designerCount == count){
             this.applyDesigner = false;
         }
-        this.designerMaxCount = count;
+        if(this.designerCount < count) {
+            this.designerMaxCount = count;
+            this.applyDesigner = true;
+        }
     }
 
     public void addRole(String str){
@@ -194,6 +203,10 @@ public class Project {
             throw new CustomException(ErrorCode.ROLE_NOT_FOUND);
         }
 
+    }
+
+    public void setCoverPic(DBFile coverPic) {
+        this.coverPic = coverPic;
     }
 
     public void setMember(Member member){
