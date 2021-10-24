@@ -76,7 +76,10 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
         if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
-
+        // 현재 댓글이 부모댓글이 아니라면 부모 댓글의 대댓글 수 감소
+        if(comment.getParentId() != comment.getId()) {
+            findProjectArticleComment(comment.getParentId()).removeReplyCount();
+        }
         comment.setIsDeleted(true);
         return HttpStatus.OK;
     }
