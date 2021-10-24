@@ -19,7 +19,7 @@ import EditProfileNav from "@/components/profile/EditProfileNav.vue"
 import BasicInfo from "@/components/profile/BasicInfo.vue"
 import PositionTechStack from "@/components/profile/PositionTechStack.vue"
 import Career from "@/components/profile/Career.vue"
-import PortfolioSNS from "@/components/profile/PortfolioSNS.vue"
+import SNSPortfolio from "@/components/profile/SNSPortfolio.vue"
 import { computed, ref } from "vue"
 
 export default {
@@ -29,7 +29,7 @@ export default {
     BasicInfo,
     PositionTechStack,
     Career,
-    PortfolioSNS,
+    SNSPortfolio,
   },
   setup() {
     const activeSectionId = ref(1)
@@ -45,7 +45,7 @@ export default {
           return Career
         }
         default: {
-          return PortfolioSNS
+          return SNSPortfolio
         }
       }
     })

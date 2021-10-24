@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class ProjectBoard {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @NotEmpty
+    @NotBlank
     @Column(name = "name")
     private String name;
 

@@ -13,7 +13,7 @@ export default {
         return uuid
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           {
             text: "파일 업로드에 실패했습니다",
             type: "error",

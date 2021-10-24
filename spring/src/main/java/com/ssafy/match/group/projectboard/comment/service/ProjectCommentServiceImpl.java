@@ -56,7 +56,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     }
 
     @Transactional
-    public HttpStatus update(Long commentId, ProjectArticleCommentRequestDto dto) {
+    public ProjectArticleCommentResponseDto update(Long commentId, ProjectArticleCommentRequestDto dto) {
         ProjectArticleComment comment = findProjectArticleComment(commentId);
 
         if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
@@ -66,7 +66,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
         comment.setContent(dto.getContent());
         comment.setIsModified(true);
 
-        return HttpStatus.OK;
+        return ProjectArticleCommentResponseDto.from(comment);
     }
 
     @Transactional

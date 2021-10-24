@@ -76,14 +76,14 @@ public class FileController {
     }
 
     @DeleteMapping
-    @ApiOperation(value = "파일 삭제", notes = "<strong>받은 fileDownloadUri</strong>로 파일을 삭제한다.")
+    @ApiOperation(value = "파일 삭제", notes = "<strong>받은 uuid</strong>로 파일을 삭제한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "파일이 삭제되었습니다."),
         @ApiResponse(code = 500, message = "파일이 없습니다."),
         @ApiResponse(code = 500, message = "로직 문제")
     })
     public ResponseEntity<String> deleteFile(@RequestBody DeleteFileRequestDto dto){
-        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.deleteFile(dto.getFileDownloadUri()));
+        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.deleteFile(dto.getUuid()));
     }
 
 }

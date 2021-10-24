@@ -86,7 +86,7 @@ public class ProjectArticleService {
     }
 
     @Transactional
-    public HttpStatus updateArticle(Long articleId, ProjectArticleRequestDto dto) {
+    public ProjectArticleInfoResponseDto updateArticle(Long articleId, ProjectArticleRequestDto dto) {
         // 게시글
         ProjectArticle projectArticle = findProjectArticle(articleId);
         if(dto.getContent() == null){
@@ -98,7 +98,10 @@ public class ProjectArticleService {
 
         projectArticle.update(dto, findProjectBoard(dto.getProjectBoardId()));
         addTags(projectArticle, dto.getTags());
-        return HttpStatus.OK;
+
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.from(projectArticle);
+        projectArticleInfoResponseDto.setContent(projectContent.getContent());
+        return projectArticleInfoResponseDto;
     }
 
     @Transactional
@@ -114,6 +117,12 @@ public class ProjectArticleService {
     @Transactional
     public void addContent(ProjectArticle projectArticle, String content) {
         projectContentRepository.save(ProjectContent.of(projectArticle, content));
+    }
+
+    // 프로젝트 게시글 조회수 증가
+    public HttpStatus plusViewCount(Long projectArticleId){
+        findProjectArticle(projectArticleId).plusViewCount();
+        return HttpStatus.OK;
     }
 
     public ProjectBoard findProjectBoard(int boardId){

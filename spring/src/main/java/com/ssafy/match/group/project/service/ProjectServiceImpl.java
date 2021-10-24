@@ -1,6 +1,5 @@
 package com.ssafy.match.group.project.service;
 
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
@@ -11,6 +10,7 @@ import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.common.repository.TechstackRepository;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
@@ -43,7 +43,6 @@ import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepositor
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,7 +54,6 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,7 +130,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 업데이트
     @Transactional
-    public HttpStatus update(Long projectId, ProjectUpdateRequestDto dto) {
+    public ProjectInfoResponseDto update(Long projectId, ProjectUpdateRequestDto dto) {
         validCity(dto.getCity());
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
@@ -149,7 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
-        return HttpStatus.OK;
+        return getOneProject(projectId);
     }
 
     // 프로젝트 삭제
@@ -224,6 +222,10 @@ public class ProjectServiceImpl implements ProjectService {
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
     }
+    // 사진 정보만 가져오기
+    public DBFileDto getCoverPicUri(Long projectId) {
+        return DBFileDto.of(findProject(projectId).getCoverPic());
+    }
 
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
@@ -261,6 +263,12 @@ public class ProjectServiceImpl implements ProjectService {
             .stream()
             .map(MemberSimpleInfoResponseDto::from)
             .collect(Collectors.toList());
+    }
+
+    // 프로젝트 조회수 증가
+    public HttpStatus plusViewCount(Long projectId){
+        findProject(projectId).plusViewCount();
+        return HttpStatus.OK;
     }
 
     // 기술 스택 추가
@@ -503,7 +511,7 @@ public class ProjectServiceImpl implements ProjectService {
     public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
-
+        checkAlreadyJoin(project, member);
         CompositeMemberProject cmp = new CompositeMemberProject(member, project);
 
         Optional<ProjectApplicationForm> form = projectApplicationFormRepository.findById(cmp);

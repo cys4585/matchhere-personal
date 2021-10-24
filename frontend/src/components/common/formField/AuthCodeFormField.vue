@@ -111,7 +111,7 @@ export default {
       }
 
       button {
-        @apply flex items-center justify-center w-20 rounded text-sm font-medium border border-gray-400 text-gray-900;
+        @apply flex items-center justify-center w-24 rounded text-sm font-medium border border-gray-400 text-gray-900;
 
         &.disabled {
           @apply bg-gray-100 border-gray-400 text-gray-400 cursor-not-allowed;

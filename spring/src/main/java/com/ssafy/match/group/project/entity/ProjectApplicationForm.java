@@ -13,6 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,10 +32,15 @@ public class ProjectApplicationForm {
 
     @EmbeddedId
     private CompositeMemberProject compositeMemberProject;
+
+    @NotBlank
+    @Size(min = 2, max = 30)
     private String name;
+
+    @NotBlank
     private String role;
     private String bio;
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
     public static ProjectApplicationForm of(ProjectApplicationRequestDto dto, CompositeMemberProject cmp, String name){
