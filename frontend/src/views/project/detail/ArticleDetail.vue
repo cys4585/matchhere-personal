@@ -38,10 +38,13 @@
       <hr />
       <div class="grid gap-2">
         <h4 class="font-medium text-lg text-gray-900">3개의 댓글</h4>
-        <CommentForm :articleId="article.articleId" />
+        <CommentForm
+          :articleId="article.articleId"
+          @create="handleCreateComment"
+        />
       </div>
     </div>
-    <div class="grid gap-6" v-if="commentList.length">
+    <div class="grid gap-6" v-if="commentList.length !== 0">
       <BoardCommentItem
         v-for="commentItem in commentList"
         :key="commentItem[0].id"
@@ -84,28 +87,34 @@ export default {
           articleId
         )
         console.log(resCommentList)
-
-        let parentId = 0
-        let commentItem = []
-        for (let comment of resCommentList) {
-          if (parentId !== comment.parentId) {
-            parentId = comment.parentId
-            if (commentItem.length) {
-              commentList.value.push(commentItem)
-              commentItem = []
+        if (resCommentList.length) {
+          let parentId = 0
+          let commentItem = []
+          for (let comment of resCommentList) {
+            if (parentId !== comment.parentId) {
+              parentId = comment.parentId
+              if (commentItem.length) {
+                commentList.value.push(commentItem)
+                commentItem = []
+              }
             }
+            commentItem.push(comment)
           }
-          commentItem.push(comment)
+          commentList.value.push(commentItem)
         }
-        commentList.value.push(commentItem)
       } catch (error) {
         console.log(error.message)
       }
     })
 
+    const handleCreateComment = (comment) => {
+      console.log(comment)
+      commentList.value.push([comment])
+    }
+
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
-    return { profilePic, article, commentList }
+    return { profilePic, article, commentList, handleCreateComment }
   },
 }
 </script>

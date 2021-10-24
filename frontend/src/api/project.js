@@ -87,7 +87,6 @@ const createComment = async (content, articleId, parentId) => {
   const res = await http.post(`/projectcomment/${articleId}/${parentId}`, {
     content,
   })
-  console.log(res)
   return res.data
 }
 export default {

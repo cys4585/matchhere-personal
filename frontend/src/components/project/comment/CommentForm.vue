@@ -26,7 +26,8 @@ export default {
       default: 0,
     },
   },
-  setup(props) {
+  emits: ["create"],
+  setup(props, { emit }) {
     const store = useStore()
 
     const content = ref("")
@@ -40,6 +41,8 @@ export default {
           parentId,
         })
         console.log(resData)
+        content.value = ""
+        emit("create", resData)
       } catch (error) {
         console.log(error)
       }

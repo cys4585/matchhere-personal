@@ -2,13 +2,17 @@
   <div class="wrapper">
     <div
       class="comment-wrapper"
-      v-for="nestedComment in nestedCommentList"
-      :key="nestedComment.id"
+      v-for="comment in commentList"
+      :key="comment.id"
     >
-      <Comment :comment="nestedComment" />
+      <Comment :comment="comment" />
       <hr />
     </div>
-    <CommentForm :articleId="articleId" :parentId="parentId" />
+    <CommentForm
+      :articleId="articleId"
+      :parentId="parentId"
+      @create="handleCreateComment"
+    />
   </div>
 </template>
 
@@ -21,9 +25,16 @@ export default {
   name: "NestedCommentList",
   components: { Comment, CommentForm },
   props: ["nestedCommentList", "articleId", "parentId"],
-  setup() {
+  setup(props) {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
-    return { profilePic }
+
+    const commentList = ref(props.nestedCommentList)
+
+    const handleCreateComment = (comment) => {
+      console.log(comment)
+      commentList.value.push(comment)
+    }
+    return { profilePic, commentList, handleCreateComment }
   },
 }
 </script>

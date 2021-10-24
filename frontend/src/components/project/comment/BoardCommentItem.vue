@@ -26,10 +26,7 @@ export default {
   name: "BoardCommentItem",
   props: ["parentComment", "nestedCommentList", "articleId"],
   components: { NestedCommentList, DropDownButton, Comment },
-  setup(props) {
-    console.log(props.parentComment.id)
-    console.log(props.NestedCommentList)
-    console.log(props.articleId)
+  setup() {
     const isDropDownActive = ref(false)
 
     return { isDropDownActive }
