@@ -387,6 +387,20 @@ export default {
         )
       }
     },
+    async getSNSPortfolio({ commit }) {
+      try {
+        return await memberAPI.getSNSPortfolio()
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "데이터를 불러오지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
   },
   getters: {
     getMyEmail(state) {

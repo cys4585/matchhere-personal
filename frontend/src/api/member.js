@@ -104,6 +104,11 @@ const deleteEdu = async (eduId) => {
   await http.delete(`member/education/${eduId}`)
 }
 
+const getSNSPortfolio = async () => {
+  const res = await http.get(`member/snsportfolio`)
+  return res.data
+}
+
 export default {
   getMypage,
   getMe,
@@ -124,4 +129,5 @@ export default {
   getEdu,
   updateEdu,
   deleteEdu,
+  getSNSPortfolio,
 }
