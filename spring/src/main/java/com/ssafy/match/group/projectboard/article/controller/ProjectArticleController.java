@@ -56,10 +56,10 @@ public class ProjectArticleController {
     @PostMapping
     @ApiOperation(value = "(프로젝트)게시판의 게시글 생성", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시글을 생성한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "게시글의 Long타입 Id"),
+        @ApiResponse(code = 200, message = "생성 게시글 정보"),
         @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND"),
     })
-    public ResponseEntity<Long> createArticle(@Valid @RequestBody ProjectArticleRequestDto dto) {
+    public ResponseEntity<ProjectArticleInfoResponseDto> createArticle(@Valid @RequestBody ProjectArticleRequestDto dto) {
         return new ResponseEntity<>(projectArticleService.createArticle(dto), HttpStatus.OK);
     }
 
