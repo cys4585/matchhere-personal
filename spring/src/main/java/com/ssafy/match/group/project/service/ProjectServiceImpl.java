@@ -112,7 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
     // 프로젝트 업데이트를 위한 정보
     public ProjectInfoForUpdateResponseDto getInfoForUpdateProject(Long projectId) {
         Project project = findProject(projectId);
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
+
         if (!SecurityUtil.getCurrentMemberId().equals(project.getMember().getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
@@ -120,8 +120,7 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectInfoForUpdateResponseDto.of(project,
             projectTechstackSimple(project), makeClubSimpleInfoResponseDtos(
                 memberClubRepository.findClubByMember(
-                    findMember(SecurityUtil.getCurrentMemberId())))
-            , findMemberProject(member, project).getRole());
+                    findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
     public MemberProject findMemberProject(Member member, Project project) {
@@ -143,6 +142,18 @@ public class ProjectServiceImpl implements ProjectService {
         addTechstack(project, dto.getTechstacks());
 
         return getOneProject(projectId);
+    }
+    // 사진 바꾸기
+    @Transactional
+    public DBFileDto changeCoverPic(Long projectId, String uuid){
+        DBFile coverPic = findDBFile(uuid);
+        Project project = findProject(projectId);
+        project.setCoverPic(coverPic);
+        return getCoverPicUri(projectId);
+    }
+    // 사진 정보만 가져오기
+    public DBFileDto getCoverPicUri(Long projectId) {
+        return DBFileDto.of(findProject(projectId).getCoverPic());
     }
 
     public void getProjectAuthority(Member member, Project project){
@@ -242,10 +253,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return authority;
     }
-    // 사진 정보만 가져오기
-    public DBFileDto getCoverPicUri(Long projectId) {
-        return DBFileDto.of(findProject(projectId).getCoverPic());
-    }
+
 
     // 현재 프로젝트 간편 정보 리턴
     public ProjectSimpleInfoResponseDto getOneSimpleProject(Long projectId) {
@@ -424,7 +432,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 소유자는 양도가 가능하다
         if (authority.equals("소유자")) {
             project.setMember(member);
-            mpChanger.setAuthority(GroupAuthority.팀원);
+            mpChanger.setAuthority(GroupAuthority.관리자);
         }
         mp.setAuthority(GroupAuthority.from(authority));
         return HttpStatus.OK;

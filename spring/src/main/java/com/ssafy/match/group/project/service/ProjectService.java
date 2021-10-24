@@ -64,6 +64,8 @@ public interface ProjectService {
 
     HttpStatus plusViewCount(Long projectId);
 
+    DBFileDto changeCoverPic(Long projectId, String uuid);
+
     DBFileDto getCoverPicUri(Long projectId);
 
     String getMemberAuthority(Long projectId);

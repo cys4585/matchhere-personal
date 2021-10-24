@@ -175,7 +175,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAllProject(pageable));
     }
 
-    @GetMapping("/role/{projectId}/{memberId}/{role}")
+    @PutMapping("/role/{projectId}/{memberId}/{role}")
     @ApiOperation(value = "역할 변경", notes = "<strong>받은 프로젝트 id와 변경 시킬 멤버의 id와 변경하고자하는 role을 받아</strong>로 역할을 변경시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
@@ -188,7 +188,7 @@ public class ProjectController {
         return new ResponseEntity<>("역할이 변경되었습니다.", projectService.changeRole(projectId, memberId, role));
     }
 
-    @GetMapping("/authority/{projectId}/{memberId}/{authority}")
+    @PutMapping("/authority/{projectId}/{memberId}/{authority}")
     @ApiOperation(value = "권한 변경", notes = "<strong>받은 프로젝트 id와 변경 시킬 멤버의 id와 변경하고자하는 authority을 받아</strong>로 권한을 변경시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "성공"),
@@ -198,6 +198,17 @@ public class ProjectController {
     public ResponseEntity<String> changeAuthority(@PathVariable("projectId") Long projectId,
         @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
         return new ResponseEntity<>("권한이 변경되었습니다.", projectService.changeAuthority(projectId, memberId, authority));
+    }
+
+    @PutMapping("/cover-pic/{projectId}/{uuid}")
+    @ApiOperation(value = "사진 변경", notes = "<strong>받은 프로젝트 id와 넣을 uuid을 받아</strong>로 사진을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<DBFileDto> changeCoverPic(@PathVariable("projectId") Long projectId,
+        @PathVariable("uuid") String uuid) {
+        return new ResponseEntity<>(projectService.changeCoverPic(projectId, uuid), HttpStatus.OK);
     }
 
     @GetMapping("/view-count/{projectId}")
