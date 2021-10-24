@@ -83,7 +83,7 @@ export default {
       try {
         const id = await AuthAPI.sendEmailForSignup(email)
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "인증 메일을 전송했습니다" },
           { root: true }
         )
@@ -91,7 +91,7 @@ export default {
         commit("SET_EMAIL_CERT_ID", id)
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "이미 가입된 이메일입니다", type: "error" },
           { root: true }
         )
@@ -102,7 +102,7 @@ export default {
       try {
         const id = await AuthAPI.sendEmailForFindPW(email)
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "인증 메일을 전송했습니다" },
           { root: true }
         )
@@ -111,7 +111,7 @@ export default {
         commit("SET_FIND_PW_FORM_DATA", { email })
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "가입하지 않은 이메일입니다", type: "error" },
           { root: true }
         )
@@ -124,11 +124,11 @@ export default {
         const id = await AuthAPI.confirmEmailAuthCode(
           getters["getEmailAuthData"]
         )
-        commit("ADD_MESSAGES", { text: "이메일 인증 성공 😎" }, { root: true })
+        commit("ADD_MESSAGE", { text: "이메일 인증 성공 😎" }, { root: true })
         commit("SET_SIGNUP_FORMDATA", { id })
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "올바르지 않은 인증코드입니다", type: "error" },
           { root: true }
         )
@@ -141,11 +141,11 @@ export default {
         const id = await AuthAPI.confirmEmailAuthCode(
           getters["getEmailAuthData"]
         )
-        commit("ADD_MESSAGES", { text: "이메일 인증 성공 😎" }, { root: true })
+        commit("ADD_MESSAGE", { text: "이메일 인증 성공 😎" }, { root: true })
         commit("SET_FIND_PW_FORM_DATA", { id })
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "올바르지 않은 인증코드입니다", type: "error" },
           { root: true }
         )
@@ -159,7 +159,7 @@ export default {
           commit("SET_SIGNUP_FORMDATA", formData)
         } else {
           commit(
-            "ADD_MESSAGES",
+            "ADD_MESSAGE",
             { text: "이미 존재하는 닉네임입니다 🥲", type: "error" },
             { root: true }
           )
@@ -174,7 +174,7 @@ export default {
       try {
         await AuthAPI.signup(state.signupFormData)
         commit("RESET_SIGNUP_FORMDATA")
-        commit("ADD_MESSAGES", { text: "회원가입 성공 😎" }, { root: true })
+        commit("ADD_MESSAGE", { text: "회원가입 성공 😎" }, { root: true })
       } catch (error) {
         throw new Error(error.message)
       }
@@ -186,10 +186,10 @@ export default {
         )
         commit("SET_TOKEN", tokenInfo)
         commit("member/SET_USER", { email, id, name, nickname }, { root: true })
-        commit("ADD_MESSAGES", { text: "안녕하세요 👍" }, { root: true })
+        commit("ADD_MESSAGE", { text: "안녕하세요 👍" }, { root: true })
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           { text: "이메일 또는 비밀번호를 확인하세요", type: "error" },
           {
             root: true,
@@ -201,7 +201,7 @@ export default {
     async logout({ commit }) {
       commit("RESET_TOKEN")
       commit(
-        "ADD_MESSAGES",
+        "ADD_MESSAGE",
         {
           text: "로그아웃 성공",
           type: "success",
@@ -227,7 +227,7 @@ export default {
       try {
         await AuthAPI.findPassword(getters["getFindPWFormData"])
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           {
             text: "비밀번호가 변경되었습니다",
             type: "success",
@@ -236,7 +236,7 @@ export default {
         )
       } catch (error) {
         commit(
-          "ADD_MESSAGES",
+          "ADD_MESSAGE",
           {
             text: "비밀번호 변경에 실패했습니다",
             type: "error",

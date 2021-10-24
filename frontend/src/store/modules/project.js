@@ -158,6 +158,44 @@ export default {
         console.log(error.response)
       }
     },
+    async getBoardArticleDetail(context, articleId) {
+      try {
+        const resData = await ProjectAPI.getBoardArticleDetail(articleId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status, message } = error.response.data
+        console.log(status)
+        throw Error(message)
+      }
+    },
+    async getArticleComment(context, articleId) {
+      try {
+        const resData = await ProjectAPI.getArticleComment(articleId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status, message } = error.response.data
+        console.log(status)
+        throw Error(message)
+      }
+    },
+    async createComment(context, { content, articleId, parentId }) {
+      try {
+        console.log(content, articleId, parentId)
+        const resData = await ProjectAPI.createComment(
+          content,
+          articleId,
+          parentId
+        )
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status, message } = error.response.data
+        console.log(status)
+        throw Error(message)
+      }
+    },
   },
   getters: {
     getMyClubList(state) {

@@ -5,6 +5,7 @@
         v-for="article in boardArticleList"
         :key="article.articleId"
         :article="article"
+        @click:item="handleItemClick"
       />
     </div>
     <AddBoardArticleButton @addClick="handleAddClick()" />
@@ -26,22 +27,36 @@ export default {
     const store = useStore()
     const router = useRouter()
 
+    const projectId = ref(route.params.projectId)
+    const boardId = ref(route.params.boardId)
+
     const boardArticleList = ref()
     onMounted(async () => {
-      const boardId = route.params.boardId
+      boardId.value = route.params.boardId
       const resData = await store.dispatch(
         "project/getBoardArticleList",
-        boardId
+        boardId.value
       )
       console.log(resData)
       boardArticleList.value = resData.content
     })
 
+    const handleItemClick = (articleId) => {
+      router.push({
+        name: "ArticleDetail",
+        params: {
+          projectId: projectId.value,
+          boardId: boardId.value,
+          articleId,
+        },
+      })
+    }
+
     const handleAddClick = () => {
       router.push({ name: "ArticleForm" })
     }
 
-    return { handleAddClick, boardArticleList }
+    return { handleAddClick, boardArticleList, handleItemClick }
   },
 }
 </script>

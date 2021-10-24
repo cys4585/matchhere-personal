@@ -13,7 +13,10 @@
       class="basic-info-section grid gap-4 pb-6 border-b border-gray-200"
     >
       <div class="basic-info flex gap-4">
-        <img src="https://picsum.photos/80" class="profile-img rounded-full" />
+        <img
+          :src="profileData.cover_pic || 'https://picsum.photos/80'"
+          class="profile-img rounded-full w-20 h-20 object-cover"
+        />
         <div class="infos grid gap-2">
           <div class="names flex gap-1 font-medium">
             <p>{{ profileData.name }}</p>

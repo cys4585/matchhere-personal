@@ -1,11 +1,17 @@
 <template>
   <div class="grid gap-4">
-    <Comment />
+    <Comment :comment="parentComment" />
     <DropDownButton
       :isDropDownActive="isDropDownActive"
+      :cntNestedComment="nestedCommentList.length"
       @btnClick="isDropDownActive = !isDropDownActive"
     />
-    <NestedCommentList v-if="isDropDownActive" />
+    <NestedCommentList
+      v-if="isDropDownActive"
+      :nestedCommentList="nestedCommentList"
+      :articleId="articleId"
+      :parentId="parentComment.id"
+    />
     <hr />
   </div>
 </template>
@@ -18,8 +24,12 @@ import Comment from "@/components/project/comment/Comment.vue"
 
 export default {
   name: "BoardCommentItem",
+  props: ["parentComment", "nestedCommentList", "articleId"],
   components: { NestedCommentList, DropDownButton, Comment },
-  setup() {
+  setup(props) {
+    console.log(props.parentComment.id)
+    console.log(props.NestedCommentList)
+    console.log(props.articleId)
     const isDropDownActive = ref(false)
 
     return { isDropDownActive }

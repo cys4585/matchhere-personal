@@ -1,5 +1,5 @@
 <template>
-  <button class="fixed right-4 bottom-20" @click="$emit('addClick')">
+  <button class="fixed right-4" style="bottom: 73px" @click="$emit('addClick')">
     <span
       class="material-icons rounded-full shadow-md bg-blue-500 text-white p-4"
     >

@@ -2,6 +2,7 @@ package com.ssafy.match.group.projectboard.comment.dto;
 
 import com.ssafy.match.group.projectboard.comment.entity.ProjectArticleComment;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,11 @@ public class ProjectArticleCommentResponseDto {
     @ApiModelProperty(name = "replyCount", notes = "대댓글 수")
     private int replyCount;
 
+    @ApiModelProperty(notes = "생성일")
+    private LocalDateTime createDate;
+    @ApiModelProperty(notes = "수정일")
+    private LocalDateTime modifiedDate;
+
     public static ProjectArticleCommentResponseDto from(ProjectArticleComment pac){
         return ProjectArticleCommentResponseDto.builder()
             .id(pac.getId())
@@ -38,6 +44,8 @@ public class ProjectArticleCommentResponseDto {
             .parentId(pac.getParentId())
             .depth(pac.getDepth())
             .replyCount(pac.getReplyCount())
+            .createDate(pac.getCreateDate())
+            .modifiedDate(pac.getModifiedDate())
             .build();
     }
 }

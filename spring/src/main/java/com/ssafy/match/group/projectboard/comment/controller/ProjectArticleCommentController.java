@@ -33,7 +33,7 @@ public class ProjectArticleCommentController {
         @ApiResponse(code = 200, message = "삭제되었습니다."),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nCOMMENT_NOT_FOUND"),
     })
-    public ResponseEntity<Long> create(@PathVariable("articleId") Long articleId,
+    public ResponseEntity<ProjectArticleCommentResponseDto> create(@PathVariable("articleId") Long articleId,
         @PathVariable("parentId") Long parentId, @Valid @RequestBody ProjectArticleCommentRequestDto dto) {
         return new ResponseEntity<>(projectCommentService.create(articleId, parentId, dto), HttpStatus.OK);
     }

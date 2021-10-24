@@ -19,7 +19,7 @@
     <div class="icon-wrapper">
       <span
         @click="editButtonActivate = !editButtonActivate"
-        class="material-icons text-gray-400 cursor-pointer"
+        class="material-icons text-gray-400 cursor-pointer hover:text-gray-600"
         >more_vert</span
       >
       <button
@@ -39,7 +39,8 @@ import { ref } from "vue"
 export default {
   name: "BoardItem",
   props: ["article"],
-  setup() {
+  emit: ["click:item"],
+  setup(props, { emit }) {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
     const editButtonActivate = ref(false)
@@ -47,7 +48,7 @@ export default {
     const handleMousedown = (e) => {
       const innerText = e.target.innerText
       if (innerText === "more_vert" || innerText === "수정") return
-      editButtonActivate.value = false
+      emit("click:item", props.article.articleId)
     }
 
     const handleEditClick = () => {
@@ -90,7 +91,7 @@ export default {
     @apply flex flex-col items-end;
 
     .edit-button {
-      @apply border-gray-100 rounded shadow-md text-gray-700 py-1 px-2 font-medium text-sm;
+      @apply border-gray-100 rounded shadow-md text-gray-700 py-1 px-2 font-medium text-sm hover:bg-gray-200;
     }
   }
 }

@@ -51,7 +51,14 @@ export default {
     })
 
     onUpdated(() => {
-      activedView.value = route.name
+      console.log(activedView.value)
+      if (route.name === "ArticleDetail") {
+        const { boardId } = route.params
+        activedView.value =
+          boardId == boardList.value[0].id
+            ? "NotiBoardArticleList"
+            : "BoardArticleList"
+      } else activedView.value = route.name
     })
 
     const handleClick = (e) => {

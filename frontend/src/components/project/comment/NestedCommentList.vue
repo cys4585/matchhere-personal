@@ -1,14 +1,14 @@
 <template>
   <div class="wrapper">
-    <div class="comment-wrapper">
-      <Comment />
+    <div
+      class="comment-wrapper"
+      v-for="nestedComment in nestedCommentList"
+      :key="nestedComment.id"
+    >
+      <Comment :comment="nestedComment" />
       <hr />
     </div>
-    <div class="grid gap-2">
-      <Comment />
-      <hr />
-    </div>
-    <CommentForm />
+    <CommentForm :articleId="articleId" :parentId="parentId" />
   </div>
 </template>
 
@@ -20,6 +20,7 @@ import CommentForm from "@/components/project/comment/CommentForm.vue"
 export default {
   name: "NestedCommentList",
   components: { Comment, CommentForm },
+  props: ["nestedCommentList", "articleId", "parentId"],
   setup() {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
     return { profilePic }

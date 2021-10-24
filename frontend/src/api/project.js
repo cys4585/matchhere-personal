@@ -52,6 +52,7 @@ const acceptApplication = async (projectId, memberId) => {
   )
   return res
 }
+
 const refuseApplication = async (projectId, memberId) => {
   const res = await http.delete(`/projectapplication/${projectId}/${memberId}`)
   return res.data
@@ -72,6 +73,23 @@ const createBoardArticle = async (reqForm) => {
   return res.data
 }
 
+const getBoardArticleDetail = async (articleId) => {
+  const res = await http.get(`/projectboards/article/${articleId}`)
+  return res.data
+}
+
+const getArticleComment = async (articleId) => {
+  const res = await http.get(`/projectcomment/${articleId}`)
+  return res.data
+}
+
+const createComment = async (content, articleId, parentId) => {
+  const res = await http.post(`/projectcomment/${articleId}/${parentId}`, {
+    content,
+  })
+  console.log(res)
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -87,4 +105,7 @@ export default {
   getBoardList,
   getBoardArticleList,
   createBoardArticle,
+  getBoardArticleDetail,
+  getArticleComment,
+  createComment,
 }

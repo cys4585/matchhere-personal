@@ -71,6 +71,9 @@ public class ProjectArticleComment {
     public void addReplyCount(){
         replyCount++;
     }
+    public void removeReplyCount(){
+        replyCount--;
+    }
 
     public void setDepth(Long parentId){
         if(parentId > 0){
