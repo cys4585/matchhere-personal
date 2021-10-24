@@ -2,7 +2,7 @@
   <div class="form-field">
     <label class="label">{{ field.label }}</label>
     <div class="select-wrapper">
-      <select @change="handleChange">
+      <select @change="handleChange" :value="field.value">
         <option disabled>{{ field.placeholder }}</option>
         <option v-for="item in field.options" :key="item">
           {{ item }}

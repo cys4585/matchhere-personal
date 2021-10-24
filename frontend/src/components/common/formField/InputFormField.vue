@@ -53,7 +53,7 @@ export default {
   @apply grid gap-2 w-full;
 
   .label {
-    @apply text-sm font-medium;
+    @apply text-sm font-medium place-self-start;
   }
 
   .input-wrapper {
