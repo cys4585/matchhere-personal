@@ -30,7 +30,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     private final ProjectArticleCommentRepository projectArticleCommentRepository;
 
     @Transactional
-    public Long create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto) {
+    public ProjectArticleCommentResponseDto create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto) {
         if (parentId > 0) {
             ProjectArticleComment parent = findProjectArticleComment(parentId);
             parent.addReplyCount();
@@ -45,7 +45,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
             projectArticleComment.setParentId(projectArticleComment.getId());
         }
 
-        return projectArticleComment.getId();
+        return ProjectArticleCommentResponseDto.from(projectArticleComment);
     }
 
     public List<ProjectArticleCommentResponseDto> allComment(Long articleId) {
