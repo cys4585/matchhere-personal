@@ -1,7 +1,5 @@
 package com.ssafy.match.group.projectboard.article.repository;
 
-import com.ssafy.match.group.project.entity.Project;
-import com.ssafy.match.group.project.entity.ProjectTechstack;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticleTag;
 import java.util.List;
@@ -13,10 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ProjectArticleTagRepository extends JpaRepository<ProjectArticleTag, Long> {
 
-//    // 현재 프로젝트의 기술 스택 조회
-//    @Query("select pt from matching.project_techstack pt "
-//        + "where pt.compositeProjectTechstack.project = :project")
-//    List<ProjectTechstack> findProjectTechstackByProject(@Param("project") Project project);
+    // 현재 프로젝트의 태그 조회
+    List<ProjectArticleTag> findAllByProjectArticle(@Param("projectArticle") ProjectArticle projectArticle);
 
     // 프로젝트 게시글의 기존 태그 전체 제거
     @Transactional

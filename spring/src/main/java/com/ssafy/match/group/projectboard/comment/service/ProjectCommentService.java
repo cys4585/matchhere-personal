@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 public interface ProjectCommentService {
 
-    Long create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto);
+    ProjectArticleCommentResponseDto create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto);
 
     List<ProjectArticleCommentResponseDto> allComment(Long articleId);
 

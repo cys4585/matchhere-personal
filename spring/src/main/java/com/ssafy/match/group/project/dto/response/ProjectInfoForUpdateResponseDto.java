@@ -71,6 +71,18 @@ public class ProjectInfoForUpdateResponseDto {
     private String recruitmentState;
 
     @ApiModelProperty(example = "3")
+    @ApiParam(value = "개발자 현재 인원")
+    private int developerCount;
+
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "디자이너 현재 인원")
+    private int designerCount;
+
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "기획자 현재 인원")
+    private int plannerCount;
+
+    @ApiModelProperty(example = "3")
     @ApiParam(value = "개발자 모집 인원")
     private int developerMaxCount;
 
@@ -104,6 +116,9 @@ public class ProjectInfoForUpdateResponseDto {
             .bio(project.getBio())
             .publicScope(project.getPublicScope().getState())
             .recruitmentState(project.getRecruitmentState().getState())
+            .developerCount(project.getDeveloperCount())
+            .plannerCount(project.getPlannerCount())
+            .designerCount(project.getDesignerCount())
             .developerMaxCount(project.getDeveloperMaxCount())
             .plannerMaxCount(project.getPlannerMaxCount())
             .designerMaxCount(project.getDesignerMaxCount())
