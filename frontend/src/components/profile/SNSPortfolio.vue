@@ -3,9 +3,9 @@
     <section>
       <header>
         <h3>포트폴리오</h3>
-        <button>
+        <button class="flex">
           <span
-            class="material-icons-outlined text-blue-400 hover:text-blue-500"
+            class="material-icons-outlined text-gray-400 hover:text-blue-500"
             @click="portfolioModalOpen = true"
           >
             settings
@@ -13,16 +13,21 @@
         </button>
       </header>
       <div class="grid gap-4">
-        <PortfolioFile :portfolio="portfolio" />
-        <PortfolioUri :portfolioUri="portfolioUri" />
+        <template v-if="portfolio.id || portfolioUri">
+          <PortfolioFile :portfolio="portfolio" />
+          <PortfolioUri :portfolioUri="portfolioUri" />
+        </template>
+        <InfoMessageContainer v-else>
+          다른 사람들이 볼 수 있도록 포트폴리오를 추가해주세요 😎
+        </InfoMessageContainer>
       </div>
     </section>
     <section>
       <header>
         <h3>SNS 링크</h3>
-        <button>
+        <button class="flex">
           <span
-            class="material-icons-outlined text-blue-400 hover:text-blue-500"
+            class="material-icons-outlined text-gray-400 hover:text-blue-500"
             @click="SNSModalOpen = true"
           >
             settings
@@ -31,6 +36,9 @@
       </header>
       <div class="grid gap-4">
         <SNSListItem v-for="sns in snsList" :key="sns.id" :sns="sns" />
+        <InfoMessageContainer v-if="!snsList.length">
+          Github, Facebook 등 SNS를 추가해주세요 😍
+        </InfoMessageContainer>
       </div>
     </section>
     <PortfolioFormModal
@@ -57,6 +65,7 @@ import SNSFormModal from "@/components/profile/SNSFormModal.vue"
 import PortfolioFile from "@/components/profile/PortfolioFile.vue"
 import PortfolioUri from "@/components/profile/PortfolioUri.vue"
 import SNSListItem from "@/components/profile/SNSListItem.vue"
+import InfoMessageContainer from "@/components/common/InfoMessageContainer.vue"
 
 export default {
   name: "SNSPortfolio",
@@ -66,6 +75,7 @@ export default {
     PortfolioFile,
     PortfolioUri,
     SNSListItem,
+    InfoMessageContainer,
   },
   setup() {
     const store = useStore()

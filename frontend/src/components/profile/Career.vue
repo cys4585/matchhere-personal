@@ -17,6 +17,9 @@
           :career="career"
           @updateCareer="handleCareer"
         />
+        <InfoMessageContainer v-if="!careerList.length">
+          지금까지의 경력을 추가해주세요 ✅
+        </InfoMessageContainer>
       </div>
     </section>
     <section>
@@ -36,6 +39,9 @@
           :certification="certification"
           @updateCertification="handleCertification"
         />
+        <InfoMessageContainer v-if="!certificationList.length">
+          가지고 있는 자격증을 추가해주세요 😶‍🌫️
+        </InfoMessageContainer>
       </div>
     </section>
     <section>
@@ -55,6 +61,9 @@
           :education="education"
           @updateEducation="handleEducation"
         />
+        <InfoMessageContainer v-if="!educationList.length">
+          학력을 추가해주세요 💼
+        </InfoMessageContainer>
       </div>
     </section>
   </div>
@@ -76,14 +85,16 @@
 </template>
 
 <script>
+import { onMounted, ref } from "vue"
+import { useStore } from "vuex"
 import CareerFormModal from "@/components/profile/CareerFormModal.vue"
 import CertificationFormModal from "@/components/profile/CertificationFormModal.vue"
 import EduFormModal from "@/components/profile/EduFormModal.vue"
 import CareerListItem from "@/components/profile/CareerListItem.vue"
 import CertificationListItem from "@/components/profile/CertificationListItem.vue"
 import EduListItem from "@/components/profile/EduListItem.vue"
-import { onMounted, ref } from "vue"
-import { useStore } from "vuex"
+import InfoMessageContainer from "@/components/common/InfoMessageContainer.vue"
+
 export default {
   name: "Career",
   components: {
@@ -93,6 +104,7 @@ export default {
     CareerListItem,
     CertificationListItem,
     EduListItem,
+    InfoMessageContainer,
   },
   setup() {
     const store = useStore()
