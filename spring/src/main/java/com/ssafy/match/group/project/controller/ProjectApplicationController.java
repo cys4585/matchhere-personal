@@ -47,13 +47,13 @@ public class ProjectApplicationController {
     @PostMapping("/{projectId}")
     @ApiOperation(value = "프로젝트 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 프로젝트에 신청을 한다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "신청되었습니다."),
+        @ApiResponse(code = 200, message = "신청서 정보"),
         @ApiResponse(code = 400, message = "ALREADY_APPLY"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<String> createForm(@PathVariable("projectId") Long projectId,
+    public ResponseEntity<ProjectFormInfoResponseDto> createForm(@PathVariable("projectId") Long projectId,
         @Valid @RequestBody ProjectApplicationRequestDto dto) {
-        return new ResponseEntity<>("신청되었습니다", projectService.applyProject(projectId, dto));
+        return new ResponseEntity<>(projectService.applyProject(projectId, dto), HttpStatus.OK);
     }
 
     @PostMapping("/approval/{projectId}/{memberId}")

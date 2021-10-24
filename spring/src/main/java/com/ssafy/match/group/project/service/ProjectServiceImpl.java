@@ -82,7 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 생성
     @Transactional
-    public Long create(ProjectCreateRequestDto dto) {
+    public ProjectInfoResponseDto create(ProjectCreateRequestDto dto) {
         validCity(dto.getCity());
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = new Project(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()),
@@ -104,7 +104,9 @@ public class ProjectServiceImpl implements ProjectService {
         project.addRole(dto.getHostPosition());
         memberProjectRepository.save(memberProject);
 
-        return project.getId();
+        return ProjectInfoResponseDto.of(project, projectTechstackFull(project),
+            memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
+            "소유자");
     }
 
     // 프로젝트 업데이트를 위한 정보
@@ -526,7 +528,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
+    public ProjectFormInfoResponseDto applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
         checkAlreadyJoin(project, member);
@@ -539,8 +541,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp,
             member.getName());
-        projectApplicationFormRepository.save(projectApplicationForm);
-        return HttpStatus.OK;
+        return ProjectFormInfoResponseDto.from(projectApplicationFormRepository.save(projectApplicationForm));
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
