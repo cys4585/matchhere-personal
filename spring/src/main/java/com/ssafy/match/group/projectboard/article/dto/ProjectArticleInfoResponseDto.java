@@ -29,7 +29,7 @@ public class ProjectArticleInfoResponseDto {
     @ApiModelProperty(name = "projectBoard", example = "일정게시판")
     private String projectBoard;
 
-    @ApiModelProperty(name = "createdMember", example = "nickname")
+    @ApiModelProperty(name = "createdMember", example = "name")
     private String createdMember;
 
     @ApiModelProperty(name = "createdDate", example = "2021-10-01T13:09:53.46748")
@@ -53,7 +53,7 @@ public class ProjectArticleInfoResponseDto {
                 .articleId(projectArticle.getId())
                 .title(projectArticle.getTitle())
                 .projectBoard(projectArticle.getProjectBoard().getName())
-                .createdMember(projectArticle.getMember().getNickname())
+                .createdMember(projectArticle.getMember().getName())
                 .createdDate(projectArticle.getCreateDate())
                 .modifiedDate(projectArticle.getModifiedDate())
                 .viewCount(projectArticle.getViewCount())
