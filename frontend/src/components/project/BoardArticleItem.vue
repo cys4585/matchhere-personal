@@ -4,7 +4,7 @@
       <div>{{ article.title }}</div>
       <div class="flex gap-2">
         <span class="tag"> 회의록 </span>
-        <span class="tag"> 회의록 </span>
+        <span class="tag"> 임시 </span>
       </div>
       <div class="other-info">
         <div class="user">
@@ -35,6 +35,7 @@
 
 <script>
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 export default {
   name: "BoardItem",
@@ -42,6 +43,8 @@ export default {
   emit: ["click:item"],
   setup(props, { emit }) {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
+
+    const router = useRouter()
 
     const editButtonActivate = ref(false)
 
@@ -52,7 +55,10 @@ export default {
     }
 
     const handleEditClick = () => {
-      console.log("asdf")
+      router.push({
+        name: "ArticleEditForm",
+        params: { articleId: props.article.articleId },
+      })
     }
 
     return {

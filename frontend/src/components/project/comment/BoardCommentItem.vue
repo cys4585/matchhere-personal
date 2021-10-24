@@ -3,7 +3,7 @@
     <Comment :comment="parentComment" />
     <DropDownButton
       :isDropDownActive="isDropDownActive"
-      :cntNestedComment="nestedCommentList.length"
+      :cntNestedComment="cntAddComment"
       @btnClick="isDropDownActive = !isDropDownActive"
     />
     <NestedCommentList
@@ -11,6 +11,7 @@
       :nestedCommentList="nestedCommentList"
       :articleId="articleId"
       :parentId="parentComment.id"
+      @create="cntAddComment = cntAddComment + 1"
     />
     <hr />
   </div>
@@ -26,10 +27,12 @@ export default {
   name: "BoardCommentItem",
   props: ["parentComment", "nestedCommentList", "articleId"],
   components: { NestedCommentList, DropDownButton, Comment },
-  setup() {
+  setup(props) {
     const isDropDownActive = ref(false)
 
-    return { isDropDownActive }
+    const cntAddComment = ref(props.nestedCommentList.length)
+
+    return { isDropDownActive, cntAddComment }
   },
 }
 </script>

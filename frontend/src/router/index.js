@@ -17,6 +17,7 @@ import ProjectManage from "@/views/project/detail/manage/ProjectManage.vue"
 import ProjectBoard from "@/views/project/detail/board/ProjectBoard.vue"
 import ProjectNotiBoard from "@/views/project/detail/notiboard/ProjectNotiBoard.vue"
 import ArticleForm from "@/views/project/detail/articleform/ArticleForm.vue"
+import ArticleEditForm from "@/views/project/detail/articleform/ArticleEditForm.vue"
 import BoardArticleList from "@/views/project/detail/board/BoardArticleList.vue"
 import ArticleDetail from "@/views/project/detail/ArticleDetail.vue"
 import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArticleList.vue"
@@ -140,6 +141,11 @@ const routes = [
             path: "article/form",
             name: "ArticleForm",
             component: ArticleForm,
+          },
+          {
+            path: "article/:articleId/form",
+            name: "ArticleEditForm",
+            component: ArticleEditForm,
           },
         ],
       },

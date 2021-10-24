@@ -37,7 +37,9 @@
     <div class="pt-4 grid gap-4">
       <hr />
       <div class="grid gap-2">
-        <h4 class="font-medium text-lg text-gray-900">3개의 댓글</h4>
+        <h4 class="font-medium text-lg text-gray-900">
+          {{ commentList.length }}개의 댓글
+        </h4>
         <CommentForm
           :articleId="article.articleId"
           @create="handleCreateComment"

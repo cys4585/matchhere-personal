@@ -25,7 +25,8 @@ export default {
   name: "NestedCommentList",
   components: { Comment, CommentForm },
   props: ["nestedCommentList", "articleId", "parentId"],
-  setup(props) {
+  emits: ["create"],
+  setup(props, { emit }) {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
     const commentList = ref(props.nestedCommentList)
@@ -33,6 +34,7 @@ export default {
     const handleCreateComment = (comment) => {
       console.log(comment)
       commentList.value.push(comment)
+      emit("create")
     }
     return { profilePic, commentList, handleCreateComment }
   },

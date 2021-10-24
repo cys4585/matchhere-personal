@@ -7,7 +7,7 @@
     <span class="comment-text" v-if="cntNestedComment"
       >{{ cntNestedComment }}개의 답글</span
     >
-    <span class="comment-text">답글</span>
+    <span v-else class="comment-text">답글</span>
   </button>
 </template>
 

@@ -158,6 +158,24 @@ export default {
         console.log(error.response)
       }
     },
+    async updateBoardArticle(context, { reqForm, articleId }) {
+      console.log(reqForm)
+      console.log(articleId)
+      try {
+        const resData = await ProjectAPI.updateBoardArticle(reqForm, articleId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
+    async deleteBoardArticle(context, articleId) {
+      try {
+        const resData = await ProjectAPI.deleteBoardArticle(articleId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
     async getBoardArticleDetail(context, articleId) {
       try {
         const resData = await ProjectAPI.getBoardArticleDetail(articleId)

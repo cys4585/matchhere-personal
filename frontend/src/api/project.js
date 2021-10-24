@@ -73,6 +73,17 @@ const createBoardArticle = async (reqForm) => {
   return res.data
 }
 
+const updateBoardArticle = async (reqForm, articleId) => {
+  const res = await http.put(`/projectboards/${articleId}`, reqForm)
+  return res.data
+}
+
+const deleteBoardArticle = async (articleId) => {
+  console.log(articleId)
+  const res = await http.delete(`/projectboards/${articleId}`)
+  return res.data
+}
+
 const getBoardArticleDetail = async (articleId) => {
   const res = await http.get(`/projectboards/article/${articleId}`)
   return res.data
@@ -104,6 +115,8 @@ export default {
   getBoardList,
   getBoardArticleList,
   createBoardArticle,
+  updateBoardArticle,
+  deleteBoardArticle,
   getBoardArticleDetail,
   getArticleComment,
   createComment,

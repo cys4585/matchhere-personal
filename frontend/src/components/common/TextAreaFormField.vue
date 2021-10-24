@@ -8,7 +8,7 @@
         :id="field.key"
         cols="30"
         rows="7"
-        :aria-valuetext="modelValue"
+        :aria-valuemin="modelValue"
         @input="handleInput"
       ></textarea>
     </div>
