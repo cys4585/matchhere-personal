@@ -14,14 +14,25 @@ if (localStorage.getItem("signupStep")) {
   store.commit("auth/SET_SIGNUP_STEP", localStorage.getItem("signupStep"))
 }
 
-if (localStorage.getItem("token")) {
-  // 토큰 업데이트
-  store
-    .dispatch("auth/reissue", JSON.parse(localStorage.getItem("token")))
-    .then(() => store.dispatch("member/getMe"))
-    .then(() => {
-      createApp(App).use(store).use(router).mount("#app")
-    })
-} else {
+const createAndMountVue = async () => {
+  if (localStorage.getItem("token")) {
+    try {
+      await store.dispatch(
+        "auth/reissue",
+        JSON.parse(localStorage.getItem("token"))
+      )
+    } catch (error) {
+      console.log(error)
+      store.commit("auth/RESET_TOKEN")
+    }
+    try {
+      await store.dispatch("member/getMe")
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  console.clear()
   createApp(App).use(store).use(router).mount("#app")
 }
+
+createAndMountVue()

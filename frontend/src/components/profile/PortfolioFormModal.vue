@@ -101,10 +101,10 @@ export default {
       }
       const formData = new FormData()
       formData.append("file", files[0])
-      const uuid = await store.dispatch("file/uploadFile", formData)
-      if (uuid) {
-        portfolioFile.id = uuid
-        portfolioFile.file_name = files[0].name
+      const { fileName, id } = await store.dispatch("file/uploadFile", formData)
+      if (id) {
+        portfolioFile.id = id
+        portfolioFile.file_name = fileName
       }
     }
 

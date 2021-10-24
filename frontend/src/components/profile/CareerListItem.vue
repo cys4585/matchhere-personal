@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class="{ 'border-b': editMode, 'pb-4': editMode }">
+  <div class="card flex" :class="{ 'border-b': editMode, 'pb-4': editMode }">
     <div class="grid gap-2 flex-1">
       <p class="text-lg font-medium">{{ career.role }}</p>
       <p class="font-medium">{{ career.company }}</p>

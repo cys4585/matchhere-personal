@@ -18,9 +18,15 @@
     <section class="basic-info-section">
       <div class="basic-info">
         <div class="img-wrapper">
-          <button class="photo-button">
-            <span class="material-icons">photo</span>
+          <button class="photo-button" @click="handleClickPhoto">
+            <span class="material-icons"> add_photo_alternate </span>
           </button>
+          <input
+            type="file"
+            class="hidden"
+            ref="fileInputEl"
+            @change="handleFileChange"
+          />
           <img
             :src="profileData.cover_pic || 'https://picsum.photos/80'"
             class="profile-img"
@@ -45,7 +51,7 @@
       <div class="infos">
         <div class="position_dposition">
           <p class="font-bold">{{ profileData.position }}</p>
-          <p class="font-medium">({{ dpositionList }})</p>
+          <p class="font-medium" v-if="dpositionList">({{ dpositionList }})</p>
         </div>
         <div class="stack-list">
           <TeckStackListItem
@@ -150,17 +156,54 @@ export default {
     const store = useStore()
     const router = useRouter()
     const loading = ref(true)
+    const fileInputEl = ref(null)
     const profileData = ref(null)
     const dpositionList = computed(() =>
       profileData.value.dpositionList.map((dp) => dp.name).join(", ")
     )
 
+    const handleClickPhoto = () => {
+      fileInputEl.value.click()
+    }
+
+    const updateProfileImage = async (uuid) => {
+      console.log("asdf")
+      return new Promise((resolve, reject) => {
+        const data = store.dispatch("member/updateBasicInfo", {
+          city: profileData.value.city,
+          name: profileData.value.name,
+          nickname: profileData.value.nickname,
+          coverpic_uuid: uuid,
+        })
+        if (data) {
+          resolve(data)
+        } else {
+          reject()
+        }
+      })
+    }
+
+    const handleFileChange = async (e) => {
+      const files = e.target.files || e.dataTransfer.files
+      if (!files.length) return
+      const formData = new FormData()
+      formData.append("file", files[0])
+      const cover_pic = await store.dispatch("file/uploadFile", formData)
+      console.log(cover_pic)
+      if (cover_pic.id) {
+        try {
+          await updateProfileImage(cover_pic.id)
+          profileData.value.cover_pic = cover_pic.fileDownloadUri
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
+
     onMounted(async () => {
       try {
-        profileData.value = await store.dispatch(
-          "member/getMypage",
-          props.email
-        )
+        const data = await store.dispatch("member/getMypage", props.email)
+        profileData.value = { ...data }
         loading.value = false
       } catch (error) {
         router.push({ name: "Home" })
@@ -169,8 +212,11 @@ export default {
 
     return {
       loading,
+      fileInputEl,
       profileData,
       dpositionList,
+      handleClickPhoto,
+      handleFileChange,
     }
   },
 }
@@ -189,17 +235,16 @@ section {
       @apply relative;
 
       .photo-button {
-        @apply absolute flex inset-0 w-full bg-transparent items-center justify-center transition-all;
+        @apply absolute bottom-0 right-0 flex items-center justify-center bg-white rounded-full p-1 transition-all;
 
         span {
-          @apply hidden text-blue-500;
+          @apply text-gray-700 transition-all;
         }
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.4);
-
+          @apply bg-blue-50;
           span {
-            @apply inline;
+            @apply text-blue-500;
           }
         }
       }
