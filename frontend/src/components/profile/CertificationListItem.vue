@@ -1,5 +1,5 @@
 <template>
-  <div class="flex border-b pb-4">
+  <div class="card" :class="{ 'border-b': editMode, 'pb-4': editMode }">
     <div class="grid gap-2 flex-1">
       <div class="flex items-center gap-1 font-medium">
         <span class="text-lg">{{ certification.name }}</span>
@@ -17,7 +17,7 @@
         {{ certification.description }}
       </p>
     </div>
-    <div class="btns flex flex-col gap-2">
+    <div class="btns flex flex-col gap-2" v-if="editMode">
       <button @click="handleToggleModal">
         <span
           class="material-icons text-gray-300 hover:text-blue-500"
@@ -54,6 +54,10 @@ export default {
   props: {
     certification: {
       type: Object,
+    },
+    editMode: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["updateCertification"],

@@ -13,36 +13,8 @@
         </button>
       </header>
       <div class="grid gap-4">
-        <a
-          class="file flex cursor-pointer"
-          v-if="portfolio.id"
-          :href="portfolio.download_uri"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <p class="flex-1">{{ portfolio.file_name }}</p>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            file_download
-          </span>
-        </a>
-        <a
-          class="link flex"
-          v-if="portfolioUri"
-          :href="portfolioUri"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <p class="flex-1">{{ portfolioUri }}</p>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            open_in_new
-          </span>
-        </a>
+        <PortfolioFile :portfolio="portfolio" />
+        <PortfolioUri :portfolioUri="portfolioUri" />
       </div>
     </section>
     <section>
@@ -58,25 +30,7 @@
         </button>
       </header>
       <div class="grid gap-4">
-        <a
-          class="link flex items-center"
-          v-for="sns in snsList"
-          :key="sns.id"
-          :href="sns.snsAccount"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div class="flex-1 grid gap-2">
-            <p>{{ sns.snsAccount }}</p>
-            <p class="text-sm text-gray-700">{{ sns.snsName }}</p>
-          </div>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            open_in_new
-          </span>
-        </a>
+        <SNSListItem v-for="sns in snsList" :key="sns.id" :sns="sns" />
       </div>
     </section>
     <PortfolioFormModal
@@ -97,13 +51,22 @@
 
 <script>
 import { onMounted, ref } from "@vue/runtime-core"
+import { useStore } from "vuex"
 import PortfolioFormModal from "@/components/profile/PortfolioFormModal.vue"
 import SNSFormModal from "@/components/profile/SNSFormModal.vue"
-import { useStore } from "vuex"
+import PortfolioFile from "@/components/profile/PortfolioFile.vue"
+import PortfolioUri from "@/components/profile/PortfolioUri.vue"
+import SNSListItem from "@/components/profile/SNSListItem.vue"
 
 export default {
   name: "SNSPortfolio",
-  components: { PortfolioFormModal, SNSFormModal },
+  components: {
+    PortfolioFormModal,
+    SNSFormModal,
+    PortfolioFile,
+    PortfolioUri,
+    SNSListItem,
+  },
   setup() {
     const store = useStore()
     const portfolio = ref({

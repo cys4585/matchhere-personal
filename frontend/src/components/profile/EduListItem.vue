@@ -1,5 +1,5 @@
 <template>
-  <div class="flex border-b pb-4">
+  <div class="flex pb-4" :class="{ 'border-b': editMode }">
     <div class="grid gap-2 flex-1">
       <span class="text-lg font-medium">{{ education.institution }}</span>
       <div class="flex items-center gap-1 font-medium">
@@ -8,7 +8,6 @@
           ({{ education.degree }})
         </span>
       </div>
-      <!-- <p class="font-medium">{{ education.organization }}</p> -->
       <p class="text-sm text-gray-700">
         {{ education.start_date }}
         {{ education.end_date && `- ${education.end_date}` }} |
@@ -18,7 +17,7 @@
         {{ education.description }}
       </p>
     </div>
-    <div class="btns flex flex-col gap-2">
+    <div class="btns flex flex-col gap-2" v-if="editMode">
       <button @click="handleToggleModal">
         <span
           class="material-icons text-gray-300 hover:text-blue-500"
@@ -55,6 +54,10 @@ export default {
   props: {
     education: {
       type: Object,
+    },
+    editMode: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["updateEducation"],

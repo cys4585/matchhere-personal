@@ -9,8 +9,12 @@
       <span class="label">프로젝트</span>
     </router-link>
     <router-link to="/">
-      <span class="material-icons">home</span>
-      <span class="label">스터디</span>
+      <span class="material-icons">group</span>
+      <span class="label">그룹</span>
+    </router-link>
+    <router-link to="/">
+      <span class="material-icons">chat</span>
+      <span class="label">채팅</span>
     </router-link>
     <router-link :to="{ name: 'Login' }" v-if="!isAuthenticated">
       <span class="material-icons">person</span>

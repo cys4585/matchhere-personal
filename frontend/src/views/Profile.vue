@@ -1,139 +1,97 @@
 <template>
-  <ProfileNav :email="email" />
+  <!-- <ProfileNav :email="email" /> -->
   <main class="grid gap-6" v-if="!loading">
     <header class="page-header mb-0">
       <div class="flex items-center justify-between">
-        <h2>프로필</h2>
-        <router-link :to="{ name: 'EditProfile' }">
-          <span class="material-icons">settings</span>
+        <div class="flex gap-1 items-center">
+          <h2>프로필</h2>
+          <!-- |
+          <h4>프로젝트</h4>
+          |
+          <h4>스터디</h4> -->
+        </div>
+        <router-link :to="{ name: 'EditProfile' }" class="flex">
+          <span class="material-icons hover:text-blue-500">settings</span>
         </router-link>
       </div>
     </header>
-    <section
-      class="basic-info-section grid gap-4 pb-6 border-b border-gray-200"
-    >
-      <div class="basic-info flex gap-4">
-        <img
-          :src="profileData.cover_pic || 'https://picsum.photos/80'"
-          class="profile-img rounded-full w-20 h-20 object-cover"
-        />
-        <div class="infos grid gap-2">
-          <div class="names flex gap-1 font-medium">
+    <section class="basic-info-section">
+      <div class="basic-info">
+        <div class="img-wrapper">
+          <button class="photo-button">
+            <span class="material-icons">photo</span>
+          </button>
+          <img
+            :src="profileData.cover_pic || 'https://picsum.photos/80'"
+            class="profile-img"
+          />
+        </div>
+        <div class="infos">
+          <div class="names">
             <p>{{ profileData.name }}</p>
             <p>({{ profileData.nickname }})</p>
           </div>
-          <p class="email text-sm font-medium">{{ profileData.email }}</p>
-          <p class="city text-sm">{{ profileData.city }}</p>
+          <p class="email">{{ profileData.email }}</p>
+          <p class="city">{{ profileData.city }}</p>
         </div>
       </div>
-      <button
-        class="
-          message-button
-          border border-gray-400
-          rounded
-          text-sm
-          font-medium
-          py-2
-          px-6
-        "
-      >
-        메세지
-      </button>
-      <div
-        class="desc h-20 p-4 rounded border border-gray-400"
-        v-if="profileData.bio"
-      >
+      <button class="message-button">메세지</button>
+      <div class="desc" v-if="profileData.bio">
         {{ profileData.bio }}
       </div>
     </section>
-    <section
-      class="position_stack-section grid gap-4 pb-6 border-b border-gray-200"
-    >
-      <h3 class="text-xl font-bold">직무/기술스택</h3>
-      <div class="infos grid gap-4">
-        <div class="position_dposition flex gap-2">
-          <p class="position font-bold">{{ profileData.position }}</p>
-          <div class="dposition-list font-medium">
-            (
-            {{ dpositionList }}
-            )
-          </div>
+    <section class="position_stack-section">
+      <h3>직무/기술스택</h3>
+      <div class="infos">
+        <div class="position_dposition">
+          <p class="font-bold">{{ profileData.position }}</p>
+          <p class="font-medium">({{ dpositionList }})</p>
         </div>
-        <div class="stack-list grid gap-2">
+        <div class="stack-list">
           <TeckStackListItem
             v-for="tech in profileData.techList"
             :key="tech.name"
             :name="tech.name"
             :userLevel="tech.level"
+            :editMode="false"
           />
         </div>
       </div>
     </section>
-    <section
-      class="career-section grid gap-4 pb-6 border-b border-gray-200"
-      v-if="profileData.careerList.length"
-    >
-      <h3 class="text-xl font-bold">경력</h3>
+    <section class="career-section" v-if="profileData.careerList.length">
+      <h3>경력</h3>
       <div class="career-list grid gap-4">
-        <div
-          class="career-card grid gap-2"
+        <CareerListItem
           v-for="career in profileData.careerList"
-          :key="career.id"
-        >
-          <h4 class="text-lg font-medium">{{ career.department }}</h4>
-          <p class="company text-sm text-gray-700">{{ career.company }}</p>
-          <p class="date text-xs text-gray-700">
-            {{ career.start_date }} -
-            {{ career.is_incumbent ? "재직 중" : career.end_date }}
-          </p>
-          <p class="desc">{{ career.description }}</p>
-        </div>
+          :key="career"
+          :career="career"
+          :editMode="false"
+        />
       </div>
     </section>
     <section
-      class="certification-section grid gap-4 pb-6 border-b border-gray-200"
+      class="certification-section"
       v-if="profileData.certificationList.length"
     >
-      <h3 class="text-xl font-bold">자격증</h3>
-      <div class="certification-list grid gap-4">
-        <div
-          class="certification-card grid gap-2"
+      <h3>자격증</h3>
+      <div class="grid gap-4">
+        <CertificationListItem
           v-for="certification in profileData.certificationList"
           :key="certification.id"
-        >
-          <h4 class="text-lg font-medium">{{ certification.name }}</h4>
-          <p class="company text-sm text-gray-700">
-            {{ certification.organization }}
-          </p>
-          <p class="date text-xs text-gray-700">
-            {{ certification.issued_date }} -
-            {{ certification.is_expire ? certification.expired_date : "" }}
-          </p>
-          <p class="desc">{{ certification.description }}</p>
-        </div>
+          :certification="certification"
+          :editMode="false"
+        />
       </div>
     </section>
-    <section
-      class="education-section grid gap-4 pb-6 border-b border-gray-200"
-      v-if="profileData.educationList.length"
-    >
+    <section class="education-section" v-if="profileData.educationList.length">
       <h3 class="text-xl font-bold">학력</h3>
       <div class="education-list grid gap-4">
-        <div
-          class="education-card grid gap-2"
+        <EduListItem
           v-for="education in profileData.educationList"
           :key="education.id"
-        >
-          <h4 class="text-lg font-medium">{{ education.institution }}</h4>
-          <p class="company text-sm text-gray-700">
-            {{ education.major }}
-          </p>
-          <p class="date text-xs text-gray-700">
-            {{ education.start_date }} -
-            {{ education.end_date }}
-          </p>
-          <p class="desc">{{ education.description }}</p>
-        </div>
+          :education="education"
+          :editMode="false"
+        />
       </div>
     </section>
     <section
@@ -142,8 +100,8 @@
     >
       <h3 class="text-xl font-bold">포트폴리오</h3>
       <div class="portfolio-list grid gap-4">
-        <p>{{ profileData.portfolio }}</p>
-        <p>{{ profileData.portfolio_uri }}</p>
+        <PortfolioFile :portfolio="profileData.portfolio" />
+        <PortfolioUri :portfolioUri="profileData.portfolio_uri" />
       </div>
     </section>
     <section
@@ -152,14 +110,11 @@
     >
       <h3 class="text-xl font-bold">SNS 링크</h3>
       <div class="sns-list grid gap-4">
-        <div
-          class="sns-list-item"
+        <SNSListItem
           v-for="sns in profileData.snsList"
           :key="sns.id"
-        >
-          <p>{{ sns.snsName }}</p>
-          <p>{{ sns.snsAccount }}</p>
-        </div>
+          :sns="sns"
+        />
       </div>
     </section>
   </main>
@@ -170,81 +125,23 @@ import { computed, onMounted, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 import TeckStackListItem from "@/components/common/TeckStackListItem.vue"
-import ProfileNav from "@/components/profile/ProfileNav.vue"
-const INFO = {
-  bio: "let me introduce",
-  careerList: [
-    {
-      company: "string",
-      department: "string",
-      description: "string",
-      end_date: "2021-10-17",
-      id: 0,
-      is_incumbent: true,
-      role: "string",
-      start_date: "2021-10-17",
-    },
-  ],
-  certificationList: [
-    {
-      code: "string",
-      expired_date: "2021-10-17",
-      grade: "string",
-      id: 0,
-      is_expire: true,
-      issued_date: "2021-10-17",
-      name: "string",
-      organization: "string",
-    },
-  ],
-  city: "부산",
-  cover_pic: "http://cdn.matchhere.me/path/coverpic.png",
-  dpositionList: ["프론트엔드", "데브옵스"],
-  educationList: [
-    {
-      id: 2,
-      state: "졸업",
-      description: "서울대학교가 낳은 최고의 인재",
-      institution: "서울대학교",
-      major: "컴퓨터과학과",
-      end_date: "2020-12-31",
-      start_date: "2020-12-31",
-      degree: "학사",
-    },
-  ],
-  email: "my_email@gmail.com",
-  name: "문일민",
-  nickname: "별명",
-  portfolio: "http://cdn.matchhere.me/path/portfolio.pdf",
-  portfolio_uri: "http://cdn.matchhere.me/path/myportfolio.pdf",
-  position: "개발자",
-  snsList: [
-    {
-      id: 1,
-      snsName: "github",
-      snsAccount: "gitid",
-    },
-    {
-      id: 2,
-      snsName: "twitter",
-      snsAccount: "twitterid",
-    },
-  ],
-  techList: {
-    python: {
-      name: "python",
-      level: "상",
-      img_uri: "http://cdn.matchhere.me/path/python.png",
-    },
-    java: {
-      name: "java",
-      level: "중",
-      img_uri: "http://cdn.matchhere.me/path/java.png",
-    },
-  },
-}
+import CareerListItem from "@/components/profile/CareerListItem.vue"
+import CertificationListItem from "@/components/profile/CertificationListItem.vue"
+import EduListItem from "@/components/profile/EduListItem.vue"
+import PortfolioFile from "@/components/profile/PortfolioFile.vue"
+import PortfolioUri from "@/components/profile/PortfolioUri.vue"
+import SNSListItem from "@/components/profile/SNSListItem.vue"
+
 export default {
-  components: { TeckStackListItem, ProfileNav },
+  components: {
+    TeckStackListItem,
+    CareerListItem,
+    CertificationListItem,
+    EduListItem,
+    PortfolioFile,
+    PortfolioUri,
+    SNSListItem,
+  },
   name: "Profile",
   props: {
     email: String,
@@ -253,7 +150,7 @@ export default {
     const store = useStore()
     const router = useRouter()
     const loading = ref(true)
-    const profileData = ref(INFO)
+    const profileData = ref(null)
     const dpositionList = computed(() =>
       profileData.value.dpositionList.map((dp) => dp.name).join(", ")
     )
@@ -279,4 +176,78 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+section {
+  @apply grid gap-4 pb-6 border-b border-gray-200;
+}
+
+.basic-info-section {
+  .basic-info {
+    @apply flex gap-4;
+
+    .img-wrapper {
+      @apply relative;
+
+      .photo-button {
+        @apply absolute flex inset-0 w-full bg-transparent items-center justify-center transition-all;
+
+        span {
+          @apply hidden text-blue-500;
+        }
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.4);
+
+          span {
+            @apply inline;
+          }
+        }
+      }
+
+      .profile-img {
+        @apply rounded-full w-20 h-20 object-cover;
+      }
+    }
+
+    .infos {
+      @apply grid gap-2;
+
+      .names {
+        @apply flex gap-1 font-medium;
+      }
+
+      .email {
+        @apply text-sm font-medium;
+      }
+
+      .city {
+        @apply text-sm;
+      }
+    }
+  }
+
+  .message-button {
+    @apply border border-gray-400 rounded text-sm font-medium py-2 px-6;
+  }
+
+  .desc {
+    @apply h-20 p-4 rounded border border-gray-400;
+  }
+}
+
+.position_stack-section {
+  .infos {
+    @apply grid gap-4;
+
+    .position_dposition {
+      @apply flex gap-2;
+    }
+    .stack-list {
+      @apply grid gap-2;
+    }
+  }
+}
+
+.career-section {
+}
+</style>
