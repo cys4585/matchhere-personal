@@ -41,10 +41,10 @@ public class ProjectBoardController {
     @PostMapping("/{projectid}/boards")
     @ApiOperation(value = "(프로젝트)게시판 생성", notes = "<strong>받은 프로젝트 id</strong>를 사용해서 게시판을 생성한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "게시판 정보"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nBOARD_NOT_FOUND\nDELETED_PROJECT"),
     })
-    public ResponseEntity<Integer> create(@PathVariable("projectid") Long projectid, @Valid @RequestBody ProjectBoardCreateRequestDto dto) {
+    public ResponseEntity<ProjectBoardInfoDto> create(@PathVariable("projectid") Long projectid, @Valid @RequestBody ProjectBoardCreateRequestDto dto) {
         return new ResponseEntity<>(projectBoardService.createBoard(projectid, dto), HttpStatus.OK);
     }
 
