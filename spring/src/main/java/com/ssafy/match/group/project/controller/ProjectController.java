@@ -65,20 +65,20 @@ public class ProjectController {
     @PostMapping
     @ApiOperation(value = "프로젝트 생성", notes = "<strong>받은 프로젝트 정보</strong>를 사용해서 프로젝트을 생성한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "{\"id\": 3}"),
+        @ApiResponse(code = 200, message = "프로젝트 정보"),
         @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"
             + "\nDEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
             + "TECHSTACK_NOT_FOUND\nLEVEL_NOT_FOUND\nROLE_NOT_FOUND"),
     })
-    public ResponseEntity<BasicResponseDto> createProject(@Valid @RequestBody ProjectCreateRequestDto dto) {
-        return new ResponseEntity<>(BasicResponseDto.from(projectService.create(dto)), HttpStatus.OK);
+    public ResponseEntity<ProjectInfoResponseDto> createProject(@Valid @RequestBody ProjectCreateRequestDto dto) {
+        return new ResponseEntity<>(projectService.create(dto), HttpStatus.OK);
     }
 
     @PutMapping("/{projectId}")
     @ApiOperation(value = "프로젝트 수정", notes = "<strong>받은 프로젝트 정보</strong>를 사용해서 프로젝트를 수정한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "수정되었습니다."),
+        @ApiResponse(code = 200, message = "수정된 정보"),
         @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"
             + "\nDEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
         @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND"
@@ -218,6 +218,16 @@ public class ProjectController {
     })
     public ResponseEntity<DBFileDto> getCoverPicUri(@PathVariable("projectId") Long projectId) {
         return new ResponseEntity<>(projectService.getCoverPicUri(projectId), HttpStatus.OK);
+    }
+
+    @GetMapping("/authority/{projectId}")
+    @ApiOperation(value = "현 사용자의 권한 정보", notes = "<strong>받은 프로젝트 id</strong>로 현 사용자에 대한 권한을 확인한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "다운로드 uri"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
+    })
+    public ResponseEntity<String> getMemberAuthority(@PathVariable("projectId") Long projectId) {
+        return new ResponseEntity<>(projectService.getMemberAuthority(projectId), HttpStatus.OK);
     }
 
 }
