@@ -87,7 +87,7 @@ public class ProjectArticleService {
 //    }
 
     @Transactional
-    public Long createArticle(ProjectArticleRequestDto dto) {
+    public ProjectArticleInfoResponseDto createArticle(ProjectArticleRequestDto dto) {
         ProjectBoard projectBoard = findProjectBoard(dto.getProjectBoardId());
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         if (dto.getContent() == null) {
@@ -97,7 +97,7 @@ public class ProjectArticleService {
             ProjectArticle.of(dto, projectBoard, member));
         addContent(projectArticle, dto.getContent());
         addTags(projectArticle, dto.getTags());
-        return projectArticle.getId();
+        return ProjectArticleInfoResponseDto.of(projectArticle, dto.getTags());
     }
 
     @Transactional
