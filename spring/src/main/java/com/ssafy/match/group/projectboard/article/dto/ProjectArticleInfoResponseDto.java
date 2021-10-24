@@ -3,6 +3,7 @@ package com.ssafy.match.group.projectboard.article.dto;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,11 +41,14 @@ public class ProjectArticleInfoResponseDto {
     @ApiModelProperty(name = "viewCount", example = "2")
     private Integer viewCount;
 
+    @ApiModelProperty(example = "[\"태그\", \"질문\"]")
+    private List<String> tags;
+
     public void setContent(String content) {
         this.content = content;
     }
 
-    public static ProjectArticleInfoResponseDto from(ProjectArticle projectArticle) {
+    public static ProjectArticleInfoResponseDto of(ProjectArticle projectArticle, List<String> tags) {
         return ProjectArticleInfoResponseDto.builder()
                 .articleId(projectArticle.getId())
                 .title(projectArticle.getTitle())
@@ -53,6 +57,7 @@ public class ProjectArticleInfoResponseDto {
                 .createdDate(projectArticle.getCreateDate())
                 .modifiedDate(projectArticle.getModifiedDate())
                 .viewCount(projectArticle.getViewCount())
+                .tags(tags)
                 .build();
     }
 

@@ -135,19 +135,22 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         // 권한 체크
-        MemberProject mp = memberProjectRepository.findById(
-                new CompositeMemberProject(member, project))
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
-        if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
-        project.removeRole(mp.getRole());
-        mp.setRole(dto.getHostPosition());
-        project.addRole(dto.getHostPosition());
+        getProjectAuthority(member, project);
+
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
         return getOneProject(projectId);
+    }
+
+    public void getProjectAuthority(Member member, Project project){
+        MemberProject mp = memberProjectRepository.findById(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+
+        if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
     }
 
     // 프로젝트 삭제
