@@ -82,7 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 생성
     @Transactional
-    public Long create(ProjectCreateRequestDto dto) {
+    public ProjectInfoResponseDto create(ProjectCreateRequestDto dto) {
         validCity(dto.getCity());
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = new Project(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()),
@@ -104,7 +104,9 @@ public class ProjectServiceImpl implements ProjectService {
         project.addRole(dto.getHostPosition());
         memberProjectRepository.save(memberProject);
 
-        return project.getId();
+        return ProjectInfoResponseDto.of(project, projectTechstackFull(project),
+            memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
+            "소유자");
     }
 
     // 프로젝트 업데이트를 위한 정보
@@ -135,19 +137,22 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = findProject(projectId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         // 권한 체크
-        MemberProject mp = memberProjectRepository.findById(
-                new CompositeMemberProject(member, project))
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
-        if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
-        project.removeRole(mp.getRole());
-        mp.setRole(dto.getHostPosition());
-        project.addRole(dto.getHostPosition());
+        getProjectAuthority(member, project);
+
         project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
         addTechstack(project, dto.getTechstacks());
 
         return getOneProject(projectId);
+    }
+
+    public void getProjectAuthority(Member member, Project project){
+        MemberProject mp = memberProjectRepository.findById(
+                new CompositeMemberProject(member, project))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+
+        if (!mp.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
     }
 
     // 프로젝트 삭제
@@ -221,6 +226,21 @@ public class ProjectServiceImpl implements ProjectService {
         return ProjectInfoResponseDto.of(project, projectTechstackFull(project),
             memberRole(project, "개발자"), memberRole(project, "기획자"), memberRole(project, "디자이너"),
             authority);
+    }
+    // 현 사용자의 권한 확인
+    public String getMemberAuthority(Long projectId){
+        Project project = findProject(projectId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberProject> mps = memberProjectRepository.findMemberRelationInProject(project);
+
+        String authority = "게스트";
+        for (MemberProject mp : mps) {
+            if (mp.getCompositeMemberProject().getMember().getId().equals(member.getId())) {
+                authority = mp.getAuthority().toString();
+                break;
+            }
+        }
+        return authority;
     }
     // 사진 정보만 가져오기
     public DBFileDto getCoverPicUri(Long projectId) {
@@ -508,7 +528,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public HttpStatus applyProject(Long projectId, ProjectApplicationRequestDto dto) {
+    public ProjectFormInfoResponseDto applyProject(Long projectId, ProjectApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Project project = findProject(projectId);
         checkAlreadyJoin(project, member);
@@ -521,8 +541,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectApplicationForm projectApplicationForm = ProjectApplicationForm.of(dto, cmp,
             member.getName());
-        projectApplicationFormRepository.save(projectApplicationForm);
-        return HttpStatus.OK;
+        return ProjectFormInfoResponseDto.from(projectApplicationFormRepository.save(projectApplicationForm));
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회

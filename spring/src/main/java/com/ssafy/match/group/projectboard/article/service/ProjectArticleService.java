@@ -17,6 +17,7 @@ import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepositor
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ProjectArticleService {
+
     private final ProjectBoardRepository projectBoardRepository;
     private final ProjectArticleRepository projectArticleRepository;
     private final ProjectContentRepository projectContentRepository;
@@ -38,16 +40,28 @@ public class ProjectArticleService {
     @Transactional(readOnly = true)
     public ProjectArticleInfoResponseDto getProjectArticleDetail(Long articleId) {
         ProjectArticle projectArticle = findProjectArticle(articleId);
-        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.from(projectArticle);
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.of(
+            projectArticle, getProjectArticleTagList(projectArticle));
         ProjectContent projectContent = findProjectContent(projectArticle);
         projectArticleInfoResponseDto.setContent(projectContent.getContent());
         return projectArticleInfoResponseDto;
     }
 
+    public List<String> getProjectArticleTagList(ProjectArticle projectArticle) {
+        List<ProjectArticleTag> pats = projectArticleTagRepository.findAllByProjectArticle(
+            projectArticle);
+        List<String> tags = new ArrayList<>();
+        for (ProjectArticleTag pat : pats) {
+            tags.add(pat.getName());
+        }
+        return tags;
+    }
+
     @Transactional(readOnly = true)
-    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticles(Integer boardId, Pageable pageable) {
-        return projectArticleRepository.findAllByProjectBoard(findProjectBoard(boardId) ,pageable)
-            .map(ProjectArticleSimpleInfoResponseDto::from);
+    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticles(Integer boardId,
+        Pageable pageable) {
+        Page<ProjectArticle> projectArticles = projectArticleRepository.findAllByProjectBoard(findProjectBoard(boardId), pageable);
+        return projectArticles.map(m -> ProjectArticleSimpleInfoResponseDto.of(m, getProjectArticleTagList(m)));
     }
 
 //    @Transactional(readOnly = true)
@@ -73,23 +87,25 @@ public class ProjectArticleService {
 //    }
 
     @Transactional
-    public Long createArticle(ProjectArticleRequestDto dto) {
+    public ProjectArticleInfoResponseDto createArticle(ProjectArticleRequestDto dto) {
         ProjectBoard projectBoard = findProjectBoard(dto.getProjectBoardId());
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
-        ProjectArticle projectArticle = projectArticleRepository.save(ProjectArticle.of(dto, projectBoard, member));
+        ProjectArticle projectArticle = projectArticleRepository.save(
+            ProjectArticle.of(dto, projectBoard, member));
         addContent(projectArticle, dto.getContent());
         addTags(projectArticle, dto.getTags());
-        return projectArticle.getId();
+        return ProjectArticleInfoResponseDto.of(projectArticle, dto.getTags());
     }
 
     @Transactional
-    public ProjectArticleInfoResponseDto updateArticle(Long articleId, ProjectArticleRequestDto dto) {
+    public ProjectArticleInfoResponseDto updateArticle(Long articleId,
+        ProjectArticleRequestDto dto) {
         // 게시글
         ProjectArticle projectArticle = findProjectArticle(articleId);
-        if(dto.getContent() == null){
+        if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
         // 게시글 내용
@@ -99,7 +115,8 @@ public class ProjectArticleService {
         projectArticle.update(dto, findProjectBoard(dto.getProjectBoardId()));
         addTags(projectArticle, dto.getTags());
 
-        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.from(projectArticle);
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.of(
+            projectArticle, dto.getTags());
         projectArticleInfoResponseDto.setContent(projectContent.getContent());
         return projectArticleInfoResponseDto;
     }
@@ -120,27 +137,27 @@ public class ProjectArticleService {
     }
 
     // 프로젝트 게시글 조회수 증가
-    public HttpStatus plusViewCount(Long projectArticleId){
+    public HttpStatus plusViewCount(Long projectArticleId) {
         findProjectArticle(projectArticleId).plusViewCount();
         return HttpStatus.OK;
     }
 
-    public ProjectBoard findProjectBoard(int boardId){
+    public ProjectBoard findProjectBoard(int boardId) {
         return projectBoardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
     }
 
-    public Member findMember(Long memberId){
+    public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    public ProjectArticle findProjectArticle(Long projectArticleId){
+    public ProjectArticle findProjectArticle(Long projectArticleId) {
         return projectArticleRepository.findById(projectArticleId)
             .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
     }
 
-    public ProjectContent findProjectContent(ProjectArticle projectArticle){
+    public ProjectContent findProjectContent(ProjectArticle projectArticle) {
         return projectContentRepository.getByProjectArticle(projectArticle)
             .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
     }
@@ -153,7 +170,7 @@ public class ProjectArticleService {
             return;
         }
 
-        for (String tag: tags) {
+        for (String tag : tags) {
             projectArticleTagRepository.save(ProjectArticleTag.of(projectArticle, tag));
         }
 

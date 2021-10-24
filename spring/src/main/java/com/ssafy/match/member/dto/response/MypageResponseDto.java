@@ -1,6 +1,7 @@
 package com.ssafy.match.member.dto.response;
 
 import com.ssafy.match.common.dto.DetailPositionInterface;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.member.dto.inter.CareerInterface;
 import com.ssafy.match.member.dto.inter.CertificationInterface;
 import com.ssafy.match.member.dto.inter.EducationInterface;
@@ -51,7 +52,7 @@ public class MypageResponseDto {
     private List<EducationInterface> educationList = new ArrayList<>();
 
     @ApiModelProperty(name = "portfolio", example = "http://cdn.matchhere.me/path/portfolio.pdf")
-    private String portfolio;
+    private DBFileDto portfolio;
 
     @ApiModelProperty(name = "portfolio_uri", example = "http://cdn.matchhere.me/path/myportfolio.pdf")
     private String portfolio_uri;
@@ -73,14 +74,14 @@ public class MypageResponseDto {
                 .careerList(careers)
                 .certificationList(certifications)
                 .educationList(educations)
-                .portfolio((member.getPortfolio() != null) ? member.getPortfolio().getDownload_uri() : null)
+                .portfolio(DBFileDto.of(member.getPortfolio()))
                 .portfolio_uri(member.getPortfolio_uri())
                 .snsList(snsList)
                 .build();
     }
 
     @Builder
-    public MypageResponseDto(String email, String name, String cover_pic, String bio, String nickname, String city, String position, List<MemberTechstackInterface> techList, List<DetailPositionInterface> dpositionList, List<CareerInterface> careerList, List<CertificationInterface> certificationList, List<EducationInterface> educationList, String portfolio, String portfolio_uri, List<MemberSns> snsList) {
+    public MypageResponseDto(String email, String name, String cover_pic, String bio, String nickname, String city, String position, List<MemberTechstackInterface> techList, List<DetailPositionInterface> dpositionList, List<CareerInterface> careerList, List<CertificationInterface> certificationList, List<EducationInterface> educationList, DBFileDto portfolio, String portfolio_uri, List<MemberSns> snsList) {
         this.email = email;
         this.name = name;
         this.cover_pic = cover_pic;

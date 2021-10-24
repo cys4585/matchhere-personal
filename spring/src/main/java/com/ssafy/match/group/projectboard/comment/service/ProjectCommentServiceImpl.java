@@ -30,7 +30,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     private final ProjectArticleCommentRepository projectArticleCommentRepository;
 
     @Transactional
-    public Long create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto) {
+    public ProjectArticleCommentResponseDto create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto) {
         if (parentId > 0) {
             ProjectArticleComment parent = findProjectArticleComment(parentId);
             parent.addReplyCount();
@@ -45,7 +45,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
             projectArticleComment.setParentId(projectArticleComment.getId());
         }
 
-        return projectArticleComment.getId();
+        return ProjectArticleCommentResponseDto.from(projectArticleComment);
     }
 
     public List<ProjectArticleCommentResponseDto> allComment(Long articleId) {
@@ -76,7 +76,10 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
         if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
-
+        // 현재 댓글이 부모댓글이 아니라면 부모 댓글의 대댓글 수 감소
+        if(comment.getParentId() != comment.getId()) {
+            findProjectArticleComment(comment.getParentId()).removeReplyCount();
+        }
         comment.setIsDeleted(true);
         return HttpStatus.OK;
     }

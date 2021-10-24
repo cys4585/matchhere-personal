@@ -6,7 +6,7 @@ const uploadFile = async (file) => {
       "Content-Type": "multipart/form-data",
     },
   })
-  return res.data.id
+  return res.data
 }
 
 export default {

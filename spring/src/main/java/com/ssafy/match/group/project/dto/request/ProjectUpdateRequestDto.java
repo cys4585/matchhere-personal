@@ -80,9 +80,4 @@ public class ProjectUpdateRequestDto {
     @NotNull
     private int plannerMaxCount;
 
-    @ApiModelProperty(example = "개발자")
-    @ApiParam(value = "호스트 역할")
-    @NotBlank
-    private String hostPosition;
-
 }
