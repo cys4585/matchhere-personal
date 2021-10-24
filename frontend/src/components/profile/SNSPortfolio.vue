@@ -6,12 +6,20 @@
         <button>
           <span
             class="material-icons-outlined text-blue-400 hover:text-blue-500"
-            >settings</span
+            @click="portfolioModalOpen = true"
           >
+            settings
+          </span>
         </button>
       </header>
       <div class="grid gap-4">
-        <div class="file flex">
+        <a
+          class="file flex cursor-pointer"
+          v-if="portfolio.id"
+          :href="portfolio.download_uri"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <p class="flex-1">{{ portfolio.file_name }}</p>
           <span
             class="material-icons-outlined text-gray-700"
@@ -19,8 +27,14 @@
           >
             file_download
           </span>
-        </div>
-        <div class="link flex">
+        </a>
+        <a
+          class="link flex"
+          v-if="portfolioUri"
+          :href="portfolioUri"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <p class="flex-1">{{ portfolioUri }}</p>
           <span
             class="material-icons-outlined text-gray-700"
@@ -28,7 +42,7 @@
           >
             open_in_new
           </span>
-        </div>
+        </a>
       </div>
     </section>
     <section>
@@ -37,16 +51,20 @@
         <button>
           <span
             class="material-icons-outlined text-blue-400 hover:text-blue-500"
+            @click="SNSModalOpen = true"
           >
             settings
           </span>
         </button>
       </header>
       <div class="grid gap-4">
-        <div
+        <a
           class="link flex items-center"
           v-for="sns in snsList"
           :key="sns.id"
+          :href="sns.snsAccount"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <div class="flex-1 grid gap-2">
             <p>{{ sns.snsAccount }}</p>
@@ -58,43 +76,37 @@
           >
             open_in_new
           </span>
-        </div>
+        </a>
       </div>
     </section>
-    <PortfolioFormModal />
+    <PortfolioFormModal
+      v-if="portfolioModalOpen"
+      @closeModal="portfolioModalOpen = false"
+      @updatePortfolio="handleUpdatePortfolio"
+      :file="portfolio"
+      :uri="portfolioUri"
+    />
+    <SNSFormModal
+      v-if="SNSModalOpen"
+      @closeModal="SNSModalOpen = false"
+      @updateSNS="handleUpdateSNS"
+      :snsList="snsList"
+    />
   </div>
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "@vue/runtime-core"
+import { onMounted, ref } from "@vue/runtime-core"
 import PortfolioFormModal from "@/components/profile/PortfolioFormModal.vue"
-const DATA = {
-  portfolio: {
-    download_uri: "https://www.instagram.com/kim.gam.ja/",
-    file_name: "FE_김병훈_이력서.pdf",
-    file_type: "string",
-    id: "string",
-  },
-  portfolio_uri: "https://www.instagram.com/kim.gam.ja/",
-  snsList: [
-    {
-      id: 1,
-      snsName: "github",
-      snsAccount: "https://www.instagram.com/kim.gam.ja/",
-    },
-    {
-      id: 2,
-      snsName: "twitter",
-      snsAccount: "https://www.instagram.com/kim.gam.ja/",
-    },
-  ],
-}
+import SNSFormModal from "@/components/profile/SNSFormModal.vue"
+import { useStore } from "vuex"
 
 export default {
   name: "SNSPortfolio",
-  components: { PortfolioFormModal },
+  components: { PortfolioFormModal, SNSFormModal },
   setup() {
-    const portfolio = reactive({
+    const store = useStore()
+    const portfolio = ref({
       id: "",
       file_name: "",
       file_type: "",
@@ -102,18 +114,36 @@ export default {
     })
     const portfolioUri = ref("")
     const snsList = ref([])
+    const portfolioModalOpen = ref(false)
+    const SNSModalOpen = ref(false)
 
-    onMounted(() => {
-      Object.keys(DATA.portfolio).forEach((key) => {
-        portfolio[key] = DATA.portfolio[key]
-      })
-      portfolioUri.value = DATA.portfolio_uri
-      snsList.value = [...DATA.snsList]
+    const handleUpdatePortfolio = (data) => {
+      if (data.portfolio) {
+        portfolio.value = { ...data.portfolio }
+      }
+      portfolioUri.value = data.portfolio_uri || ""
+    }
+
+    const handleUpdateSNS = (data) => {
+      snsList.value = [...data.snsList]
+    }
+
+    onMounted(async () => {
+      const data = await store.dispatch("member/getSNSPortfolio")
+      if (data.portfolio) {
+        portfolio.value = { ...data.portfolio }
+      }
+      portfolioUri.value = data.portfolio_uri || ""
+      snsList.value = [...data.snsList]
     })
     return {
       portfolio,
       portfolioUri,
       snsList,
+      SNSModalOpen,
+      portfolioModalOpen,
+      handleUpdatePortfolio,
+      handleUpdateSNS,
     }
   },
 }
