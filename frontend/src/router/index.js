@@ -7,14 +7,15 @@ import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
 
 import Profile from "@/views/Profile.vue"
-import ProjectList from "@/views/ProjectList.vue"
-import ProjectForm from "@/views/ProjectForm.vue"
-import Project from "@/views/Project.vue"
+import EditProfile from "@/views/EditProfile.vue"
+
+import ProjectList from "@/views/project/ProjectList.vue"
+import ProjectForm from "@/views/project/ProjectForm.vue"
+import ProjectArticle from "@/views/project/ProjectArticle.vue"
+import Project from "@/views/project/Project.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
-import CheckEmail from "@/views/auth/CheckEmail.vue"
-import AuthEmail from "@/views/auth/AuthEmail.vue"
 import FindPassword from "@/views/auth/FindPassword.vue"
 
 const routes = [
@@ -26,20 +27,6 @@ const routes = [
   {
     path: "/auth",
     component: AuthLayout,
-    // beforeEnter: (to, from, next) => {
-    //   if (to.name === "Login" || to.name === "FindPassword") {
-    //     next()
-    //     return
-    //   }
-    //   if (!from.name) {
-    //     const signupStep = store.getters["auth/getSignupStep"]
-    //     if (to.name !== signupStep) {
-    //       next({ name: signupStep })
-    //       return
-    //     }
-    //   }
-    //   next()
-    // },
     meta: { requiresNoAuth: true },
     children: [
       {
@@ -53,16 +40,6 @@ const routes = [
         component: Signup,
       },
       {
-        path: "check-email",
-        name: "CheckEmail",
-        component: CheckEmail,
-      },
-      {
-        path: "auth-email",
-        name: "AuthEmail",
-        component: AuthEmail,
-      },
-      {
         path: "find-password",
         name: "FindPassword",
         component: FindPassword,
@@ -74,9 +51,15 @@ const routes = [
     component: ProfileLayout,
     children: [
       {
-        path: ":userId",
+        path: ":email",
         name: "Profile",
         component: Profile,
+        props: true,
+      },
+      {
+        path: "edit",
+        name: "EditProfile",
+        component: EditProfile,
       },
     ],
   },
@@ -84,11 +67,6 @@ const routes = [
     path: "/projects",
     component: ProjectLayout,
     children: [
-      {
-        path: "form",
-        name: "ProjectForm",
-        component: ProjectForm,
-      },
       {
         path: "",
         name: "ProjectList",
@@ -98,6 +76,21 @@ const routes = [
         path: ":projectId",
         name: "Project",
         component: Project,
+      },
+      {
+        path: "article/form",
+        name: "ProjectCreateForm",
+        component: ProjectForm,
+      },
+      {
+        path: "article/:projectId",
+        name: "ProjectArticle",
+        component: ProjectArticle,
+      },
+      {
+        path: "article/:projectId/form",
+        name: "ProjectEditForm",
+        component: ProjectForm,
       },
     ],
   },

@@ -112,7 +112,7 @@ export default {
 
     const handleSubmit = async () => {
       if (!checkConfirmPassword()) {
-        store.commit("ADD_MESSAGES", {
+        store.commit("ADD_MESSAGE", {
           text: "비밀번호가 일치하지 않습니다",
           type: "error",
         })

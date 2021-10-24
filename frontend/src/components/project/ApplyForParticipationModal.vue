@@ -75,7 +75,7 @@ export default {
     )
 
     const submit = () => {
-      store.dispatch("applyForParticipation", { ...formFields.value })
+      store.dispatch("project/applyForParticipation", { ...formFields.value })
       emit("close")
     }
 

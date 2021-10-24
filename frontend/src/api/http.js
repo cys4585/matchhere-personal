@@ -7,7 +7,7 @@ const http = axios.create({
 })
 
 http.interceptors.request.use(async (config) => {
-  console.log(config)
+  // console.log(config)
   let tokenData = store.getters["auth/getToken"]
   if (!tokenData.accessToken || config.url.includes("reissue")) {
     return config
@@ -18,15 +18,17 @@ http.interceptors.request.use(async (config) => {
     try {
       // token 재발급
       await store.dispatch("auth/reissue", tokenData)
+      console.log("try")
       tokenData = store.getters["autn/getToken"]
     } catch (error) {
       // refreshToken 유효기간 만료
       router.push({ name: "Login" })
+      console.log("RESET_TOKEN")
       store.commit("auth/RESET_TOKEN")
       return
     }
   }
-  config.headers.Authorization = `${tokenData.grantType} ${tokenData.accessToken}`
+  config.headers.Authorization = `Bearer ${tokenData.accessToken}`
   return config
 })
 

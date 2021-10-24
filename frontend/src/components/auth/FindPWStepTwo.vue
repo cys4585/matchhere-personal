@@ -12,10 +12,8 @@
         <InputFormField
           v-for="field in formFields"
           :key="field.key"
-          v-model="field.value"
           :field="field"
-          :formFields="formFields"
-          @update:errors="handleUpdateErrors"
+          v-model="field.value"
         />
       </div>
       <SubmitButton :disabled="!canSubmit" @click="handleSubmit">
@@ -26,34 +24,22 @@
 </template>
 
 <script>
-import InputFormField from "@/components/common/InputFormField.vue"
+import InputFormField from "@/components/common/formField/InputFormField.vue"
 import { computed, ref } from "vue"
-import { confirmPasswordValidator, passwordValidator } from "@/libs/validator"
 import SubmitButton from "@/components/common/SubmitButton.vue"
+import { InputFormFieldMaker } from "@/libs/func"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 export default {
   name: "FindPWStepTwo",
   components: { InputFormField, SubmitButton },
   setup() {
+    const store = useStore()
+    const router = useRouter()
     const formFields = ref({
-      password: {
-        key: "password",
-        label: "새 비밀번호",
-        type: "password",
-        value: "",
-        placeholder: "대소문자, 숫자, 특수문자 포함 10자 이상",
-        errors: {},
-        validators: [passwordValidator],
-      },
-      confirmPassword: {
-        key: "confirmPassword",
-        label: "새 비밀번호 확인",
-        type: "password",
-        value: "",
-        placeholder: "대소문자, 숫자, 특수문자 포함 10자 이상",
-        errors: {},
-        validators: [confirmPasswordValidator],
-      },
+      password: new InputFormFieldMaker("password"),
+      confirmPassword: new InputFormFieldMaker("confirmPassword"),
     })
 
     const canSubmit = computed(() =>
@@ -72,8 +58,30 @@ export default {
       }
     }
 
-    const handleSubmit = () => {
-      console.log(Object.values(formFields.value).map((f) => f.value))
+    const checkPasswordMatch = () => {
+      if (
+        formFields.value.password.value !==
+        formFields.value.confirmPassword.value
+      ) {
+        store.commit("ADD_MESSAGE", {
+          text: "비밀번호가 일치하지 않습니다",
+          type: "error",
+        })
+        return false
+      }
+      return true
+    }
+
+    const handleSubmit = async () => {
+      if (!checkPasswordMatch) return
+      const { value: password } = formFields.value.password
+      console.log(password)
+      try {
+        await store.dispatch("auth/findPassword", { password })
+        router.push({ name: "Login" })
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     return {

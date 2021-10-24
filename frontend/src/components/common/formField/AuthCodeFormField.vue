@@ -42,6 +42,10 @@ export default {
       type: String,
       required: true,
     },
+    forSignup: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["update:modelValue", "onHide:AuthCodeField"],
   setup(props, { emit }) {
@@ -59,8 +63,12 @@ export default {
 
     const handleClick = async () => {
       props.field.updateButtonDisabled(true)
+      let actionName = props.forSignup
+        ? "auth/confirmEmailAuthCode"
+        : "auth/confirmEmailAuthCodeForFindPW"
+
       try {
-        await store.dispatch("auth/confirmEmailAuthCode", props.field.value)
+        await store.dispatch(actionName, props.field.value)
         emit("onHide:AuthCodeField")
       } catch (error) {
         props.field.updateButtonDisabled(false)
@@ -103,7 +111,7 @@ export default {
       }
 
       button {
-        @apply flex items-center justify-center w-20 rounded text-sm font-medium border border-gray-400 text-gray-900;
+        @apply flex items-center justify-center w-24 rounded text-sm font-medium border border-gray-400 text-gray-900;
 
         &.disabled {
           @apply bg-gray-100 border-gray-400 text-gray-400 cursor-not-allowed;

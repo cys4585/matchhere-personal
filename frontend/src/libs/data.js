@@ -19,7 +19,7 @@ export const cityList = [
 ]
 
 export const detailPositionList = {
-  developer: [
+  개발자: [
     {
       id: 1,
       selected: false,
@@ -76,7 +76,7 @@ export const detailPositionList = {
       value: "HW/임베디드",
     },
   ],
-  designer: [
+  디자이너: [
     {
       id: 1,
       selected: false,
@@ -118,7 +118,7 @@ export const detailPositionList = {
       value: "UX 디자이너",
     },
   ],
-  planner: [
+  기획자: [
     {
       id: 1,
       selected: false,
