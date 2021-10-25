@@ -32,7 +32,7 @@ export default {
         "project/getProjectMemberList",
         props.projectId
       )
-      console.log(memberList.value)
+      // console.log(memberList.value)
       memberList.value.forEach((member) => {
         if (member.authority === "소유자") member.authorityLevel = 2
         else if (member.authority === "관리자") member.authorityLevel = 1
@@ -43,18 +43,17 @@ export default {
         else if (a.authorityLevel < b.authorityLevel) return 1
         return 0
       })
-      console.log(memberList.value)
+      // console.log(memberList.value)
     })
 
     watch(store.getters["project/getAcceptedApplyers"], () => {
-      console.log("watch")
       const acceptedApplyers = store.getters["project/getAcceptedApplyers"]
       memberList.value = [
         ...memberList.value,
         acceptedApplyers[acceptedApplyers.length - 1],
       ]
-      console.log(acceptedApplyers[acceptedApplyers.length - 1])
-      console.log(memberList.value)
+      // console.log(acceptedApplyers[acceptedApplyers.length - 1])
+      // console.log(memberList.value)
     })
 
     return {

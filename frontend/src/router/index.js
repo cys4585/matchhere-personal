@@ -25,6 +25,7 @@ import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArti
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
 import FindPassword from "@/views/auth/FindPassword.vue"
+// import { useStore } from "vuex"
 
 const routes = [
   {
@@ -99,6 +100,15 @@ const routes = [
         path: "detail/:projectId",
         name: "ProjectDetail",
         component: ProjectDetail,
+        // beforeEnter: async (to, from, next) => {
+        //   const store = useStore()
+        //   const myAuth = await store.dispatch(
+        //     "project/getAuthority",
+        //     to.params.projectId
+        //   )
+        //   console.log(myAuth)
+        //   console.log(from, next)
+        // },
         children: [
           {
             path: "manage",

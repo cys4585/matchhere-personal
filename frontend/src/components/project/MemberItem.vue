@@ -6,20 +6,23 @@
     </div>
     <div class="flex gap-2">
       <div>
-        <div v-if="myAuth !== '소유자'" class="not-host">
+        <div
+          v-if="memberInfo.authority === '소유자' || myAuth !== '소유자'"
+          class="host"
+        >
           {{ memberInfo.authority }}
         </div>
-        <div v-else class="host">
+
+        <div v-else class="not-host">
           <select
             @change="handleAuthorityChange"
             class="font-bold bg-gray-200 outline-none w-full"
+            v-model="currentAuthority"
           >
-            <option>{{ memberInfo.authority }}</option>
             <option v-for="authority in authorityList" :key="authority">
               {{ authority }}
             </option>
           </select>
-          <!-- <span class="material-icons text-sm">expand_more</span> -->
         </div>
       </div>
 
@@ -28,11 +31,10 @@
           <select
             @change="handleRoleChange"
             class="font-bold bg-blue-100 outline-none w-full"
+            v-model="currentRole"
           >
-            <option>{{ memberInfo.role }}</option>
             <option v-for="role in roleList" :key="role">{{ role }}</option>
           </select>
-          <!-- <span class="material-icons text-sm">expand_more</span> -->
         </div>
         <div v-else class="role-info">
           {{ memberInfo.role }}
@@ -53,29 +55,36 @@ export default {
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
     const roleActive = ref(false)
-    const roleList = ref(["개발자", "기획자", "디자이너"])
     const authorityActive = ref(false)
-    const authorityList = ref(["소유자", "관리자", "팀원"])
+    let tempSet
+    tempSet = new Set([props.memberInfo.role, "개발자", "기획자", "디자이너"])
+    const roleList = ref([...tempSet])
+    tempSet = new Set([props.memberInfo.authority, "소유자", "관리자", "팀원"])
+    const authorityList = ref([...tempSet])
+
+    const currentRole = ref(props.memberInfo.role)
+    const currentAuthority = ref(props.memberInfo.authority)
 
     const myAuth = ref("")
     const route = useRoute()
     const store = useStore()
 
     onMounted(async () => {
+      // console.log(props.memberInfo)
       const resData = await store.dispatch(
         "project/getAuthority",
         route.params.projectId
       )
-      console.log(resData)
+      // console.log(resData)
       myAuth.value = resData
     })
 
     const handleRoleChange = async (e) => {
+      // console.log(e.target.value)
+      const projectId = route.params.projectId
+      const memberId = props.memberInfo.id
+      const role = e.target.value
       try {
-        console.log(e.target.value)
-        const projectId = route.params.projectId
-        const memberId = props.memberInfo.id
-        const role = e.target.value
         const resData = await store.dispatch("project/changeRole", {
           projectId,
           memberId,
@@ -83,6 +92,11 @@ export default {
         })
         console.log(resData)
       } catch (error) {
+        // console.log(currentRole.value)
+        // console.log(props.memberInfo.role)
+        currentRole.value = props.memberInfo.role
+        // console.log(currentRole.value)
+
         store.commit("ADD_MESSAGE", {
           text: error.message,
           type: "error",
@@ -94,12 +108,20 @@ export default {
       const projectId = route.params.projectId
       const memberId = props.memberInfo.id
       const authority = e.target.value
-      const resData = await store.dispatch("project/changeAuthority", {
-        projectId,
-        memberId,
-        authority,
-      })
-      console.log(resData)
+      try {
+        const resData = await store.dispatch("project/changeAuthority", {
+          projectId,
+          memberId,
+          authority,
+        })
+        console.log(resData)
+      } catch (error) {
+        currentAuthority.value = props.memberInfo.authority
+        store.commit("ADD_MESSAGE", {
+          text: error.message,
+          type: "error",
+        })
+      }
     }
     return {
       profilePic,
@@ -110,16 +132,18 @@ export default {
       authorityActive,
       authorityList,
       myAuth,
+      currentRole,
+      currentAuthority,
     }
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.not-host {
+.host {
   @apply flex items-center bg-gray-200 text-gray-900 font-bold text-sm px-4 py-1 rounded-lg;
 }
-.host {
+.not-host {
   @apply flex items-center bg-gray-200 text-gray-900 font-bold text-sm pl-2 pr-1 py-1 rounded-lg;
 }
 
@@ -138,10 +162,4 @@ export default {
             py-1
             rounded-lg;
 }
-
-// select {
-//   -moz-appearance: none; /* Firefox */
-//   -webkit-appearance: none; /* Safari and Chrome */
-//   appearance: none;
-// }
 </style>

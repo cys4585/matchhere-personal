@@ -15,6 +15,7 @@
       게시판
     </button>
     <button
+      v-if="myAuth === '소유자' || myAuth === '관리자'"
       @click="handleClick"
       name="ProjectManage"
       :class="{ active: activedView === 'ProjectManage' }"
@@ -29,7 +30,7 @@
 <script>
 import { ref } from "@vue/reactivity"
 import { useRoute, useRouter } from "vue-router"
-import { onMounted, onUpdated } from "@vue/runtime-core"
+import { onBeforeMount, onMounted, onUpdated } from "@vue/runtime-core"
 import { useStore } from "vuex"
 export default {
   name: "ProjectDetail",
@@ -40,8 +41,18 @@ export default {
 
     const projectId = route.params.projectId
 
-    const boardList = ref()
+    const myAuth = ref("")
+    onBeforeMount(async () => {
+      const resAuth = await store.dispatch("project/getAuthority", projectId)
+      // console.log(resAuth)
+      if (resAuth === "게스트")
+        router.push({ name: "ProjectArticle", params: { projectId } })
+      if (route.name === "ProjectManage" && resAuth === "팀원")
+        router.push({ name: "ProjectDetail", params: { projectId } })
+      myAuth.value = resAuth
+    })
 
+    const boardList = ref()
     const activedView = ref()
 
     onMounted(async () => {
@@ -51,7 +62,7 @@ export default {
     })
 
     onUpdated(() => {
-      console.log(activedView.value)
+      // console.log(activedView.value)
       if (route.name === "ArticleDetail") {
         const { boardId } = route.params
         activedView.value =
@@ -68,7 +79,7 @@ export default {
       else if (name === "BoardArticleList") boardId = boardList.value[1].id
       router.push({ name, params: { projectId, boardId } })
     }
-    return { handleClick, activedView }
+    return { handleClick, activedView, myAuth }
   },
 }
 </script>

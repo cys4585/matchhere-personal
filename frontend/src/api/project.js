@@ -107,16 +107,14 @@ const getAuthority = async (projectId) => {
 }
 
 const changeAuthority = async (projectId, memberId, authority) => {
-  const res = await http.get(
+  const res = await http.put(
     `/project/authority/${projectId}/${memberId}/${authority}`
   )
   return res.data
 }
 
 const changeRole = async (projectId, memberId, role) => {
-  const res = await http.get(
-    `/project/authority/${projectId}/${memberId}/${role}`
-  )
+  const res = await http.put(`/project/role/${projectId}/${memberId}/${role}`)
   return res.data
 }
 export default {
