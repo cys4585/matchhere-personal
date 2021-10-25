@@ -47,13 +47,13 @@ public class StudyController {
 
     @PostMapping
     @ApiOperation(value = "스터디 생성", notes = "<strong>받은 스터디 정보</strong>를 사용해서 스터디을 생성한다.")
-    public ResponseEntity<Long> create(@RequestBody StudyCreateRequestDto dto) throws Exception {
+    public ResponseEntity<StudyInfoResponseDto> create(@RequestBody StudyCreateRequestDto dto) throws Exception {
         return ResponseEntity.ok(studyService.create(dto));
     }
 
     @PatchMapping("/{studyId}")
     @ApiOperation(value = "스터디 수정", notes = "<strong>받은 스터디 정보</strong>를 사용해서 스터디를 수정한다.")
-    public ResponseEntity<HttpStatus> update(@PathVariable("studyId") Long studyId,
+    public ResponseEntity<StudyInfoResponseDto> update(@PathVariable("studyId") Long studyId,
         @RequestBody StudyUpdateRequestDto dto) throws Exception {
         return ResponseEntity.ok(studyService.update(studyId, dto));
     }
@@ -68,7 +68,7 @@ public class StudyController {
     @DeleteMapping("/{studyId}/member")
     @ApiOperation(value = "스터디 탈퇴", notes = "<strong>받은 스터디 id</strong>로 스터디에서 탈퇴한다.")
     public ResponseEntity<HttpStatus> deleteMember(@PathVariable("studyId") Long studyId) throws Exception {
-        return ResponseEntity.ok(studyService.removeMember(studyId));
+        return ResponseEntity.ok(studyService.removeMe(studyId));
     }
 
 //    @GetMapping

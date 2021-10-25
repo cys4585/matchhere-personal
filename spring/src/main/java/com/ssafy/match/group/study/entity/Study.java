@@ -79,8 +79,6 @@ public class Study {
 
     private String schedule;
 
-    private LocalDate period;
-
     @Column(name = "member_count", nullable = false)
     private int memberCount;
 
@@ -145,7 +143,6 @@ public class Study {
         this.recruitmentState = RecruitmentState.from(dto.getRecruitmentState());
         this.modifiedDate = LocalDateTime.now();
         this.schedule = dto.getSchedule();
-        this.period = dto.getPeriod();
         setMaxCount(dto.getMaxCount());
         this.city = GroupCity.from(dto.getCity());
         this.club = club;
@@ -164,7 +161,6 @@ public class Study {
             .modifiedDate(LocalDateTime.now())
             .member(member)
             .schedule(dto.getSchedule())
-            .period(dto.getPeriod())
             .memberCount(0)
             .maxCount(dto.getMaxCount())
             .city(GroupCity.from(dto.getCity()))

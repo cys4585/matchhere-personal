@@ -1,5 +1,6 @@
 package com.ssafy.match.group.study.service;
 
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
@@ -34,15 +35,17 @@ public interface StudyService {
 
     void addMember(Study study, Member member);
 
-    HttpStatus removeMember(Long studyId);
+    HttpStatus removeMe(Long studyId);
 
-    InfoForApplyStudyFormResponseDto getInfoForApply(Long studyId);
+    HttpStatus removeMember(Long studyId, Long memberId);
 
-    HttpStatus applyStudy(Long studyId, StudyApplicationRequestDto dto);
+    boolean checkCanApply(Long studyId);
 
-    List<StudyFormInfoResponseDto> getAllStudyForm(Long studyId);
+    StudyFormInfoResponseDto applyStudy(Long studyId, StudyApplicationRequestDto dto);
 
-    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname);
+    List<StudyFormSimpleInfoResponseDto> getAllStudyForm(Long studyId);
+
+//    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname);
 
     StudyFormInfoResponseDto getOneStudyForm(Long studyId, Long memberId);
 
