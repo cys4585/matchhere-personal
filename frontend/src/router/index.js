@@ -5,6 +5,8 @@ import Home from "@/views/Home.vue"
 import AuthLayout from "@/layouts/Auth.vue"
 import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
+import StudyLayout from "@/layouts/Study.vue"
+import StudyBoardLayout from "@/layouts/StudyBoard.vue"
 
 import Profile from "@/views/Profile.vue"
 import EditProfile from "@/views/EditProfile.vue"
@@ -21,6 +23,9 @@ import ArticleEditForm from "@/views/project/detail/articleform/ArticleEditForm.
 import BoardArticleList from "@/views/project/detail/board/BoardArticleList.vue"
 import ArticleDetail from "@/views/project/detail/ArticleDetail.vue"
 import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArticleList.vue"
+
+// Study
+import StudyPage from "@/views/study/index"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
@@ -69,6 +74,73 @@ const routes = [
         path: "edit",
         name: "EditProfile",
         component: EditProfile,
+      },
+    ],
+  },
+  {
+    path: "/study",
+    component: StudyLayout,
+    children: [
+      {
+        path: "",
+        name: "StudyList",
+        component: StudyPage.StudyList,
+      },
+      {
+        path: "create",
+        name: "StudyCreate",
+        component: StudyPage.StudyCreate,
+      },
+      {
+        path: ":studyId/article",
+        name: "StudyArticle",
+        component: StudyPage.StudyArticle,
+      },
+      {
+        path: ":studyId/edit",
+        name: "StudyEdit",
+        component: StudyPage.StudyEdit,
+      },
+      {
+        path: ":studyId/board",
+        component: StudyBoardLayout,
+        children: [
+          {
+            path: "create",
+            name: "StudyBoardCreate",
+            component: StudyPage.StudyBoardCreate,
+          },
+          {
+            path: ":boardId/edit",
+            name: "StudyBoardEdit",
+            component: StudyPage.StudyBoardEdit,
+          },
+          {
+            path: ":boardId/articles",
+            name: "StudyBoardArticleList",
+            component: StudyPage.StudyBoardArticleList,
+          },
+          {
+            path: ":boardId/articles/create",
+            name: "StudyBoardArticleCreate",
+            component: StudyPage.StudyBoardArticleCreate,
+          },
+          {
+            path: ":boardId/articles/:articleId",
+            name: "StudyBoardArticleDetail",
+            component: StudyPage.StudyBoardArticleDetail,
+          },
+          {
+            path: ":boardId/articles/:articleId/edit",
+            name: "StudyBoardArticleEdit",
+            component: StudyPage.StudyBoardArticleEdit,
+          },
+          {
+            path: "manage",
+            name: "StudyManage",
+            component: StudyPage.StudyManage,
+          },
+        ],
       },
     ],
   },
