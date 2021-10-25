@@ -16,14 +16,9 @@ public class StudyTopicResponseDto {
     @ApiParam(value = "주제명")
     private String name;
 
-    @ApiModelProperty(example = "상")
-    @ApiParam(value = "수준")
-    private String level;
-
     public static StudyTopicResponseDto from(StudyTopic studyTopic){
         return StudyTopicResponseDto.builder()
             .name(studyTopic.getName())
-            .level(studyTopic.getLevel().toString())
             .build();
     }
 

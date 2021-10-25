@@ -20,7 +20,7 @@ public interface StudyService {
 
     StudyInfoForCreateResponseDto getInfoForCreate();
 
-    Long create(StudyCreateRequestDto dto);
+    StudyInfoResponseDto create(StudyCreateRequestDto dto);
 
     StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto) ;
 

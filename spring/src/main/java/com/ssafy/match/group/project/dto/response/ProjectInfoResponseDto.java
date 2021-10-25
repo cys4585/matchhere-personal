@@ -155,29 +155,4 @@ public class ProjectInfoResponseDto {
             .build();
     }
 
-    public static ProjectInfoResponseDto of(Project project) {
-        return ProjectInfoResponseDto.builder()
-            .id(project.getId())
-            .projectProgressState(project.getProjectProgressState().getState())
-            .coverPicUri(
-                (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
-            .recruitmentState(project.getRecruitmentState().getState())
-            .viewCount(project.getViewCount())
-            .createDate(project.getCreateDate())
-            .host(MemberSimpleInfoResponseDto.from(project.getMember()))
-            .schedule(project.getSchedule())
-            .period(project.getPeriod())
-            .developerCount(project.getDeveloperCount())
-            .developerMaxCount(project.getDeveloperMaxCount())
-            .plannerCount(project.getPlannerCount())
-            .plannerMaxCount(project.getPlannerMaxCount())
-            .designerCount(project.getDesignerCount())
-            .designerMaxCount(project.getDesignerMaxCount())
-            .city(project.getCity().toString())
-            .currentClub((project.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
-                project.getClub()))
-            .bio(project.getBio())
-            .build();
-    }
-
 }

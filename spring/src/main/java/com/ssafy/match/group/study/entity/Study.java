@@ -129,6 +129,10 @@ public class Study {
         this.maxCount = count;
     }
 
+    public void activation(){
+        this.isActive = true;
+    }
+
     public void deActivation(){
         this.isActive = false;
     }

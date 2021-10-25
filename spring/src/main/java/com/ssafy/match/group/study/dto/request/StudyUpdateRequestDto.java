@@ -17,32 +17,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyUpdateRequestDto {
 
+    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
+    @ApiParam(value = "사진 고유 uuid")
+    private String uuid;
+
     @ApiModelProperty(example = "매칭 스터디")
     @ApiParam(value = "스터디명", required = true)
     @NotBlank
     @Size(min = 2, max = 100)
     private String name;
 
-    @ApiModelProperty(example = "프로젝트 진행 중")
-    @ApiParam(value = "프로젝트 진행 상태", required = true)
-    @NotBlank
-    private String studyProgressState;
-
-    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
-    @ApiParam(value = "사진 고유 uuid")
-    private String uuid;
-
-    @ApiModelProperty(example = "{\"OS\":\"중\", \"데이터베이스\":\"상\"}")
-    @ApiParam(value = "주제, 난이도")
-    private HashMap<String, String> topics;
+    @ApiModelProperty(example = "[\"OS\", \"DB\"]")
+    @ApiParam(value = "주제")
+    private List<String> topics;
 
     @ApiModelProperty(name = "schedule", example = "매주 화, 수 6시")
     @ApiParam(value = "스터디 작업 시간", required = true)
     private String schedule;
 
-    @ApiModelProperty(example = "2020-05-22")
-    @ApiParam(value = "프로젝트 마감 예정일")
-    private LocalDate period;
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "스터디 제한 인원", required = true)
+    private int maxCount;
+
+    @ApiModelProperty(example = "프로젝트 진행 중")
+    @ApiParam(value = "프로젝트 진행 상태", required = true)
+    @NotBlank
+    private String studyProgressState;
 
     @ApiModelProperty(example = "서울")
     @ApiParam(value = "지역", required = true)
@@ -67,7 +67,4 @@ public class StudyUpdateRequestDto {
     @NotBlank
     private String recruitmentState;
 
-    @ApiModelProperty(example = "3")
-    @ApiParam(value = "스터디 제한 인원", required = true)
-    private int maxCount;
 }

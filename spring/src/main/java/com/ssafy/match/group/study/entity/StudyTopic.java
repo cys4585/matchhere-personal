@@ -1,9 +1,6 @@
 package com.ssafy.match.group.study.entity;
 
-import com.ssafy.match.common.entity.Level;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,14 +32,10 @@ public class StudyTopic {
     @NotBlank
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private Level level;
-
-    public static StudyTopic of(Study study, String name, Level level){
+    public static StudyTopic of(Study study, String name){
         return StudyTopic.builder()
             .study(study)
             .name(name)
-            .level(level)
             .build();
     }
 }

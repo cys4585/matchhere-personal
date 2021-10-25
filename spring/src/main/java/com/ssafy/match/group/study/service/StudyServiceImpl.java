@@ -3,6 +3,7 @@ package com.ssafy.match.group.study.service;
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.Level;
+import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.Techstack;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
@@ -23,6 +24,7 @@ import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
 import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
@@ -63,7 +65,6 @@ public class StudyServiceImpl implements StudyService {
     private final MemberStudyRepository memberStudyRepository;
     private final MemberClubRepository memberClubRepository;
     private final StudyApplicationFormRepository studyApplicationFormRepository;
-    private final TechstackRepository techstackRepository;
     private final DBFileRepository dbFileRepository;
     private final MemberSnsRepository memberSnsRepository;
     private final StudyBoardRepository studyBoardRepository;
@@ -75,8 +76,9 @@ public class StudyServiceImpl implements StudyService {
             findClubInMember(findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
+    // 스터디 생성
     @Transactional
-    public Long create(StudyCreateRequestDto dto) {
+    public StudyInfoResponseDto create(StudyCreateRequestDto dto) {
         validCity(dto.getCity());
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Study study = Study.of(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()), member);
@@ -98,7 +100,7 @@ public class StudyServiceImpl implements StudyService {
         study.addMember();
         memberStudyRepository.save(memberStudy);
 
-        return study.getId();
+        return getOneStudy(study.getId());
     }
 
     // 스터디 업데이트를 위한 정보
@@ -113,15 +115,13 @@ public class StudyServiceImpl implements StudyService {
             makeClubSimpleInfoResponseDtos(findClubInMember(member)));
     }
 
-    private HashMap<String, String> getStudyTopics(Study study) {
-        List<StudyTopic> sts = studyTopicRepository.findAllByStudy(study);
-        HashMap<String, String> topics = new HashMap<>();
-        for (StudyTopic st: sts) {
-            topics.put(st.getName(), st.getLevel().toString());
-        }
-        return topics;
+    // 스터디의 주제 리스트
+    private List<StudyTopicResponseDto> getStudyTopics(Study study) {
+        return studyTopicRepository.findAllByStudy(study)
+            .stream().map(StudyTopicResponseDto::from).collect(Collectors.toList());
     }
 
+    // 스터디 업데이트
     @Transactional
     public StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto) {
         validCity(dto.getCity());
@@ -178,13 +178,14 @@ public class StudyServiceImpl implements StudyService {
 //        return studyInfoResponseDtos;
 //    }
 
-    // 현재 스터디 정보 리턴
-    public StudyInfoResponseDto getOneStudy(Long studyId) throws Exception {
+    // 현재 스터디 정보 조회
+    public StudyInfoResponseDto getOneStudy(Long studyId){
         Study study = findStudy(studyId);
 
+        // 스터디의 주인은 비공개된 스터디라도 확인 가능
         if (!SecurityUtil.getCurrentMemberId().equals(study.getMember().getId())
-            && !study.getIsPublic()) {
-            throw new Exception("비공개된 스터디입니다.");
+            && !study.getPublicScope().equals(PublicScope.PUBLIC)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
         StudyInfoResponseDto studyInfoResponseDto = studyRepository.findById(studyId)
             .map(StudyInfoResponseDto::of)
@@ -196,15 +197,17 @@ public class StudyServiceImpl implements StudyService {
     }
 
     @Transactional
-    public void addTopics(Study study, HashMap<String, String> topics) {
+    public void addTopics(Study study, List<String> topics) {
         studyTopicRepository.deleteAllByStudy(study);
         if(topics.isEmpty()){
             return;
         }
-
-        for (Map.Entry<String, String> entry : topics.entrySet()) {
-            Level level = Level.from(entry.getValue());
-            studyTopicRepository.save(StudyTopic.of(study, entry.getKey(), level));
+//        for (Map.Entry<String, String> entry : topics.entrySet()) {
+//            Level level = Level.from(entry.getValue());
+//            studyTopicRepository.save(StudyTopic.of(study, entry.getKey(), level));
+//        }
+        for (String topic: topics) {
+            studyTopicRepository.save(StudyTopic.of(study, topic));
         }
     }
 
