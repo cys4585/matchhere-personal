@@ -2,16 +2,6 @@
   <form @submit.prevent="handleSubmit">
     <div class="fields">
       <InputFormField :field="emailFormField" v-model="emailFormField.value" />
-      <div class="form-field">
-        <label for="cover_pic">프로필 이미지</label>
-        <input
-          type="file"
-          accept="image/*"
-          name="cover_pic"
-          id="cover_pic"
-          @change="handleFileChange"
-        />
-      </div>
       <InputFormField
         :field="nicknameFormField"
         v-model="nicknameFormField.value"
@@ -62,13 +52,6 @@ export default {
       value: "",
       placeholder: "자기소개를 입력하세요",
     })
-    const fileFormField = reactive({
-      key: "cover_pic",
-      id: "",
-      file_name: "",
-      file_type: "",
-      download_uri: "",
-    })
 
     const formIsValid = computed(() => {
       return (
@@ -82,34 +65,20 @@ export default {
       name: nameFormField.value,
       city: cityFormField.value,
       bio: bioFormField.value,
-      coverpic_uuid: fileFormField.id,
     }))
-
-    const handleFileChange = async (e) => {
-      const files = e.target.files || e.dataTransfer.files
-      if (!files.length) {
-        fileFormField.id = ""
-        return
-      }
-      const formData = new FormData()
-      formData.append("file", files[0])
-      const uuid = await store.dispatch("file/uploadFile", formData)
-      fileFormField.id = uuid
-    }
 
     const handleSubmit = async () => {
       await store.dispatch("member/updateBasicInfo", submitData.value)
     }
 
     onMounted(async () => {
-      const { nickname, name, bio, cover_pic, city } = await store.dispatch(
+      const { nickname, name, bio, city } = await store.dispatch(
         "member/getBasicInfo"
       )
       nicknameFormField.value = nickname
       nameFormField.value = name
       cityFormField.value = city
       bioFormField.value = bio || ""
-      console.log(bio, cover_pic)
     })
 
     return {
@@ -119,7 +88,6 @@ export default {
       cityFormField,
       bioFormField,
       formIsValid,
-      handleFileChange,
       handleSubmit,
     }
   },

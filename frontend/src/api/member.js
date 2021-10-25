@@ -109,6 +109,16 @@ const getSNSPortfolio = async () => {
   return res.data
 }
 
+const updatePortfolio = async (data) => {
+  const res = await http.put(`member/portfolio`, data)
+  return res.data
+}
+
+const updateSNS = async (data) => {
+  const res = await http.put(`member/sns`, data)
+  return res.data
+}
+
 export default {
   getMypage,
   getMe,
@@ -130,4 +140,6 @@ export default {
   updateEdu,
   deleteEdu,
   getSNSPortfolio,
+  updatePortfolio,
+  updateSNS,
 }

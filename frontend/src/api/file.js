@@ -6,7 +6,7 @@ const uploadFile = async (file) => {
       "Content-Type": "multipart/form-data",
     },
   })
-  return res.data.id
+  return res.data
 }
 const uploadFile2 = async (file) => {
   const res = await http.post(`/file/uploadFile`, file, {

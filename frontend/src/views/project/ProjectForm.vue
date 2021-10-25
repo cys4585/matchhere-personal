@@ -517,11 +517,11 @@ export default {
       }
 
       if (tmpFields.ThumbnailImageFile.value) {
-        const uuid = await store.dispatch(
+        const { id } = await store.dispatch(
           "file/uploadFile",
           tmpFields.ThumbnailImageFile.value
         )
-        formData["uuid"] = uuid
+        formData["uuid"] = id
       }
 
       console.log(formData)
