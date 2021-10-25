@@ -214,6 +214,42 @@ export default {
         throw Error(message)
       }
     },
+    async getAuthority(context, projectId) {
+      try {
+        const resData = await ProjectAPI.getAuthority(projectId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
+    async changeAuthority(context, { projectId, memberId, authority }) {
+      console.log(projectId, memberId, authority)
+      try {
+        const resData = await ProjectAPI.changeAuthority(
+          projectId,
+          memberId,
+          authority
+        )
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status, message } = error.response.data
+        console.log(status)
+        throw Error(message)
+      }
+    },
+    async changeRole(context, { projectId, memberId, role }) {
+      console.log(projectId, memberId, role)
+      try {
+        const resData = await ProjectAPI.changeRole(projectId, memberId, role)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        const { status, message } = error.response.data
+        console.log(status)
+        throw Error(message)
+      }
+    },
   },
   getters: {
     getMyClubList(state) {

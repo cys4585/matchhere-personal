@@ -22,6 +22,22 @@ export default {
         )
       }
     },
+    async uploadFile2({ commit }, file) {
+      console.log(file)
+      try {
+        const resData = await FileAPI.uploadFile2(file)
+        return resData
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "파일 업로드에 실패했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
   },
   getters: {},
 }

@@ -100,6 +100,25 @@ const createComment = async (content, articleId, parentId) => {
   })
   return res.data
 }
+
+const getAuthority = async (projectId) => {
+  const res = await http.get(`project/authority/${projectId}`)
+  return res.data
+}
+
+const changeAuthority = async (projectId, memberId, authority) => {
+  const res = await http.get(
+    `/project/authority/${projectId}/${memberId}/${authority}`
+  )
+  return res.data
+}
+
+const changeRole = async (projectId, memberId, role) => {
+  const res = await http.get(
+    `/project/authority/${projectId}/${memberId}/${role}`
+  )
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -120,4 +139,7 @@ export default {
   getBoardArticleDetail,
   getArticleComment,
   createComment,
+  getAuthority,
+  changeAuthority,
+  changeRole,
 }
