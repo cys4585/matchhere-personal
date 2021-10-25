@@ -30,9 +30,9 @@ public class ProjectInfoForUpdateResponseDto {
     @ApiParam(value = "프로젝트 진행 상태")
     private String projectProgressState;
 
-    @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
-    @ApiParam(value = "파일 다운로드 Uri")
-    private String coverPicUri;
+//    @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
+//    @ApiParam(value = "파일 다운로드 Uri")
+//    private String coverPicUri;
 
     @ApiModelProperty(example = "[{\"name\":\"python\", \"level\":\"상\", \"imgUri\":\"null\"}, {\"name\":\"spring\", \"level\":\"하\", \"imgUri\":\"null\"}]")
     @ApiParam(value = "변경된 기술 스택 리스트")
@@ -94,18 +94,12 @@ public class ProjectInfoForUpdateResponseDto {
     @ApiParam(value = "기획자 모집 인원")
     private int plannerMaxCount;
 
-    @ApiModelProperty(example = "개발자")
-    @ApiParam(value = "호스트 역할")
-    private String hostPosition;
-
     public static ProjectInfoForUpdateResponseDto of(Project project,
-        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs, String hostPosition) {
+        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs) {
         return ProjectInfoForUpdateResponseDto.builder()
             .id(project.getId())
             .name(project.getName())
             .projectProgressState(project.getProjectProgressState().getState())
-            .coverPicUri(
-                (project.getCoverPic() == null) ? null : project.getCoverPic().getDownload_uri())
             .techstacks(techstacks)
             .schedule(project.getSchedule())
             .period(project.getPeriod())
@@ -122,7 +116,6 @@ public class ProjectInfoForUpdateResponseDto {
             .developerMaxCount(project.getDeveloperMaxCount())
             .plannerMaxCount(project.getPlannerMaxCount())
             .designerMaxCount(project.getDesignerMaxCount())
-            .hostPosition(hostPosition)
             .build();
     }
 

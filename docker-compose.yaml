@@ -17,7 +17,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=madmin
   mysql:
-    image: mysql:8.0.26
+    image: happyostrich/matchhere_mysql
+    build: ./mysql
     container_name: mysql
     restart: always
     environment:

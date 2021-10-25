@@ -12,11 +12,20 @@ import EditProfile from "@/views/EditProfile.vue"
 import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
-import Project from "@/views/project/Project.vue"
+import ProjectDetail from "@/views/project/ProjectDetail.vue"
+import ProjectManage from "@/views/project/detail/manage/ProjectManage.vue"
+import ProjectBoard from "@/views/project/detail/board/ProjectBoard.vue"
+import ProjectNotiBoard from "@/views/project/detail/notiboard/ProjectNotiBoard.vue"
+import ArticleForm from "@/views/project/detail/articleform/ArticleForm.vue"
+import ArticleEditForm from "@/views/project/detail/articleform/ArticleEditForm.vue"
+import BoardArticleList from "@/views/project/detail/board/BoardArticleList.vue"
+import ArticleDetail from "@/views/project/detail/ArticleDetail.vue"
+import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArticleList.vue"
 
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
 import FindPassword from "@/views/auth/FindPassword.vue"
+// import { useStore } from "vuex"
 
 const routes = [
   {
@@ -73,11 +82,6 @@ const routes = [
         component: ProjectList,
       },
       {
-        path: ":projectId",
-        name: "Project",
-        component: Project,
-      },
-      {
         path: "article/form",
         name: "ProjectCreateForm",
         component: ProjectForm,
@@ -91,6 +95,69 @@ const routes = [
         path: "article/:projectId/form",
         name: "ProjectEditForm",
         component: ProjectForm,
+      },
+      {
+        path: "detail/:projectId",
+        name: "ProjectDetail",
+        component: ProjectDetail,
+        // beforeEnter: async (to, from, next) => {
+        //   const store = useStore()
+        //   const myAuth = await store.dispatch(
+        //     "project/getAuthority",
+        //     to.params.projectId
+        //   )
+        //   console.log(myAuth)
+        //   console.log(from, next)
+        // },
+        children: [
+          {
+            path: "manage",
+            name: "ProjectManage",
+            component: ProjectManage,
+          },
+          {
+            path: "board/:boardId",
+            component: ProjectBoard,
+            children: [
+              {
+                path: "",
+                name: "BoardArticleList",
+                component: BoardArticleList,
+              },
+              {
+                path: "detail/:articleId",
+                name: "ArticleDetail",
+                component: ArticleDetail,
+              },
+            ],
+          },
+          {
+            path: "noti-board/:boardId",
+            component: ProjectNotiBoard,
+            children: [
+              {
+                path: "",
+                name: "NotiBoardArticleList",
+                component: NotiBoardArticleList,
+              },
+              {
+                path: "detail/:articleId",
+                name: "ArticleDetail",
+                component: ArticleDetail,
+              },
+            ],
+          },
+          {
+            path: "article/form",
+            name: "ArticleForm",
+            component: ArticleForm,
+          },
+          {
+            path: "article/:articleId/form",
+            name: "ArticleEditForm",
+            component: ArticleEditForm,
+          },
+        ],
       },
     ],
   },

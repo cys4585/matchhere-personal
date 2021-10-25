@@ -62,6 +62,20 @@ export class InputFormFieldMaker {
         this.validators = [nameValidator]
         break
       }
+      case "title": {
+        this.label = "제목"
+        this.type = "string"
+        this.placeholder = "ex) DTO 사용방식에 대한 고찰"
+        this.validators = [requiredValidator]
+        break
+      }
+      case "tags": {
+        this.label = "태그"
+        this.type = "string"
+        this.placeholder = "ex) Todo, FE, BE, DB, 일정, 회의록"
+        this.validators = []
+        break
+      }
       default: {
         this.label = label
         this.type = type

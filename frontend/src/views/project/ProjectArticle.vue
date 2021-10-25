@@ -1,7 +1,24 @@
 <template>
   <div v-if="projectInfo">
     <div class="mt-4 flex justify-center h-40">
-      <img :src="projectInfo.coverPicUri" alt="" />
+      <img
+        v-if="projectInfo.coverPicUri"
+        :src="projectInfo.coverPicUri"
+        alt=""
+      />
+      <div v-else class="self-end">
+        <label for="coverpic" class="cursor-pointer hover:text-gray-500"
+          >커버 사진 등록</label
+        >
+        <input
+          type="file"
+          accept="image/*"
+          name="coverpic"
+          id="coverpic"
+          hidden
+          @change="handleFileChange"
+        />
+      </div>
     </div>
     <div class="container">
       <section class="project-section">
@@ -48,23 +65,28 @@
                 :key="tech.name"
                 class="flex gap-2 items-center"
               >
-                {{ tech }}
+                <img
+                  class="w-4 h-4"
+                  :src="require('@/assets/images/noStack.png')"
+                  alt="로고"
+                />
+                <span> {{ tech.name }}</span>
               </p>
-              <p class="flex gap-2 items-center">
+              <!-- <p class="flex gap-2 items-center">
                 <img :src="javaPic" alt="" class="w-4 h-4" />
                 <span>java</span>
               </p>
               <p class="flex gap-2 items-center">
                 <img :src="pythonPic" alt="" class="w-4 h-4" />
                 <span>python</span>
-              </p>
+              </p> -->
             </div>
           </div>
           <div class="content">
             <h3>일정</h3>
             <div class="grid gap-2">
               <p>{{ projectInfo.schedule }}</p>
-              <p>{{ projectInfo.period }} 까지</p>
+              <p v-if="projectInfo.period">{{ projectInfo.period }} 까지</p>
             </div>
           </div>
           <div class="content">
@@ -176,12 +198,17 @@
         </div>
         <div class="flex flex-col items-center gap-2 px-7">
           <button
+            v-if="projectInfo.authority === '게스트'"
             class="w-full text-white py-4 rounded-full bg-blue-500"
             @click="isApplyModalActivation = true"
           >
             프로젝트 참가 신청
           </button>
-          <button class="py-2 px-6" @click="editProject">
+          <button
+            v-if="projectInfo.authority === '소유자'"
+            class="py-2 px-6"
+            @click="editProject"
+          >
             <p class="text-gray-600 font-medium text-sm">수정</p>
           </button>
         </div>
@@ -190,18 +217,19 @@
     <ApplyForParticipationModal
       v-if="isApplyModalActivation"
       @close="isApplyModalActivation = false"
+      :projectId="projectInfo.id"
     />
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from "@vue/runtime-core"
+import { onMounted, reactive, ref } from "@vue/runtime-core"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import ApplyForParticipationModal from "@/components/project/ApplyForParticipationModal.vue"
 
 export default {
-  name: "Project",
+  name: "ProjectArticle",
   components: { ApplyForParticipationModal },
   setup() {
     const route = useRoute()
@@ -211,6 +239,27 @@ export default {
     const projectInfo = ref()
     const projectProgressStateColorClass = ref()
     const recruitmentStateColorClass = ref()
+
+    const fileFormField = reactive({
+      key: "coverpic",
+      id: "",
+      file_name: "",
+      file_type: "",
+      download_uri: "",
+    })
+    const handleFileChange = async (e) => {
+      const files = e.target.files || e.dataTransfer.files
+      if (!files.length) {
+        fileFormField.id = ""
+        return
+      }
+      console.log("asjkldfhasdjklfh")
+      const formData = new FormData()
+      formData.append("file", files[0])
+      const resData = await store.dispatch("file/uploadFile2", formData)
+      console.log(resData)
+      fileFormField.id = resData.uuid
+    }
 
     onMounted(async () => {
       projectInfo.value = await store.dispatch(
@@ -240,12 +289,14 @@ export default {
       })
     }
 
-    const profilePic = ref(require("@/assets/test-profile.png"))
-    const javaPic = ref(require("@/assets/test-java.png"))
-    const pythonPic = ref(require("@/assets/test-python.png"))
+    const profilePic = ref(require("@/assets/images/test-profile.png"))
+    const javaPic = ref(require("@/assets/images/test-java.png"))
+    const pythonPic = ref(require("@/assets/images/test-python.png"))
 
     return {
       projectInfo,
+      handleFileChange,
+      fileFormField,
       projectProgressStateColorClass,
       recruitmentStateColorClass,
       isApplyModalActivation,

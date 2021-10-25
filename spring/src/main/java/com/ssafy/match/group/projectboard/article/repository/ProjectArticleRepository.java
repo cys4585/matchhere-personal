@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 public interface ProjectArticleRepository extends JpaRepository<ProjectArticle, Long> {
     Page<ProjectArticle> findAllByProjectBoard(ProjectBoard projectBoard, Pageable pageable);
 
+    List<ProjectArticle> findAllByProjectBoard(ProjectBoard projectBoard);
+
     // 제목으로 게시글 조회
     @Query("select pa from matching.project_article pa "
         + "where pa.projectBoard = :projectBoard "
