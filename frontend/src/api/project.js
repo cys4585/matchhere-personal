@@ -12,6 +12,8 @@ const createProject = async (formData) => {
 }
 
 const updateProject = async (formData, projectId) => {
+  console.log(formData)
+  console.log(projectId)
   const res = await http.put(`/project/${projectId}`, formData)
   return res.data
 }

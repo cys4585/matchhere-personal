@@ -5,7 +5,7 @@
         <h2>프로젝트 만들기</h2>
         <p>매치히어에서 내 프로젝트를 만들고 나의 성공시대 시작됐다!</p>
       </header>
-      <div class="project-form-container">
+      <div class="project-form-container" v-if="ready">
         <div
           class="form"
           v-for="(form, name, index) in formFields"
@@ -88,6 +88,7 @@
               </div>
               <div v-else-if="field.type === 'textarea'">
                 <textarea
+                  v-if="field"
                   :placeholder="field.placeholder"
                   v-model="field.value"
                   class="
@@ -164,11 +165,21 @@ export default {
     const router = useRouter()
     const route = useRoute()
 
+    const ready = ref(false)
     const projectId = ref()
     onBeforeMount(async () => {
       projectId.value = route.params.projectId
-      if (projectId.value) {
-        try {
+      const resAuth = await store.dispatch(
+        "project/getAuthority",
+        projectId.value
+      )
+      try {
+        if (resAuth !== "소유자") {
+          router.push({
+            name: "ProjectArticle",
+            params: { projectId: projectId.value },
+          })
+        } else {
           const projectInfo = await store.dispatch(
             "project/getInfoForUpdate",
             projectId.value
@@ -199,24 +210,17 @@ export default {
             }
           }
           console.log(formFields.value)
-        } catch (error) {
-          store.commit("ADD_MESSAGES", {
-            text: error.message,
-            type: "error",
-          })
-          router.push({
-            name: "ProjectArticle",
-            params: { projectId: projectId.value },
-          })
+          ready.value = true
         }
-      } else {
-        await store.dispatch("project/getMyClubList")
-        formFields.value.project.club.clubList =
-          store.getters["project/getMyClubList"]
-        formFields.value.project.club.options = [
-          "선택 안함",
-          ...formFields.value.project.club.clubList.map((club) => club.name),
-        ]
+      } catch (error) {
+        store.commit("ADD_MESSAGES", {
+          text: error.message,
+          type: "error",
+        })
+        router.push({
+          name: "ProjectArticle",
+          params: { projectId: projectId.value },
+        })
       }
     })
 
@@ -350,18 +354,6 @@ export default {
           errors: {},
           validators: [],
         },
-        hostPosition: {
-          key: "hostPosition",
-          backendKey: "hostPosition",
-          label: "팀장 포지션",
-          type: "select",
-          placeholder: "포지션을 선택하세요",
-          options: ["개발자", "디자이너", "기획자"],
-          value: "",
-          notNull: true,
-          errors: {},
-          validators: [],
-        },
         developer: {
           key: "developer",
           backendKey: "developerMaxCount",
@@ -394,29 +386,6 @@ export default {
         },
       },
     })
-
-    // 팀장 포지션 watch -> maxCount 수정
-    watch(
-      () => formFields.value.member.hostPosition.value,
-      (newVal, oldVal) => {
-        // 수정일 때 최초
-        if (projectId.value && !oldVal) {
-          console.log(newVal)
-          console.log(oldVal)
-        } else {
-          console.log(newVal)
-          console.log(oldVal)
-          Object.values(formFields.value.member).find(
-            (obj) => obj.label === newVal
-          ).value += 1
-          if (oldVal) {
-            Object.values(formFields.value.member).find(
-              (obj) => obj.label === oldVal
-            ).value -= 1
-          }
-        }
-      }
-    )
 
     // club 선택 안하면 -> 공개 범위에서 '클럽 멤버에게만 공개' disabled
     const haveClub = ref(false)
@@ -529,24 +498,16 @@ export default {
       try {
         if (e.target.innerText === "수정") {
           console.log(projectId.value)
-          console.log(formData)
           const resData = await store.dispatch("project/updateProject", {
             formData,
             projectId: projectId.value,
           })
-          alert(`임시: ${resData}`)
+          console.log(resData)
+          alert(`임시: 수정 완료`)
           router.push({
             name: "ProjectArticle",
             params: { projectId: projectId.value },
           })
-        } else {
-          console.log(formData)
-          const projectId = await store.dispatch(
-            "project/createProject",
-            formData
-          )
-          alert(`임시: ${projectId}번 글 생성 성공`)
-          router.push({ name: "ProjectArticle", params: { projectId } })
         }
       } catch (error) {
         alert(error.message)
@@ -554,6 +515,7 @@ export default {
     }
 
     return {
+      ready,
       projectId,
       formFields,
       haveClub,

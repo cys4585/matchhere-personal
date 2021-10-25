@@ -47,7 +47,7 @@
 <script>
 import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 export default {
   name: "MemberItem",
   props: ["memberInfo"],
@@ -68,6 +68,7 @@ export default {
     const myAuth = ref("")
     const route = useRoute()
     const store = useStore()
+    const router = useRouter()
 
     onMounted(async () => {
       // console.log(props.memberInfo)
@@ -115,6 +116,7 @@ export default {
           authority,
         })
         console.log(resData)
+        if (authority === "소유자") router.go()
       } catch (error) {
         currentAuthority.value = props.memberInfo.authority
         store.commit("ADD_MESSAGE", {

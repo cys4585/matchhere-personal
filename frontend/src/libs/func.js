@@ -76,6 +76,20 @@ export class InputFormFieldMaker {
         this.validators = []
         break
       }
+      case "projectName": {
+        this.label = "프로젝트 이름"
+        this.type = "string"
+        this.placeholder = "11월까지 진행하는 사이드 프로젝트"
+        this.validators = [requiredValidator]
+        break
+      }
+      case "schedule": {
+        this.label = "일정"
+        this.type = "string"
+        this.placeholder = "ex) 주말 10시 - 18시 / 평일 논의"
+        this.validators = []
+        break
+      }
       default: {
         this.label = label
         this.type = type
