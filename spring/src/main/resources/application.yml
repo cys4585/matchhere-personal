@@ -9,7 +9,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true&MVCC=TRUE
+    url: jdbc:mysql://matchhere-mysql:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&MVCC=TRUE
     username: root
     password: madmin
   servlet:
@@ -37,7 +37,7 @@ spring:
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
-      group-id: test-group
+      group-id: spring-boot-test
       auto-offset-reset: earliest
   #  kafka:
 #    consumer:
@@ -50,14 +50,14 @@ spring:
 #      bootstrap-servers: localhost:29092
 #      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
 #      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-  redis:
-    lettuce:
-        pool:
-          max-active: 10
-          max-idle: 10
-          min-idle: 2
-    host: redis
-    port: 6379
+#  redis:
+#    lettuce:
+#        pool:
+#          max-active: 10
+#          max-idle: 10
+#          min-idle: 2
+#    host: redis
+#    port: 6379
   mail:
     host: smtp.gmail.com
     port: 587
