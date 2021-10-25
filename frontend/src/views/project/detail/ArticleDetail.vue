@@ -8,14 +8,11 @@
         <div class="grid gap-2">
           <div class="flex gap-2">
             <span
+              v-for="tag in article.tags"
+              :key="tag"
               class="rounded bg-gray-100 text-gray-600 font-bold text-sm"
               style="padding: 2px 8px"
-              >정보공유</span
-            >
-            <span
-              class="rounded bg-gray-100 text-gray-600 font-bold text-sm"
-              style="padding: 2px 8px"
-              >BE</span
+              >{{ tag }}</span
             >
           </div>
           <p class="flex gap-2 items-center">

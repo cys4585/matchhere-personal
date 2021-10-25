@@ -3,8 +3,9 @@
     <div class="article-info">
       <div>{{ article.title }}</div>
       <div class="flex gap-2">
-        <span class="tag"> 회의록 </span>
-        <span class="tag"> 임시 </span>
+        <span class="tag" v-for="tag in article.tags" :key="tag">{{
+          tag
+        }}</span>
       </div>
       <div class="other-info">
         <div class="user">
