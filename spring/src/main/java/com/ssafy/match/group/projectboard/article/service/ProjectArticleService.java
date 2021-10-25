@@ -14,6 +14,8 @@ import com.ssafy.match.group.projectboard.article.repository.ProjectArticleTagRe
 import com.ssafy.match.group.projectboard.article.repository.ProjectContentRepository;
 import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
 import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
+import com.ssafy.match.group.projectboard.comment.entity.ProjectArticleComment;
+import com.ssafy.match.group.projectboard.comment.repository.ProjectArticleCommentRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
@@ -36,6 +38,7 @@ public class ProjectArticleService {
     private final ProjectContentRepository projectContentRepository;
     private final MemberRepository memberRepository;
     private final ProjectArticleTagRepository projectArticleTagRepository;
+    private final ProjectArticleCommentRepository projectArticleCommentRepository;
 
     @Transactional(readOnly = true)
     public ProjectArticleInfoResponseDto getProjectArticleDetail(Long articleId) {
@@ -125,9 +128,11 @@ public class ProjectArticleService {
     public HttpStatus deleteArticle(Long articleId) {
         ProjectArticle projectArticle = findProjectArticle(articleId);
         ProjectContent projectContent = findProjectContent(projectArticle);
+        deleteAllByProjectArticle(projectArticle);
+        projectArticleTagRepository.deleteAllTagsByProjectArticle(projectArticle);
         projectContentRepository.delete(projectContent);
         projectArticleRepository.delete(projectArticle);
-        projectArticleTagRepository.deleteAllTagsByProjectArticle(projectArticle);
+
         return HttpStatus.OK;
     }
 
@@ -160,6 +165,10 @@ public class ProjectArticleService {
     public ProjectContent findProjectContent(ProjectArticle projectArticle) {
         return projectContentRepository.getByProjectArticle(projectArticle)
             .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
+    }
+
+    public void deleteAllByProjectArticle(ProjectArticle projectArticle){
+        projectArticleCommentRepository.deleteAllByProjectArticle(projectArticle);
     }
 
     // 게시글 태그 추가
