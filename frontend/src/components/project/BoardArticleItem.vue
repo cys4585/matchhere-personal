@@ -50,6 +50,7 @@ export default {
     const editButtonActivate = ref(false)
 
     const handleMousedown = (e) => {
+      console.log(props.article)
       const innerText = e.target.innerText
       if (innerText === "more_vert" || innerText === "수정") return
       emit("click:item", props.article.articleId)

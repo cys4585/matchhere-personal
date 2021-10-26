@@ -81,15 +81,15 @@ export default {
 
     const submit = async () => {
       try {
-        const resData = await store.dispatch("project/applyForParticipation", {
+        await store.dispatch("project/applyForParticipation", {
           reqForm: formFields.value,
           projectId: props.projectId,
         })
-        store.commit("ADD_MESSAGES", { text: resData })
+        store.commit("ADD_MESSAGE", { text: "참가 신청 완료! 😎" })
       } catch (error) {
-        store.commit("ADD_MESSAGES", {
-          text: error.message,
-          type: "error",
+        store.commit("ADD_MESSAGE", {
+          text: "이미 참가 신청을 했어요 😅",
+          type: "warning",
         })
       }
       emit("close")

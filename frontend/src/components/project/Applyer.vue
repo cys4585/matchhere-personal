@@ -54,8 +54,8 @@ export default {
           (item) => item.memberId !== applyer.memberId
         )
       } catch (error) {
-        store.commit("ADD_MESSAGES", {
-          text: error.message,
+        store.commit("ADD_MESSAGE", {
+          text: `${error.message} 😢`,
           type: "error",
         })
       }
