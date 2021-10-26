@@ -4,7 +4,9 @@ package com.ssafy.match.chat.service;
 import com.ssafy.match.chat.dao.ChatHistoryDao;
 import com.ssafy.match.chat.dto.ChatMessageInterface;
 import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
+import com.ssafy.match.chat.dto.ChatRoomUserInterface;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
+import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.entity.ChatRoom;
 import com.ssafy.match.chat.repository.ChatMessageRepository;
@@ -88,6 +90,20 @@ public class ChatService {
         List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoom(chatRoom);
         ChatMessagesResponseDto chatMessagesResponseDto = ChatMessagesResponseDto.of(chatMessages);
         return chatMessagesResponseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomsResponseDto getChattingRooms() throws Exception {
+        Long user_id = SecurityUtil.getCurrentMemberId();
+        if (memberRepository.existsById(user_id)) {
+            throw new Exception("잘못된 토큰입니다!");
+        }
+        List<ChatRoomUserInterface> chatRooms1 = chatRoomRepository.findAllOthersByUser_id(user_id);
+        List<ChatRoomUserInterface> chatRooms2 = chatRoomRepository.findAllOthersByUser_id(user_id);
+        chatRooms1.addAll(chatRooms2);
+        ChatRoomsResponseDto chatRoomsResponseDto = ChatRoomsResponseDto.of(chatRooms1);
+        return chatRoomsResponseDto;
+
     }
 
     private String getRoomId(Long myid, Long id) {
