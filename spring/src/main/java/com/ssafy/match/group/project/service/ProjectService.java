@@ -15,6 +15,7 @@ import com.ssafy.match.group.project.dto.request.ProjectUpdateRequestDto;
 import com.ssafy.match.group.project.entity.Project;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
@@ -28,7 +29,7 @@ public interface ProjectService {
 
     HttpStatus delete(Long projectId);
 
-    List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable);
+    Page<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable);
 
 //    List<ProjectSimpleInfoResponseDto> getRecommendationProject(Pageable pageable);
 
