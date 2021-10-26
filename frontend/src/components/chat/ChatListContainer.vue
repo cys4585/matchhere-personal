@@ -1,5 +1,5 @@
 <template>
-  <div>ChatListContainer</div>
+  <div class="flex-1">ChatListContainer</div>
 </template>
 
 <script>

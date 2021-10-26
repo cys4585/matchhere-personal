@@ -41,7 +41,7 @@ export default {
 }
 
 main {
-  @apply flex-1;
+  @apply flex-1 flex flex-col;
 }
 
 .divider {
