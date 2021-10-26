@@ -36,7 +36,7 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getHistory(id));
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ChatRoomResponseDto>> getChattingRooms() throws Exception {
         return ResponseEntity.ok(chatService.getChattingRooms());
     }
