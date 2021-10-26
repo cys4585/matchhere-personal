@@ -31,12 +31,12 @@ public class ChatController {
         chatService.sendMessage(chatMessageRequestDto, token, id);
     }
 
-    @GetMapping("/history/{id}")
+    @GetMapping("/chatroom/{id}")
     public ResponseEntity<List<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") Long id) throws Exception {
         return ResponseEntity.ok(chatService.getHistory(id));
     }
 
-    @GetMapping
+    @GetMapping("/chatroom")
     public ResponseEntity<List<ChatRoomResponseDto>> getChattingRooms() throws Exception {
         return ResponseEntity.ok(chatService.getChattingRooms());
     }
