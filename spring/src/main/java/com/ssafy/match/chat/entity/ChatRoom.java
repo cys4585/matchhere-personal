@@ -25,15 +25,10 @@ public class ChatRoom {
 
 //    private int unReadCount;
 
-
     @Builder
-    public ChatRoom(String id, Long user_id, String user_nickname, String user_pic, Long other_id, String other_nickname, String other_pic) {
+    public ChatRoom(String id, Member user, Member other) {
         this.id = id;
-        this.user_id = user_id;
-        this.user_nickname = user_nickname;
-        this.user_pic = user_pic;
-        this.other_id = other_id;
-        this.other_nickname = other_nickname;
-        this.other_pic = other_pic;
+        this.user = user;
+        this.other = other;
     }
 }
