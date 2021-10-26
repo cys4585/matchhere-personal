@@ -137,8 +137,7 @@ public class Study {
         this.isActive = false;
     }
 
-    public void update(StudyUpdateRequestDto dto, Club club, DBFile coverPic){
-        this.coverPic = coverPic;
+    public void update(StudyUpdateRequestDto dto, Club club){
         this.name = dto.getName();
         this.studyProgressState = StudyProgressState.from(dto.getStudyProgressState());
         this.publicScope = PublicScope.from(dto.getPublicScope());

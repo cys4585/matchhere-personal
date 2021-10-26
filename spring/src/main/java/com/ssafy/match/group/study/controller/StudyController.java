@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +48,11 @@ public class StudyController {
     @GetMapping("/infoforupdate/{studyId}")
     @ApiOperation(value = "스터디 업데이트를 위한 정보",
         notes = "<strong>받은 스터디 id</strong>로 해당 스터디 정보 + 수정을 위한 정보(사용자 클럽 리스트, 지역, 상태 리스트 등")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "정보 조회"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND"),
+    })
     public ResponseEntity<StudyInfoForUpdateResponseDto> getInfoForUpdate(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getInfoForUpdateStudy(studyId));
     }
@@ -62,10 +68,16 @@ public class StudyController {
         return ResponseEntity.ok(studyService.create(dto));
     }
 
-    @PatchMapping("/{studyId}")
+    @PutMapping("/{studyId}")
     @ApiOperation(value = "스터디 수정", notes = "<strong>받은 스터디 정보</strong>를 사용해서 스터디를 수정한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "수정된 정보"),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_OVER"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND")
+    })
     public ResponseEntity<StudyInfoResponseDto> update(@PathVariable("studyId") Long studyId,
-        @RequestBody StudyUpdateRequestDto dto) throws Exception {
+        @Valid @RequestBody StudyUpdateRequestDto dto) {
         return ResponseEntity.ok(studyService.update(studyId, dto));
     }
 
@@ -101,8 +113,11 @@ public class StudyController {
     @GetMapping("/{studyId}")
     @ApiOperation(value = "스터디 상세정보 조회",
         notes = "<strong>받은 스터디 id</strong>로 해당 스터디 정보 + 수정을 위한 정보(사용자 클럽 리스트, 지역, 상태 리스트 등")
-    public ResponseEntity<StudyInfoResponseDto> getOneStudy(@PathVariable("studyId") Long studyId)
-        throws Exception {
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "스터디 상세 정보"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nDELETED_STUDY"),
+    })
+    public ResponseEntity<StudyInfoResponseDto> getOneStudy(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getOneStudy(studyId));
     }
 

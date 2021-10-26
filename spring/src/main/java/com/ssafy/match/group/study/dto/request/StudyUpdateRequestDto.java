@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,9 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyUpdateRequestDto {
 
-    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
-    @ApiParam(value = "사진 고유 uuid")
-    private String uuid;
+//    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
+//    @ApiParam(value = "사진 고유 uuid")
+//    private String uuid;
 
     @ApiModelProperty(example = "매칭 스터디")
     @ApiParam(value = "스터디명", required = true)
@@ -37,6 +38,7 @@ public class StudyUpdateRequestDto {
 
     @ApiModelProperty(example = "3")
     @ApiParam(value = "스터디 제한 인원", required = true)
+    @NotNull
     private int maxCount;
 
     @ApiModelProperty(example = "프로젝트 진행 중")

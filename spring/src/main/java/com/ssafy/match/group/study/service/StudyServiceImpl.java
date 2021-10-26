@@ -2,7 +2,6 @@ package com.ssafy.match.group.study.service;
 
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
-import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.common.exception.CustomException;
@@ -36,7 +35,6 @@ import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -124,7 +122,7 @@ public class StudyServiceImpl implements StudyService {
         // 권한 체크
         checkAuthority(member, study);
 
-        study.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
+        study.update(dto, findClub(dto.getClubId()));
         addTopics(study, dto.getTopics());
 
         return getOneStudy(studyId);
@@ -179,11 +177,8 @@ public class StudyServiceImpl implements StudyService {
     public StudyInfoResponseDto getOneStudy(Long studyId) {
         Study study = findStudy(studyId);
 
-        // 스터디의 주인은 비공개된 스터디라도 확인 가능
-        if (!SecurityUtil.getCurrentMemberId().equals(study.getMember().getId())
-            && !study.getPublicScope().equals(PublicScope.PUBLIC)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
-        }
+        // 비공개 스터디에는 소속된 멤버 + 초대링크를 가진 사람들만 조회하는 로직 필요
+
         // 삭제된 스터디일 경우
         if (!study.getIsActive()) {
             throw new CustomException(ErrorCode.DELETED_STUDY);
@@ -199,10 +194,6 @@ public class StudyServiceImpl implements StudyService {
         if (topics.isEmpty()) {
             return;
         }
-//        for (Map.Entry<String, String> entry : topics.entrySet()) {
-//            Level level = Level.from(entry.getValue());
-//            studyTopicRepository.save(StudyTopic.of(study, entry.getKey(), level));
-//        }
         for (String topic : topics) {
             studyTopicRepository.save(StudyTopic.of(study, topic));
         }
