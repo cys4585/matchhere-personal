@@ -4,6 +4,7 @@ import auth from "@/store/modules/auth"
 import project from "@/store/modules/project"
 import member from "@/store/modules/member"
 import file from "@/store/modules/file"
+import chat from "@/store/modules/chat"
 
 export default createStore({
   state: {
@@ -23,5 +24,5 @@ export default createStore({
     },
   },
   actions: {},
-  modules: { auth, project, member, file },
+  modules: { auth, project, member, file, chat },
 })

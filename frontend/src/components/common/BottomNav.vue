@@ -12,7 +12,7 @@
       <span class="material-icons">group</span>
       <span class="label">그룹</span>
     </router-link>
-    <router-link to="/">
+    <router-link :to="{ name: 'ChatList' }">
       <span class="material-icons">chat</span>
       <span class="label">채팅</span>
     </router-link>

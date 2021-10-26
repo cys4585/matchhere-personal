@@ -5,6 +5,7 @@ import Home from "@/views/Home.vue"
 import AuthLayout from "@/layouts/Auth.vue"
 import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
+import ChatLayout from "@/layouts/Chat.vue"
 
 import Profile from "@/views/Profile.vue"
 import EditProfile from "@/views/EditProfile.vue"
@@ -26,7 +27,9 @@ import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArti
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
 import FindPassword from "@/views/auth/FindPassword.vue"
-// import { useStore } from "vuex"
+
+import ChatList from "@/views/chat/ChatList.vue"
+import ChatDetail from "@/views/chat/ChatDetail.vue"
 
 const routes = [
   {
@@ -101,15 +104,6 @@ const routes = [
         path: "detail/:projectId",
         name: "ProjectDetail",
         component: ProjectDetail,
-        // beforeEnter: async (to, from, next) => {
-        //   const store = useStore()
-        //   const myAuth = await store.dispatch(
-        //     "project/getAuthority",
-        //     to.params.projectId
-        //   )
-        //   console.log(myAuth)
-        //   console.log(from, next)
-        // },
         children: [
           {
             path: "manage",
@@ -159,6 +153,22 @@ const routes = [
             component: ArticleEditForm,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/chat",
+    component: ChatLayout,
+    children: [
+      {
+        path: "chatlist",
+        name: "ChatList",
+        component: ChatList,
+      },
+      {
+        path: ":email",
+        name: "ChatDetail",
+        component: ChatDetail,
       },
     ],
   },
