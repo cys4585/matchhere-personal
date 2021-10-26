@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-between items-center">
     <div class="flex gap-2 items-center">
-      <img :src="profilePic" alt="" class="w-8 h-8" />
+      <img :src="memberInfo.coverPicUri || profilePic" alt="" class="w-8 h-8" />
       <p class="text-gray-900 font-medium">{{ memberInfo.name }}</p>
     </div>
     <div class="flex gap-2">
@@ -71,7 +71,7 @@ export default {
     const router = useRouter()
 
     onMounted(async () => {
-      // console.log(props.memberInfo)
+      console.log(props.memberInfo)
       const resData = await store.dispatch(
         "project/getAuthority",
         route.params.projectId

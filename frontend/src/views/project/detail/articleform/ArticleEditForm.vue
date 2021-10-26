@@ -137,9 +137,16 @@ export default {
           name = "BoardArticleList"
           boardId = boardList.value[1].id
         }
+        store.commit("ADD_MESSAGE", {
+          text: "게시글을 수정했습니다! 😊",
+        })
         router.push({ name, params: { projectId: projectId.value, boardId } })
       } catch (error) {
         console.log(error)
+        store.commit("ADD_MESSAGE", {
+          text: "게시글을 수정에 실패했어요 😢",
+          type: "error",
+        })
       }
     }
 
@@ -160,9 +167,16 @@ export default {
           name = "BoardArticleList"
           boardId = boardList.value[1].id
         }
+        store.commit("ADD_MESSAGE", {
+          text: "게시글을 삭제했습니다! 😊",
+        })
         router.push({ name, params: { projectId: projectId.value, boardId } })
       } catch (error) {
         console.log(error)
+        store.commit("ADD_MESSAGE", {
+          text: "게시글을 삭제에 실패했어요 😢",
+          type: "error",
+        })
       }
     }
 

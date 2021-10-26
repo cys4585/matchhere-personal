@@ -62,7 +62,11 @@
               </span>
             </p>
             <p class="flex gap-2 items-center">
-              <img :src="profilePic" alt="" class="w-6 h-6" />
+              <img
+                :src="projectInfo.host.coverPicUri || profilePic"
+                alt=""
+                class="w-6 h-6 rounded-full"
+              />
               <span class="text-xs text-gray-500">{{
                 projectInfo.host.name
               }}</span>
@@ -80,19 +84,11 @@
               >
                 <img
                   class="w-4 h-4"
-                  :src="require('@/assets/images/noStack.png')"
+                  :src="tech.imgUri || require('@/assets/images/noStack.png')"
                   alt="로고"
                 />
                 <span> {{ tech.name }}</span>
               </p>
-              <!-- <p class="flex gap-2 items-center">
-                <img :src="javaPic" alt="" class="w-4 h-4" />
-                <span>java</span>
-              </p>
-              <p class="flex gap-2 items-center">
-                <img :src="pythonPic" alt="" class="w-4 h-4" />
-                <span>python</span>
-              </p> -->
             </div>
           </div>
           <div class="content">
@@ -126,7 +122,11 @@
                     v-for="developer in projectInfo.developers"
                     :key="developer.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="developer.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       developer.name
                     }}</span>
@@ -154,7 +154,11 @@
                     v-for="planner in projectInfo.planners"
                     :key="planner.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="planner.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       planner.name
                     }}</span>
@@ -182,7 +186,11 @@
                     v-for="designer in projectInfo.designers"
                     :key="designer.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="designer.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       designer.name
                     }}</span>
@@ -266,6 +274,7 @@ export default {
           "project/getProject",
           projectId
         )
+        console.log(projectInfo.value)
         const projectProgressState = projectInfo.value.projectProgressState
         if (projectProgressState === "프로젝트 준비 중") {
           projectProgressStateColorClass.value = "bg-green-100 text-green-600"
