@@ -7,6 +7,9 @@ import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,21 +36,29 @@ public class StudyController {
 
     @GetMapping("/myclublist")
     @ApiOperation(value = "스터디 생성을 위한 정보", notes = "스터디 생성을 위해 사용자의 클럽 정보를 조회")
-    public ResponseEntity<StudyInfoForCreateResponseDto> getInfoForCreate() throws Exception {
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "클럽 정보 조회"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND"),
+    })
+    public ResponseEntity<StudyInfoForCreateResponseDto> getInfoForCreate() {
         return ResponseEntity.ok(studyService.getInfoForCreate());
     }
 
     @GetMapping("/infoforupdate/{studyId}")
     @ApiOperation(value = "스터디 업데이트를 위한 정보",
         notes = "<strong>받은 스터디 id</strong>로 해당 스터디 정보 + 수정을 위한 정보(사용자 클럽 리스트, 지역, 상태 리스트 등")
-    public ResponseEntity<StudyInfoForUpdateResponseDto> getInfoForUpdate(@PathVariable("studyId") Long studyId)
-        throws Exception {
+    public ResponseEntity<StudyInfoForUpdateResponseDto> getInfoForUpdate(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getInfoForUpdateStudy(studyId));
     }
 
     @PostMapping
     @ApiOperation(value = "스터디 생성", notes = "<strong>받은 스터디 정보</strong>를 사용해서 스터디을 생성한다.")
-    public ResponseEntity<StudyInfoResponseDto> create(@RequestBody StudyCreateRequestDto dto) throws Exception {
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "생성한 스터디 정보"),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_OVER\nMEMBER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 404, message = "CITY_NOT_FOUND\nMEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nFILE_NOT_FOUND\nAUTHORITY_NOT_FOUND"),
+    })
+    public ResponseEntity<StudyInfoResponseDto> create(@Valid @RequestBody StudyCreateRequestDto dto) {
         return ResponseEntity.ok(studyService.create(dto));
     }
 

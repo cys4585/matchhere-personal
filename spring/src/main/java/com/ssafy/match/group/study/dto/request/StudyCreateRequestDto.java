@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,9 +34,6 @@ public class StudyCreateRequestDto {
     @ApiParam(value = "스터디 작업 시간")
     private String schedule;
 
-    @ApiModelProperty(name = "maxCount", example = "3")
-    private int maxCount;
-
     @ApiModelProperty(example = "스터디 준비 중")
     @ApiParam(value = "스터디 진행 상태", required = true)
     @NotBlank
@@ -58,6 +56,11 @@ public class StudyCreateRequestDto {
     @ApiParam(value = "공개 범위", required = true)
     @NotBlank
     private String publicScope;
+
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "모집 정원")
+    @NotNull
+    private int maxCount;
 
     @ApiModelProperty(example = "모집 중")
     @ApiParam(value = "모집 상태", required = true)

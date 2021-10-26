@@ -26,6 +26,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -74,7 +75,7 @@ public class Study {
     private LocalDateTime modifiedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "host_id")
+    @JoinColumn(name = "host_id", nullable = false)
     private Member member;
 
     private String schedule;
@@ -87,6 +88,7 @@ public class Study {
     private int maxCount;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private GroupCity city;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -95,7 +97,7 @@ public class Study {
 
     private String bio;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
     public void plusViewCount() {
