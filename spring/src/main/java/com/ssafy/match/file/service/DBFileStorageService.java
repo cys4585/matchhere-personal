@@ -1,11 +1,19 @@
 package com.ssafy.match.file.service;
 
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.file.dto.DeleteFileRequestDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.exception.FileStorageException;
 import com.ssafy.match.file.exception.MyFileNotFoundException;
 import com.ssafy.match.file.repository.DBFileRepository;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.project.repository.ProjectRepository;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.repository.StudyRepository;
 import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Delete;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class DBFileStorageService {
 
-    @Autowired
-    private DBFileRepository dbFileRepository;
+    private final DBFileRepository dbFileRepository;
+    private final ProjectRepository projectRepository;
+    private final StudyRepository studyRepository;
 
     @Transactional
     public DBFile storeFile(MultipartFile file) {
@@ -57,7 +67,21 @@ public class DBFileStorageService {
     }
 
     @Transactional
-    public HttpStatus deleteFile(String uuid){
+    public HttpStatus projectDeleteFile(DeleteFileRequestDto dto){
+        Project project = projectRepository.findById(dto.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PROJECT_NOT_FOUND));
+        String uuid = project.getCoverPic().getId();
+        project.initialCoverPic();
+        dbFileRepository.deleteById(uuid);
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus studyDeleteFile(DeleteFileRequestDto dto){
+        Study study = studyRepository.findById(dto.getId())
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
+        String uuid = study.getCoverPic().getId();
+        study.initialCoverPic();
         dbFileRepository.deleteById(uuid);
         return HttpStatus.OK;
     }

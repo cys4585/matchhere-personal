@@ -229,6 +229,10 @@ public class Project {
         this.isActive = active;
     }
 
+    public void initialCoverPic(){
+        this.coverPic = null;
+    }
+
     public void update(ProjectUpdateRequestDto dto, Club club) {
         this.name = dto.getName();
         this.projectProgressState = ProjectProgressState.from(dto.getProjectProgressState());
