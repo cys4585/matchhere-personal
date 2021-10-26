@@ -126,7 +126,7 @@ const updatePicture = async (projectId, uuid) => {
 }
 
 const viewCount = async (projectId) => {
-  const res = await http.get(`/project/view-count/${projectId}`)
+  const res = await http.put(`/project/view-count/${projectId}`)
   return res.data
 }
 export default {
