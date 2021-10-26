@@ -50,7 +50,7 @@ export default {
     },
     async getProject(context, projectId) {
       const projectInfo = await ProjectAPI.getProject(projectId)
-      console.log(projectInfo)
+      // console.log(projectInfo)
       return projectInfo
     },
     async getInfoForUpdate(context, projectId) {

@@ -257,7 +257,7 @@ export default {
       const projectId = route.params.projectId
       try {
         const viewedProject = localStorage.getItem(`hit${projectId}`)
-        console.log(viewedProject)
+        console.log("이미 본 프로젝트인가 -> ", viewedProject)
         if (!viewedProject) {
           await store.dispatch("project/viewCount", projectId)
           localStorage.setItem(`hit${projectId}`, true)
@@ -299,15 +299,22 @@ export default {
         const formData = new FormData()
         formData.append("file", files[0])
         const picInfo = await store.dispatch("file/uploadFile", formData)
-        console.log(picInfo)
+        // console.log(picInfo)
         const pjtPicInfo = await store.dispatch("project/updatePicture", {
           projectId: route.params.projectId,
           uuid: picInfo.id,
         })
-        console.log(pjtPicInfo)
+        // console.log(pjtPicInfo)
         projectInfo.value.coverPicUri = pjtPicInfo.download_uri
+        store.commit("ADD_MESSAGE", {
+          text: "커버 사진을 바꿨어요! 😎",
+        })
       } catch (error) {
         console.log(error.message)
+        store.commit("ADD_MESSAGE", {
+          text: "변경에 실패했어요 😢",
+          type: "error",
+        })
       }
     }
 
