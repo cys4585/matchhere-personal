@@ -260,6 +260,17 @@ export default {
         throw Error("사진 변경에 실패했습니다")
       }
     },
+    async viewCount(context, projectId) {
+      try {
+        console.log("조회수 증가 요청")
+        const resData = await ProjectAPI.viewCount(projectId)
+        console.log(resData)
+        console.log("증가 성공")
+      } catch (error) {
+        console.log(error.response)
+        console.log("증가 실패")
+      }
+    },
   },
   getters: {
     getMyClubList(state) {

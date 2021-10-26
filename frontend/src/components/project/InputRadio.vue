@@ -9,7 +9,7 @@
           :id="field.idList[index]"
           :value="option"
           @change="handleChange"
-          :checked="index === 0"
+          :checked="option === field.value"
         />
         <label :for="field.idList[index]" class="text-gray-900 font-medium">{{
           option

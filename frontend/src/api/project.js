@@ -124,6 +124,11 @@ const updatePicture = async (projectId, uuid) => {
   const res = await http.put(`/project/cover-pic/${projectId}/${uuid}`)
   return res.data
 }
+
+const viewCount = async (projectId) => {
+  const res = await http.get(`/project/view-count/${projectId}`)
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -148,4 +153,5 @@ export default {
   changeAuthority,
   changeRole,
   updatePicture,
+  viewCount,
 }

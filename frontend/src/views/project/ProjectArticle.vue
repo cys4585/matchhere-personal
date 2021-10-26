@@ -254,22 +254,37 @@ export default {
     const recruitmentStateColorClass = ref()
 
     onMounted(async () => {
-      projectInfo.value = await store.dispatch(
-        "project/getProject",
-        route.params.projectId
-      )
-      const projectProgressState = projectInfo.value.projectProgressState
-      if (projectProgressState === "프로젝트 준비 중") {
-        projectProgressStateColorClass.value = "bg-green-100 text-green-600"
-      } else if (projectProgressState === "프로젝트 진행 중 ") {
-        projectProgressStateColorClass.value = "bg-blue-100 text-blue-600"
-      } else {
-        projectProgressStateColorClass.value = "bg-red-100 text-red-600"
+      const projectId = route.params.projectId
+      try {
+        const viewedProject = localStorage.getItem(`hit${projectId}`)
+        console.log(viewedProject)
+        if (!viewedProject) {
+          await store.dispatch("project/viewCount", projectId)
+          localStorage.setItem(`hit${projectId}`, true)
+        }
+        projectInfo.value = await store.dispatch(
+          "project/getProject",
+          projectId
+        )
+        const projectProgressState = projectInfo.value.projectProgressState
+        if (projectProgressState === "프로젝트 준비 중") {
+          projectProgressStateColorClass.value = "bg-green-100 text-green-600"
+        } else if (projectProgressState === "프로젝트 진행 중") {
+          projectProgressStateColorClass.value = "bg-blue-100 text-blue-600"
+        } else {
+          projectProgressStateColorClass.value = "bg-red-100 text-red-600"
+        }
+        recruitmentStateColorClass.value =
+          projectInfo.value.recruitmentState === "모집 중"
+            ? "bg-green-100 text-green-600"
+            : "bg-red-100 text-red-600"
+      } catch (error) {
+        console.log(error.message)
+        store.commit("ADD_MESSAGE", {
+          text: error.message,
+          type: "error",
+        })
       }
-      recruitmentStateColorClass.value =
-        projectInfo.value.recruitmentState === "모집 중"
-          ? "bg-green-100 text-green-600"
-          : "bg-red-100 text-red-600"
     })
 
     const fileInputEl = ref(null)

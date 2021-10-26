@@ -92,6 +92,9 @@ export default {
           role,
         })
         console.log(resData)
+        store.commit("ADD_MESSAGE", {
+          text: `${resData} 👍`,
+        })
       } catch (error) {
         // console.log(currentRole.value)
         // console.log(props.memberInfo.role)
@@ -99,7 +102,7 @@ export default {
         // console.log(currentRole.value)
 
         store.commit("ADD_MESSAGE", {
-          text: error.message,
+          text: `${error.message} 😢`,
           type: "error",
         })
       }
@@ -120,7 +123,7 @@ export default {
       } catch (error) {
         currentAuthority.value = props.memberInfo.authority
         store.commit("ADD_MESSAGE", {
-          text: error.message,
+          text: `${error.message} 😢`,
           type: "error",
         })
       }

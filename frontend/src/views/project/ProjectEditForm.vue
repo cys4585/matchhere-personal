@@ -102,7 +102,7 @@ import TechStackListItem from "@/components/common/TeckStackListItem.vue"
 import SelectFormField from "@/components/project/SelectFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
 import InputRadio from "@/components/project/InputRadio.vue"
-import { computed, onBeforeMount, ref } from "@vue/runtime-core"
+import { computed, onBeforeMount, onMounted, ref } from "@vue/runtime-core"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import { InputFormFieldMaker } from "@/libs/func"
@@ -129,7 +129,14 @@ export default {
         const resAuth = await store.dispatch("project/getAuthority", projectId)
         if (resAuth !== "소유자")
           router.push({ name: "ProjectArticle", params: { projectId } })
-
+        // =============================================================
+      } catch (error) {
+        console.log(error.message)
+      }
+    })
+    onMounted(async () => {
+      const projectId = route.params.projectId
+      try {
         const resProjectInfo = await store.dispatch(
           "project/getInfoForUpdate",
           projectId
@@ -154,9 +161,8 @@ export default {
         resProjectInfo.techstacks.forEach(
           (item) => (techstacks.value.value[item.name] = item.level)
         )
-        // =============================================================
       } catch (error) {
-        console.log(error.message)
+        console.log(error)
       }
     })
 
@@ -169,7 +175,7 @@ export default {
       type: "radio",
       idList: ["will", "ing", "done"],
       stateList: ["프로젝트 준비 중", "프로젝트 진행 중", "프로젝트 종료"],
-      value: "프로젝트 준비 중",
+      value: "",
     })
     // 기술스택
     const techstacks = ref({
@@ -283,8 +289,8 @@ export default {
         designerMaxCount: designerMaxCount.value.value,
         plannerMaxCount: plannerMaxCount.value.value,
       }
-      console.log(projectId)
-      console.log(formData)
+      // console.log(projectId)
+      // console.log(formData)
       try {
         const resData = await store.dispatch("project/updateProject", {
           formData,
@@ -292,7 +298,7 @@ export default {
         })
         console.log(resData)
         store.commit("ADD_MESSAGE", {
-          text: "수정이 완료되었습니다",
+          text: "수정이 완료되었습니다. 😎",
         })
         router.push({
           name: "ProjectArticle",
@@ -300,6 +306,10 @@ export default {
         })
       } catch (error) {
         alert(error.message)
+        store.commit("ADD_MESSAGE", {
+          text: "수정에 실패했습니다. 😢",
+          type: "error",
+        })
       }
     }
 
