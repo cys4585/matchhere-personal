@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -170,7 +171,7 @@ public class ProjectController {
 
     @GetMapping
     @ApiOperation(value = "모든 프로젝트 조회", notes = "프로젝트 종료가 아닌 // 모집 중 // 전체 공개 // 를 만족하는 프로젝트들을 작성일 기준 내림차순으로 받는다")
-    public ResponseEntity<List<ProjectSimpleInfoResponseDto>> getAllProject(
+    public ResponseEntity<Page<ProjectSimpleInfoResponseDto>> getAllProject(
         @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(projectService.getAllProject(pageable));
     }
@@ -211,7 +212,7 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.changeCoverPic(projectId, uuid), HttpStatus.OK);
     }
 
-    @GetMapping("/view-count/{projectId}")
+    @PutMapping("/view-count/{projectId}")
     @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 id</strong>로 조회수를 증가시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "처리되었습니다."),

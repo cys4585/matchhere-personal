@@ -25,13 +25,15 @@ public class KafkaReceiverService {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
         msg.put("sent_time", message.getSent_time().format(DateTimeFormatter.ISO_DATE_TIME));
-        msg.put("nickname", message.getNickname());
+        msg.put("nickname", message.getSender().getNickname());
         msg.put("content", message.getContent());
-        msg.put("sender_id", message.getSender_id());
+        msg.put("pic_uri", (message.getSender().getCover_pic() == null) ? null : message.getSender().getCover_pic().getDownload_uri());
+        msg.put("sender_id", Long.toString(message.getSender().getId()));
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(msg);
 
+//        this.template.convertAndSend("/room/" + roomId, json);
         this.template.convertAndSend("/room/" + message.getChatRoom().getId(), json);
     }
 

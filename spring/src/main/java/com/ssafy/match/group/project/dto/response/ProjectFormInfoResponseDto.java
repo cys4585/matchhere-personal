@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.dto.response;
 
 import com.ssafy.match.group.project.entity.ProjectApplicationForm;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
@@ -16,17 +17,9 @@ public class ProjectFormInfoResponseDto {
     @ApiParam(value = "프로젝트 id")
     private Long projectId;
 
-    @ApiModelProperty(example = "3")
-    @ApiParam(value = "멤버 id")
-    private Long memberId;
-
-    @ApiModelProperty(example = "박범진")
-    @ApiParam(value = "신청자 이름")
-    private String name;
-
-//    @ApiModelProperty(example = "qjafd@naver.com")
-//    @ApiParam(value = "신청자 이메일")
-//    private String email;
+    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\", \"coverPicUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"]")
+    @ApiParam(value = "작성자 정보(id, name, nickname, email, coverPicUri)")
+    private MemberSimpleInfoResponseDto writer;
 
     @ApiModelProperty(example = "개발자")
     @ApiParam(value = "신청 역할")
@@ -39,9 +32,7 @@ public class ProjectFormInfoResponseDto {
     public static ProjectFormInfoResponseDto from(ProjectApplicationForm form){
         return ProjectFormInfoResponseDto.builder()
             .projectId(form.getCompositeMemberProject().getProject().getId())
-            .memberId(form.getCompositeMemberProject().getMember().getId())
-            .name(form.getName())
-//            .email(form.getCompositeMemberProject().getMember().getEmail())
+            .writer(MemberSimpleInfoResponseDto.from(form.getCompositeMemberProject().getMember()))
             .role(form.getRole())
             .bio(form.getBio())
             .build();

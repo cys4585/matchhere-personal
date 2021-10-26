@@ -1,7 +1,9 @@
 package com.ssafy.match.group.projectboard.comment.dto;
 
 import com.ssafy.match.group.projectboard.comment.entity.ProjectArticleComment;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +16,11 @@ public class ProjectArticleCommentResponseDto {
 
     @ApiModelProperty(name = "id", notes = "댓글의 id")
     private Long id;
-    @ApiModelProperty(notes = "댓글 작성자 이름")
-    private String name;
+
+    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\", \"coverPicUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"]")
+    @ApiParam(value = "작성자 정보(id, name, nickname, email, coverPicUri)")
+    private MemberSimpleInfoResponseDto writer;
+
     @ApiModelProperty(name = "content", notes = "댓글 내용")
     private String content;
     @ApiModelProperty(name = "isModified", notes = "수정 여부(수정되었으면 댓글에 수정됨 표시)")
@@ -37,7 +42,7 @@ public class ProjectArticleCommentResponseDto {
     public static ProjectArticleCommentResponseDto from(ProjectArticleComment pac){
         return ProjectArticleCommentResponseDto.builder()
             .id(pac.getId())
-            .name(pac.getMember().getName())
+            .writer(MemberSimpleInfoResponseDto.from(pac.getMember()))
             .content(pac.getContent())
             .isModified(pac.getIsModified())
             .isDeleted(pac.getIsDeleted())
