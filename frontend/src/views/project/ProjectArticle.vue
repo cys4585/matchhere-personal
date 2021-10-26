@@ -1,6 +1,19 @@
 <template>
   <div v-if="projectInfo">
-    <div class="mt-4 flex justify-center h-40">
+    <div class="img-wrapper">
+      <img :src="projectInfo.coverPicUri || 'https://picsum.photos/80'" />
+      <button class="photo-button" @click="handleClickPhoto">
+        <span class="material-icons"> add_photo_alternate </span>
+      </button>
+      <input
+        type="file"
+        accept="image/*"
+        class="hidden"
+        ref="fileInputEl"
+        @change="handleFileChange"
+      />
+    </div>
+    <!-- <div class="mt-4 flex justify-center h-40">
       <img
         v-if="projectInfo.coverPicUri"
         :src="projectInfo.coverPicUri"
@@ -19,7 +32,7 @@
           @change="handleFileChange"
         />
       </div>
-    </div>
+    </div> -->
     <div class="container">
       <section class="project-section">
         <header>
@@ -223,7 +236,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "@vue/runtime-core"
+import { onMounted, ref } from "@vue/runtime-core"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import ApplyForParticipationModal from "@/components/project/ApplyForParticipationModal.vue"
@@ -239,27 +252,6 @@ export default {
     const projectInfo = ref()
     const projectProgressStateColorClass = ref()
     const recruitmentStateColorClass = ref()
-
-    const fileFormField = reactive({
-      key: "coverpic",
-      id: "",
-      file_name: "",
-      file_type: "",
-      download_uri: "",
-    })
-    const handleFileChange = async (e) => {
-      const files = e.target.files || e.dataTransfer.files
-      if (!files.length) {
-        fileFormField.id = ""
-        return
-      }
-      console.log("asjkldfhasdjklfh")
-      const formData = new FormData()
-      formData.append("file", files[0])
-      const resData = await store.dispatch("file/uploadFile2", formData)
-      console.log(resData)
-      fileFormField.id = resData.uuid
-    }
 
     onMounted(async () => {
       projectInfo.value = await store.dispatch(
@@ -280,6 +272,30 @@ export default {
           : "bg-red-100 text-red-600"
     })
 
+    const fileInputEl = ref(null)
+    const handleClickPhoto = () => {
+      fileInputEl.value.click()
+    }
+
+    const handleFileChange = async (e) => {
+      try {
+        const files = e.target.files || e.dataTransfer.files
+        if (!files.length) return
+        const formData = new FormData()
+        formData.append("file", files[0])
+        const picInfo = await store.dispatch("file/uploadFile", formData)
+        console.log(picInfo)
+        const pjtPicInfo = await store.dispatch("project/updatePicture", {
+          projectId: route.params.projectId,
+          uuid: picInfo.id,
+        })
+        console.log(pjtPicInfo)
+        projectInfo.value.coverPicUri = pjtPicInfo.download_uri
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+
     const isApplyModalActivation = ref()
 
     const editProject = () => {
@@ -296,7 +312,6 @@ export default {
     return {
       projectInfo,
       handleFileChange,
-      fileFormField,
       projectProgressStateColorClass,
       recruitmentStateColorClass,
       isApplyModalActivation,
@@ -304,12 +319,33 @@ export default {
       profilePic,
       javaPic,
       pythonPic,
+      handleClickPhoto,
+      fileInputEl,
     }
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.img-wrapper {
+  @apply relative mt-4 flex justify-center h-40 w-full;
+
+  .photo-button {
+    @apply absolute bottom-0 right-0 flex items-center justify-center bg-white rounded-full p-1 transition-all;
+
+    span {
+      @apply text-gray-700 transition-all;
+    }
+
+    &:hover {
+      @apply bg-blue-50;
+      span {
+        @apply text-blue-500;
+      }
+    }
+  }
+}
+
 .project-section {
   @apply pt-6 pb-10 grid gap-10;
 

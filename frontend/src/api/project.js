@@ -119,6 +119,11 @@ const changeRole = async (projectId, memberId, role) => {
   const res = await http.put(`/project/role/${projectId}/${memberId}/${role}`)
   return res.data
 }
+
+const updatePicture = async (projectId, uuid) => {
+  const res = await http.put(`/project/cover-pic/${projectId}/${uuid}`)
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -142,4 +147,5 @@ export default {
   getAuthority,
   changeAuthority,
   changeRole,
+  updatePicture,
 }

@@ -250,6 +250,16 @@ export default {
         throw Error(message)
       }
     },
+    async updatePicture(context, { projectId, uuid }) {
+      console.log(projectId, uuid)
+      try {
+        const resData = await ProjectAPI.updatePicture(projectId, uuid)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        throw Error("사진 변경에 실패했습니다")
+      }
+    },
   },
   getters: {
     getMyClubList(state) {
