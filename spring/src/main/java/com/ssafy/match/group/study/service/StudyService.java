@@ -1,5 +1,6 @@
 package com.ssafy.match.group.study.service;
 
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
@@ -23,7 +24,9 @@ public interface StudyService {
 
     StudyInfoResponseDto create(StudyCreateRequestDto dto);
 
-    StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto) ;
+    StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto);
+
+    DBFileDto changeCoverPic(Long studyId, String uuid);
 
     HttpStatus delete(Long studyId);
 

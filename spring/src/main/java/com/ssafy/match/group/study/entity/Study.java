@@ -141,6 +141,10 @@ public class Study {
         this.coverPic = null;
     }
 
+    public void setCoverPic(DBFile coverPic){
+        this.coverPic = coverPic;
+    }
+
     public void update(StudyUpdateRequestDto dto, Club club){
         this.name = dto.getName();
         this.studyProgressState = StudyProgressState.from(dto.getStudyProgressState());

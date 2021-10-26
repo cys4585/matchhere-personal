@@ -1,5 +1,6 @@
 package com.ssafy.match.group.study.controller;
 
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
@@ -79,6 +80,17 @@ public class StudyController {
     public ResponseEntity<StudyInfoResponseDto> update(@PathVariable("studyId") Long studyId,
         @Valid @RequestBody StudyUpdateRequestDto dto) {
         return ResponseEntity.ok(studyService.update(studyId, dto));
+    }
+
+    @PutMapping("/cover-pic/{studyId}/{uuid}")
+    @ApiOperation(value = "사진 변경", notes = "<strong>받은 스터디 id와 넣을 uuid을 받아</strong>로 사진을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nFILE_NOT_FOUND"),
+    })
+    public ResponseEntity<DBFileDto> changeCoverPic(@PathVariable("studyId") Long studyId,
+        @PathVariable("uuid") String uuid) {
+        return new ResponseEntity<>(studyService.changeCoverPic(studyId, uuid), HttpStatus.OK);
     }
 
     @DeleteMapping("/{studyId}")

@@ -6,12 +6,14 @@ import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
@@ -126,6 +128,19 @@ public class StudyServiceImpl implements StudyService {
         addTopics(study, dto.getTopics());
 
         return getOneStudy(studyId);
+    }
+
+    // 사진 바꾸기
+    @Transactional
+    public DBFileDto changeCoverPic(Long studyId, String uuid){
+        DBFile coverPic = findDBFile(uuid);
+        Study study = findStudy(studyId);
+        study.setCoverPic(coverPic);
+        return getCoverPicUri(studyId);
+    }
+    // 사진 정보만 가져오기
+    public DBFileDto getCoverPicUri(Long studyId) {
+        return DBFileDto.of(findStudy(studyId).getCoverPic());
     }
 
     // 스터디를 업데이트, 삭제할 권한이 있는지 체크
