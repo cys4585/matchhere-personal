@@ -60,9 +60,11 @@ public class ChatService {
 //        } else {
 //            message = chatMessageRequestDto.toChatMessage(user, chatRoom.get());
 //        }
-        Member user = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 토큰입니다!"));
+        ConcurrentHashMap<String, String> concurrentHashMap = tokenProvider.getUserDataFromJwt(token);
+        Long userid = Long.parseLong(concurrentHashMap.get("userid"));
+        Member user = memberRepository.findById(userid).orElseThrow(() -> new NullPointerException("잘못된 사용자 토큰입니다!"));
         Member other = memberRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
-        String roomid = getRoomId(SecurityUtil.getCurrentMemberId(), other.getId());
+        String roomid = getRoomId(userid, other.getId());
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomid);
         ChatMessage message;
 
