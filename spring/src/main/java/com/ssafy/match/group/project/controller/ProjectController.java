@@ -211,7 +211,7 @@ public class ProjectController {
         return new ResponseEntity<>(projectService.changeCoverPic(projectId, uuid), HttpStatus.OK);
     }
 
-    @GetMapping("/view-count/{projectId}")
+    @PutMapping("/view-count/{projectId}")
     @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 프로젝트 id</strong>로 조회수를 증가시킨다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "처리되었습니다."),

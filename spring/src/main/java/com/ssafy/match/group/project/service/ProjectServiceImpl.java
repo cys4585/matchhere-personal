@@ -294,6 +294,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 조회수 증가
+    @Transactional
     public HttpStatus plusViewCount(Long projectId){
         findProject(projectId).plusViewCount();
         return HttpStatus.OK;
