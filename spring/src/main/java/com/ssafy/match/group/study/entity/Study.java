@@ -11,7 +11,6 @@ import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.member.entity.Member;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -49,7 +49,7 @@ public class Study {
     @Size(min = 2, max = 100)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "cover_pic")
     private DBFile coverPic;
 
@@ -135,6 +135,10 @@ public class Study {
 
     public void deActivation(){
         this.isActive = false;
+    }
+
+    public void initialCoverPic(){
+        this.coverPic = null;
     }
 
     public void update(StudyUpdateRequestDto dto, Club club){

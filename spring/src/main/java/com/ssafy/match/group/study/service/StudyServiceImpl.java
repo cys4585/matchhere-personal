@@ -146,6 +146,7 @@ public class StudyServiceImpl implements StudyService {
     public HttpStatus delete(Long studyId) {
         Study study = findStudy(studyId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
+
         checkAuthority(member, study);
         // 스터디 멤버 비활성화
         List<MemberStudy> memberStudies = memberStudyRepository.findMemberRelationInStudy(study);
@@ -153,12 +154,14 @@ public class StudyServiceImpl implements StudyService {
             mem.deActivation();
         }
         // 스터디 Cover 제거
-        if (study.getCoverPic().getId() != null) {
-            dbFileRepository.delete(study.getCoverPic());
+        if (study.getCoverPic() != null) {
+            String uuid = study.getCoverPic().getId();
+            study.initialCoverPic();
+            dbFileRepository.deleteById(uuid);
         }
         // 스터디 주제 제거
         studyTopicRepository.deleteAllByStudy(study);
-        // 스터디 게시판, 게시글, 댓글 삭제 로직
+        // 스터디 게시판, 게시글, 댓글 삭제 정책 회의 후 생성
         study.deActivation();
         return HttpStatus.OK;
     }

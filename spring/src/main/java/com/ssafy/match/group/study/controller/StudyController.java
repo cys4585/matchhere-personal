@@ -82,9 +82,13 @@ public class StudyController {
     }
 
     @DeleteMapping("/{studyId}")
-    @ApiOperation(value = "스터디 삭제", notes = "<strong>받은 스터디 Id</strong>로 스터디와 포함된 멤버관계를 삭제한다.")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("studyId") Long studyId)
-        throws Exception {
+    @ApiOperation(value = "스터디 삭제", notes = "<strong>받은 스터디 Id</strong>로 스터디 관련 정보(멤버 관계, 사진, 주제)를 삭제한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "삭제되었습니다."),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND\nFILE_NOT_FOUND"),
+    })
+    public ResponseEntity<HttpStatus> delete(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.delete(studyId));
     }
 
