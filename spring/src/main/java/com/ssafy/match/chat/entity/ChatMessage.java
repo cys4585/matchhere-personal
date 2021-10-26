@@ -21,7 +21,7 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
-    private Member sender_id;
+    private Member sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
@@ -37,9 +37,9 @@ public class ChatMessage {
 //    private String rawData;
 
     @Builder
-    public ChatMessage(String content, Member sender_id, ChatRoom chatRoom, LocalDateTime sent_time) {
+    public ChatMessage(String content, Member sender, ChatRoom chatRoom, LocalDateTime sent_time) {
         this.content = content;
-        this.sender_id = sender_id;
+        this.sender = sender;
         this.chatRoom = chatRoom;
         this.sent_time = sent_time;
     }
