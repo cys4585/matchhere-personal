@@ -27,7 +27,8 @@ public class MessageSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
-                .setAllowedOriginPatterns("http://localhost:8080", "http://jxy.me")
+                .setAllowedOriginPatterns("*")
+//                .setAllowedOriginPatterns("http://localhost:8080", "http://jxy.me", "http://localhost:80")
                 .withSockJS()
                 .setStreamBytesLimit(512 * 1024)
                 .setHttpMessageCacheSize(1000)
