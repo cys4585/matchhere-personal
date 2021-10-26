@@ -184,9 +184,9 @@ public class ProjectServiceImpl implements ProjectService {
             mem.deactivation();
         }
         // 프로젝트 Cover 제거
-        if (project.getCoverPic().getId() != null) {
-            dbFileRepository.delete(project.getCoverPic());
-        }
+//        if (project.getCoverPic().getId() != null) {
+//            dbFileRepository.delete(project.getCoverPic());
+//        }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
         projectTechstackRepository.deleteAllByProject(project);
         // 프로젝트 비활성화
