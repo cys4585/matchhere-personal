@@ -138,9 +138,17 @@ public class StudyServiceImpl implements StudyService {
         study.setCoverPic(coverPic);
         return getCoverPicUri(studyId);
     }
+    
     // 사진 정보만 가져오기
     public DBFileDto getCoverPicUri(Long studyId) {
         return DBFileDto.of(findStudy(studyId).getCoverPic());
+    }
+
+    // 스터디 조회수 증가
+    @Transactional
+    public HttpStatus plusViewCount(Long studyId){
+        findStudy(studyId).plusViewCount();
+        return HttpStatus.OK;
     }
 
     // 스터디를 업데이트, 삭제할 권한이 있는지 체크
@@ -233,12 +241,6 @@ public class StudyServiceImpl implements StudyService {
         memberStudy.activation();
         study.addMember();
         memberStudyRepository.save(memberStudy);
-    }
-
-    // 조회수 증가
-    public HttpStatus plusViewCount(Long studyId) {
-        findStudy(studyId).plusViewCount();
-        return HttpStatus.OK;
     }
 
     // 스터디 탈퇴

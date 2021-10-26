@@ -20,13 +20,20 @@ import org.springframework.http.HttpStatus;
 
 public interface StudyService {
 
+    // 스터디 생성하려는 사람의 클럽 정보
     StudyInfoForCreateResponseDto getInfoForCreate();
 
+    //스터디 생성
     StudyInfoResponseDto create(StudyCreateRequestDto dto);
 
+    // 스터디 수정
     StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto);
 
+    // 스터디 수정시 사진 변경
     DBFileDto changeCoverPic(Long studyId, String uuid);
+
+    // 조회 수 증가
+    HttpStatus plusViewCount(Long studyId);
 
     HttpStatus delete(Long studyId);
 

@@ -93,6 +93,16 @@ public class StudyController {
         return new ResponseEntity<>(studyService.changeCoverPic(studyId, uuid), HttpStatus.OK);
     }
 
+    @PutMapping("/view-count/{studyId}")
+    @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 스터디 id</strong>로 조회수를 증가시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<String> plusViewCount(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>("처리되었습니다.", studyService.plusViewCount(studyId));
+    }
+
     @DeleteMapping("/{studyId}")
     @ApiOperation(value = "스터디 삭제", notes = "<strong>받은 스터디 Id</strong>로 스터디 관련 정보(멤버 관계, 사진, 주제)를 삭제한다.")
     @ApiResponses({
