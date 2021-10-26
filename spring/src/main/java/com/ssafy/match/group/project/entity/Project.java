@@ -231,8 +231,7 @@ public class Project {
         this.isActive = active;
     }
 
-    public void update(ProjectUpdateRequestDto dto, Club club, DBFile coverPic) {
-        this.coverPic = coverPic;
+    public void update(ProjectUpdateRequestDto dto, Club club) {
         this.name = dto.getName();
         this.projectProgressState = ProjectProgressState.from(dto.getProjectProgressState());
         this.publicScope = PublicScope.from(dto.getPublicScope());

@@ -138,7 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 권한 체크
         getProjectAuthority(member, project);
 
-        project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
+        project.update(dto, findClub(dto.getClubId()));
         addTechstack(project, dto.getTechstacks());
 
         return getOneProject(projectId);
