@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`files` (
   `file_type` VARCHAR(255) NULL DEFAULT NULL,
   `download_uri` VARCHAR(255) NULL,
   PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -64,7 +66,10 @@ CREATE TABLE IF NOT EXISTS `matching`.`member` (
     REFERENCES `matching`.`files` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 46
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -92,7 +97,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`club` (
   CONSTRAINT `fk_club_member1`
     FOREIGN KEY (`host_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -109,7 +116,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_board` (
     REFERENCES `matching`.`club` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -129,7 +138,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`career` (
   CONSTRAINT `FKj3sr8mqtm4j9hh3cdk9514iuy`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -150,7 +161,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`certification` (
   CONSTRAINT `FKean8y31fu1keq8505jsdy4ts7`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -180,7 +193,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`club_application_form` (
   CONSTRAINT `fk_club_application_form_member1`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -201,7 +216,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`education` (
   CONSTRAINT `FKcwpq7xrd9cidl8hxgepm1cju8`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -221,7 +238,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_club` (
   CONSTRAINT `fk_member_club_member1`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -266,7 +285,11 @@ CREATE TABLE IF NOT EXISTS `matching`.`project` (
   CONSTRAINT `fk_project_member1`
     FOREIGN KEY (`host_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 12
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci
+INSERT_METHOD = LAST;
 
 
 -- -----------------------------------------------------
@@ -287,7 +310,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_project` (
   CONSTRAINT `fk_member_project_project1`
     FOREIGN KEY (`project_id`)
     REFERENCES `matching`.`project` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -304,7 +329,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_sns` (
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 17;
+AUTO_INCREMENT = 17
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -341,7 +368,10 @@ CREATE TABLE IF NOT EXISTS `matching`.`study` (
   CONSTRAINT `fk_study_member1`
     FOREIGN KEY (`host_id`)
     REFERENCES `matching`.`member` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -361,7 +391,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_study` (
   CONSTRAINT `fk_member_study_study1`
     FOREIGN KEY (`study_id`)
     REFERENCES `matching`.`study` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -373,7 +405,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`techstack` (
   `img_uri` VARCHAR(255) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4;
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -391,21 +425,22 @@ CREATE TABLE IF NOT EXISTS `matching`.`member_techstack` (
   CONSTRAINT `FKt9pc24oxcu8o9129k92jt7qg7`
     FOREIGN KEY (`techstack_id`)
     REFERENCES `matching`.`techstack` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
 -- Table `matching`.`chat_message`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`chat_message` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `sender_id` BIGINT NOT NULL,
   `sent_time` DATETIME(6) NOT NULL,
   `content` TEXT NULL,
   `is_read` BIT(1) NULL,
   `file_id` VARCHAR(255) NULL DEFAULT NULL,
   `chat_room_id` VARCHAR(255) NOT NULL,
-  `nickname` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_message_member1_idx` (`sender_id` ASC),
   INDEX `fk_chat_message_files2_idx` (`file_id` ASC),
@@ -417,7 +452,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`chat_message` (
     REFERENCES `matching`.`files` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -439,7 +476,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_application_form` (
   CONSTRAINT `fk_project_application_form_project1`
     FOREIGN KEY (`project_id`)
     REFERENCES `matching`.`project` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -458,7 +497,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`project_techstack` (
   CONSTRAINT `fk_project_techstack_techstack1`
     FOREIGN KEY (`techstack_id`)
     REFERENCES `matching`.`techstack` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -468,7 +509,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`refresh_token` (
   `member_id` VARCHAR(255) NOT NULL,
   `value` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`member_id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -498,7 +541,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`study_application_form` (
   CONSTRAINT `fk_study_application_form_study1`
     FOREIGN KEY (`study_id`)
     REFERENCES `matching`.`study` (`id`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
@@ -882,15 +927,9 @@ CREATE TABLE IF NOT EXISTS `matching`.`chat_room` (
   `id` VARCHAR(255) NOT NULL,
   `user_id` BIGINT NOT NULL,
   `other_id` BIGINT NOT NULL,
-  `user_nickname` VARCHAR(10) NOT NULL,
-  `other_nickname` VARCHAR(10) NOT NULL,
-  `user_pic_id` VARCHAR(255) NULL DEFAULT NULL,
-  `other_pic_id` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_chat_room_member1_idx` (`user_id` ASC),
   INDEX `fk_chat_room_member2_idx` (`other_id` ASC),
-  INDEX `fk_chat_room_files1_idx` (`user_pic_id` ASC),
-  INDEX `fk_chat_room_files2_idx` (`other_pic_id` ASC),
   CONSTRAINT `fk_chat_room_member1`
     FOREIGN KEY (`user_id`)
     REFERENCES `matching`.`member` (`id`)
@@ -900,16 +939,6 @@ CREATE TABLE IF NOT EXISTS `matching`.`chat_room` (
     FOREIGN KEY (`other_id`)
     REFERENCES `matching`.`member` (`id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_chat_room_files1`
-    FOREIGN KEY (`user_pic_id`)
-    REFERENCES `matching`.`files` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_chat_room_files2`
-    FOREIGN KEY (`other_pic_id`)
-    REFERENCES `matching`.`files` (`id`)
-    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -917,6 +946,7 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
 
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (1, ".net");
 INSERT INTO `matching`.`techstack` (`id`, `name`) VALUES (2, "2d rendering");

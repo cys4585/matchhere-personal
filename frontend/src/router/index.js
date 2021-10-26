@@ -13,6 +13,7 @@ import EditProfile from "@/views/EditProfile.vue"
 
 import ProjectList from "@/views/project/ProjectList.vue"
 import ProjectForm from "@/views/project/ProjectForm.vue"
+import ProjectEditForm from "@/views/project/ProjectEditForm.vue"
 import ProjectArticle from "@/views/project/ProjectArticle.vue"
 import ProjectDetail from "@/views/project/ProjectDetail.vue"
 import ProjectManage from "@/views/project/detail/manage/ProjectManage.vue"
@@ -166,7 +167,7 @@ const routes = [
       {
         path: "article/:projectId/form",
         name: "ProjectEditForm",
-        component: ProjectForm,
+        component: ProjectEditForm,
       },
       {
         path: "detail/:projectId",

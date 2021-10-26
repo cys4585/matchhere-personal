@@ -6,12 +6,14 @@
     <div class="info">
       <h4>{{ projectInfo.name }}</h4>
       <div class="content">
-        <p class="text-gray-900 text-sm">주요 기술 스택: {{ techStacks }}</p>
+        <p class="text-gray-900 text-sm" v-if="techStacks">
+          주요 기술 스택: {{ techStacks }}
+        </p>
         <div class="flex justify-between">
           <span class="text-xs text-gray-600"
             >지역: {{ projectInfo.city }}</span
           >
-          <span class="text-xs text-gray-600"
+          <span class="text-xs text-gray-600" v-if="projectInfo.period"
             >{{ projectInfo.period }} 까지</span
           >
         </div>
@@ -24,7 +26,11 @@
     <hr />
     <div class="create-info">
       <div class="flex gap-2 items-center">
-        <img :src="profilePic" alt="" class="w-6 h-6" />
+        <img
+          :src="projectInfo.host.coverPicUri || profilePic"
+          alt=""
+          class="w-6 h-6 rounded-full"
+        />
         <div class="flex gap-1">
           <span class="text-gray-900 text-xs">{{ projectInfo.host.name }}</span>
           <span class="text-gray-500 text-xs">

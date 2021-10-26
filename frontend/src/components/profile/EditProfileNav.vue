@@ -65,7 +65,7 @@ nav {
       @apply flex-shrink-0 p-4 font-medium text-gray-400;
 
       &.active {
-        @apply text-gray-900;
+        @apply text-gray-900 font-bold;
       }
     }
   }

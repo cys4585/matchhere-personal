@@ -50,7 +50,7 @@ export default {
     },
     async getProject(context, projectId) {
       const projectInfo = await ProjectAPI.getProject(projectId)
-      console.log(projectInfo)
+      // console.log(projectInfo)
       return projectInfo
     },
     async getInfoForUpdate(context, projectId) {
@@ -248,6 +248,27 @@ export default {
         const { status, message } = error.response.data
         console.log(status)
         throw Error(message)
+      }
+    },
+    async updatePicture(context, { projectId, uuid }) {
+      console.log(projectId, uuid)
+      try {
+        const resData = await ProjectAPI.updatePicture(projectId, uuid)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+        throw Error("사진 변경에 실패했습니다")
+      }
+    },
+    async viewCount(context, projectId) {
+      try {
+        console.log("조회수 증가 요청")
+        const resData = await ProjectAPI.viewCount(projectId)
+        console.log(resData)
+        console.log("증가 성공")
+      } catch (error) {
+        console.log(error.response)
+        console.log("증가 실패")
       }
     },
   },

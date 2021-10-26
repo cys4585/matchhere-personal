@@ -12,6 +12,8 @@ const createProject = async (formData) => {
 }
 
 const updateProject = async (formData, projectId) => {
+  console.log(formData)
+  console.log(projectId)
   const res = await http.put(`/project/${projectId}`, formData)
   return res.data
 }
@@ -117,6 +119,16 @@ const changeRole = async (projectId, memberId, role) => {
   const res = await http.put(`/project/role/${projectId}/${memberId}/${role}`)
   return res.data
 }
+
+const updatePicture = async (projectId, uuid) => {
+  const res = await http.put(`/project/cover-pic/${projectId}/${uuid}`)
+  return res.data
+}
+
+const viewCount = async (projectId) => {
+  const res = await http.put(`/project/view-count/${projectId}`)
+  return res.data
+}
 export default {
   getMyClubList,
   createProject,
@@ -140,4 +152,6 @@ export default {
   getAuthority,
   changeAuthority,
   changeRole,
+  updatePicture,
+  viewCount,
 }

@@ -529,6 +529,7 @@ export default {
       try {
         if (e.target.innerText === "수정") {
           console.log(projectId.value)
+          console.log(formData)
           const resData = await store.dispatch("project/updateProject", {
             formData,
             projectId: projectId.value,
@@ -539,6 +540,7 @@ export default {
             params: { projectId: projectId.value },
           })
         } else {
+          console.log(formData)
           const projectId = await store.dispatch(
             "project/createProject",
             formData

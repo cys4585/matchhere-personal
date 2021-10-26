@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-between items-center">
     <div class="flex gap-2 items-center">
-      <img :src="profilePic" alt="" class="w-8 h-8" />
+      <img :src="memberInfo.coverPicUri || profilePic" alt="" class="w-8 h-8" />
       <p class="text-gray-900 font-medium">{{ memberInfo.name }}</p>
     </div>
     <div class="flex gap-2">
@@ -47,7 +47,7 @@
 <script>
 import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 export default {
   name: "MemberItem",
   props: ["memberInfo"],
@@ -68,9 +68,10 @@ export default {
     const myAuth = ref("")
     const route = useRoute()
     const store = useStore()
+    const router = useRouter()
 
     onMounted(async () => {
-      // console.log(props.memberInfo)
+      console.log(props.memberInfo)
       const resData = await store.dispatch(
         "project/getAuthority",
         route.params.projectId
@@ -91,6 +92,9 @@ export default {
           role,
         })
         console.log(resData)
+        store.commit("ADD_MESSAGE", {
+          text: `${resData} 👍`,
+        })
       } catch (error) {
         // console.log(currentRole.value)
         // console.log(props.memberInfo.role)
@@ -98,7 +102,7 @@ export default {
         // console.log(currentRole.value)
 
         store.commit("ADD_MESSAGE", {
-          text: error.message,
+          text: `${error.message} 😢`,
           type: "error",
         })
       }
@@ -115,10 +119,11 @@ export default {
           authority,
         })
         console.log(resData)
+        if (authority === "소유자") router.go()
       } catch (error) {
         currentAuthority.value = props.memberInfo.authority
         store.commit("ADD_MESSAGE", {
-          text: error.message,
+          text: `${error.message} 😢`,
           type: "error",
         })
       }
