@@ -2,8 +2,13 @@ import ChatAPI from "@/api/chat"
 
 export default {
   namespaced: true,
-  state: {},
-  mutations: {},
+  state: { stompClient: null, targetUserId: null },
+  mutations: {
+    SET_CHAT_MATERIALS(state, { stompClient, targetUserId }) {
+      state.stompClient = stompClient
+      state.targetUserId = targetUserId
+    },
+  },
   actions: {
     async getChatList() {
       try {
@@ -15,6 +20,29 @@ export default {
         console.log(error.response)
       }
     },
+    async getChatRoomInfo(context, email) {
+      try {
+        const resData = await ChatAPI.getChatRoomInfo(email)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
+    async getChatHistory(context, targetUserId) {
+      try {
+        const resData = await ChatAPI.getChatHistory(targetUserId)
+        return resData
+      } catch (error) {
+        console.log(error.response)
+      }
+    },
   },
-  getters: {},
+  getters: {
+    getStompClient(state) {
+      return state.stompClient
+    },
+    getTargetUserId(state) {
+      return state.targetUserId
+    },
+  },
 }

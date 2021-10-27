@@ -19,11 +19,14 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity"
+import { computed, ref } from "@vue/reactivity"
 import { watch } from "@vue/runtime-core"
+import { useStore } from "vuex"
 export default {
   name: "ChatControler",
   setup() {
+    const store = useStore()
+
     const textareaHeight = ref("24px")
     const resize = (e) => {
       const scrollHeight = e.target.scrollHeight
@@ -37,12 +40,26 @@ export default {
       if (content.value === "") textareaHeight.value = "24px"
     })
 
+    const stompClient = computed(() => store.getters["chat/getStompClient"])
+    const targetUserId = computed(() => store.getters["chat/getTargetUserId"])
+
+    const send = (content) => {
+      const token = JSON.parse(localStorage.getItem("token")).accessToken
+      const header = { Authorization: token }
+      const msg = { content }
+
+      stompClient.value.send(
+        `/message/user/${targetUserId.value}`,
+        header,
+        JSON.stringify(msg)
+      )
+    }
+
     const handleEnter = (e) => {
-      console.log(e.keyCode)
       // just Enter
       if (!e.shiftKey) {
         e.preventDefault()
-        console.log(content.value)
+        send(content.value)
         content.value = ""
         // shift + Enter
       } else {
