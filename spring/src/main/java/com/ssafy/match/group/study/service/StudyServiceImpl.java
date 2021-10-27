@@ -138,7 +138,7 @@ public class StudyServiceImpl implements StudyService {
         study.setCoverPic(coverPic);
         return getCoverPicUri(studyId);
     }
-    
+
     // 사진 정보만 가져오기
     public DBFileDto getCoverPicUri(Long studyId) {
         return DBFileDto.of(findStudy(studyId).getCoverPic());
