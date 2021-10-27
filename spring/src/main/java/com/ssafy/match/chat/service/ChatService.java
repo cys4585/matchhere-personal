@@ -151,18 +151,18 @@ public class ChatService {
 
     }
 
-    @Transactional(readOnly = true)
-    public MemberChatRoomResponse getChatroomId(Long id) {
+    @Transactional
+    public MemberChatRoomResponse getChatroomId(String email) {
         Member user = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 토큰입니다!"));
-        Member other = memberRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
+        Member other = memberRepository.findByEmail(email).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
         String roomid = getRoomId(user.getId(), other.getId());
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomid);
         if (chatRoom.isEmpty()) {
             ChatRoom inner_chatroom = createChatRoom(roomid, user, other);
             chatRoomRepository.save(inner_chatroom);
-            return MemberChatRoomResponse.of(inner_chatroom);
+            return MemberChatRoomResponse.of(inner_chatroom, other.getId());
         } else {
-            return MemberChatRoomResponse.of(chatRoom.get());
+            return MemberChatRoomResponse.of(chatRoom.get(), other.getId());
         }
     }
 

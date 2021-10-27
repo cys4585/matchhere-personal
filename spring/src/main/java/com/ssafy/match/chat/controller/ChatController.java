@@ -42,9 +42,9 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getChattingRooms());
     }
 
-    @GetMapping("/member/{id}")
-    public ResponseEntity<MemberChatRoomResponse> getMemberChat(@PathVariable("id") Long id) throws Exception {
-        return ResponseEntity.ok(chatService.getChatroomId(id));
+    @GetMapping("/member/{email}")
+    public ResponseEntity<MemberChatRoomResponse> getMemberChat(@PathVariable("email") String email) throws Exception {
+        return ResponseEntity.ok(chatService.getChatroomId(email));
     }
 
 //    @MessageMapping("/file")
