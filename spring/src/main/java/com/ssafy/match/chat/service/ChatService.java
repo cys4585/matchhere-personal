@@ -9,6 +9,7 @@ import com.ssafy.match.chat.dto.ChatRoomUserInterface;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.dto.response.ChatRoomResponseDto;
 import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
+import com.ssafy.match.chat.dto.response.MemberChatRoomResponse;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.entity.ChatRoom;
 import com.ssafy.match.chat.repository.ChatMessageRepository;
@@ -148,6 +149,21 @@ public class ChatService {
 //        ChatRoomsResponseDto chatRoomsResponseDto = ChatRoomsResponseDto.of(chatRooms1);
 //        return chatRoomsResponseDto;
 
+    }
+
+    @Transactional(readOnly = true)
+    public MemberChatRoomResponse getChatroomId(Long id) {
+        Member user = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 토큰입니다!"));
+        Member other = memberRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
+        String roomid = getRoomId(user.getId(), other.getId());
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomid);
+        if (chatRoom.isEmpty()) {
+            ChatRoom inner_chatroom = createChatRoom(roomid, user, other);
+            chatRoomRepository.save(inner_chatroom);
+            return MemberChatRoomResponse.of(inner_chatroom);
+        } else {
+            return MemberChatRoomResponse.of(chatRoom.get());
+        }
     }
 
     private String getRoomId(Long myid, Long id) {
