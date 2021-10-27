@@ -1,7 +1,6 @@
 package com.ssafy.match.group.study.controller;
 
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
-import com.ssafy.match.group.study.dto.response.InfoForApplyStudyFormResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
@@ -27,19 +26,22 @@ public class StudyApplicationController {
 
     private final StudyService studyService;
 
-    @GetMapping("/infoforcreate/{studyId}")
-    @ApiOperation(value = "신청서 생성을 위한 정보", notes = "<strong>스터디에 가입하기 위한</strong>신청서를 작성하기 위한 정보(전체 기술, 선택할 수 있는 지역 리스트)를 받는다")
+    @GetMapping("/check-apply/{studyId}")
+    @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 스터디에 신청 가능한지 여부(스터디 종료, 삭제, 모집, 이미 가입된 멤버인지 여부 확인)")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청 가능합니다."),
+        @ApiResponse(code = 400, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<Boolean> getInfoForApply(@PathVariable("studyId") Long studyId) {
+    public ResponseEntity<Boolean> checkCanApply(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.checkCanApply(studyId));
     }
 
     @PostMapping("/{studyId}")
     @ApiOperation(value = "스터디 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 스터디에 신청을 한다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 정보"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
     public ResponseEntity<StudyFormInfoResponseDto> applyStudy(@PathVariable("studyId") Long studyId, @RequestBody StudyApplicationRequestDto dto) throws Exception {
         return ResponseEntity.ok(studyService.applyStudy(studyId, dto));
@@ -66,9 +68,11 @@ public class StudyApplicationController {
     @GetMapping("/all/{studyId}")
     @ApiOperation(value = "특정 스터디 모든 신청서 조회", notes = "특정 스터디의 모든 신청서 리스트를 작성일 기준 내림차순으로 받는다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 조회"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
     })
-    public ResponseEntity<List<StudyFormSimpleInfoResponseDto>> getAllStudyForm(@PathVariable("studyId") Long studyId) throws Exception {
+    public ResponseEntity<List<StudyFormSimpleInfoResponseDto>> getAllStudyForm(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getAllStudyForm(studyId));
     }
 

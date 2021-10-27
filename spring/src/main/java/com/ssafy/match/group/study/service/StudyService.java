@@ -65,6 +65,7 @@ public interface StudyService {
 
     StudyFormInfoResponseDto applyStudy(Long studyId, StudyApplicationRequestDto dto);
 
+    // 모든 스터디 신청서 조회
     List<StudyFormSimpleInfoResponseDto> getAllStudyForm(Long studyId);
 
 //    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname);

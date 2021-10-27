@@ -14,24 +14,19 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
-import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
-import com.ssafy.match.group.study.entity.MemberStudy;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
 import com.ssafy.match.group.study.entity.StudyTopic;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
@@ -400,7 +395,7 @@ public class StudyServiceImpl implements StudyService {
             .collect(Collectors.toList());
     }
 
-    // 신청 버튼 클릭시 신청 가능한 인원인지 확인
+    // 신청 버튼 클릭시 신청 가능한 인원인지 확인(조건 위배시 boolean? error?)
     public boolean checkCanApply(Long studyId) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Study study = findStudy(studyId);
@@ -409,6 +404,13 @@ public class StudyServiceImpl implements StudyService {
         if (study.getStudyProgressState().equals(StudyProgressState.FINISH)
             || study.getIsActive().equals(Boolean.FALSE) || study.getRecruitmentState()
             .equals(RecruitmentState.FINISH) || !checkAlreadyJoin(study, member)) {
+            return false;
+        }
+        // 신청 여부
+        CompositeMemberStudy cms = new CompositeMemberStudy(member, study);
+        Optional<StudyApplicationForm> form = studyApplicationFormRepository.findById(cms);
+        if (form.isPresent()) {
+//            throw new CustomException(ErrorCode.ALREADY_APPLY);
             return false;
         }
 
@@ -420,7 +422,8 @@ public class StudyServiceImpl implements StudyService {
         Optional<MemberStudy> ms = memberStudyRepository.findById(
             new CompositeMemberStudy(member, study));
         if (ms.isPresent() && ms.get().getIsActive()) {
-            throw new CustomException(ErrorCode.ALREADY_JOIN);
+//            throw new CustomException(ErrorCode.ALREADY_JOIN);
+            return false;
         }
         return true;
     }
@@ -431,12 +434,6 @@ public class StudyServiceImpl implements StudyService {
         Study study = findStudy(studyId);
 
         CompositeMemberStudy cms = new CompositeMemberStudy(member, study);
-
-        Optional<StudyApplicationForm> form = studyApplicationFormRepository.findById(cms);
-        if (form.isPresent()) {
-            throw new CustomException(ErrorCode.ALREADY_APPLY);
-        }
-
         StudyApplicationForm studyApplicationForm = StudyApplicationForm.of(dto, cms,
             member.getName());
 
@@ -462,7 +459,10 @@ public class StudyServiceImpl implements StudyService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
 
-        return studyApplicationFormRepository.formByStudyId(study);
+        return studyApplicationFormRepository.formByStudyId(study)
+            .stream()
+            .map(StudyFormSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회

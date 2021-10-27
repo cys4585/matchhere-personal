@@ -131,7 +131,7 @@ public class SwaggerConfig {
             .apiInfo(apiInfo)
             .groupName("Study")
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.study"))
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.study.controller"))
 
             // api 필요한 클래스패스 추가하기
             .paths(
