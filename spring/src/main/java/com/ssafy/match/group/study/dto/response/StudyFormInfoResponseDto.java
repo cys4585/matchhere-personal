@@ -1,52 +1,38 @@
 package com.ssafy.match.group.study.dto.response;
 
-import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
+import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-// 신청서 정보 조회
+@Builder
+@AllArgsConstructor
 public class StudyFormInfoResponseDto {
 
     private Long studyId;
+
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "멤버 id")
     private Long memberId;
-    private String email;
-    private String nickname;
-    private String city;
-    private String git;
-    private String twitter;
-    private String facebook;
-    private String backjoon;
-    private List<String> strong;
-    private List<String> knowledgeable;
+
+    @ApiModelProperty(example = "박범진")
+    @ApiParam(value = "신청자 이름")
+    private String name;
+
+    @ApiModelProperty(example = "설명란")
+    @ApiParam(value = "자기 소개")
     private String bio;
-    @ApiModelProperty(name = "fileDownloadUri", example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
-    private String fileDownloadUri;
 
-    public void setFileDownloadUri(DBFile dbFile){
-        if(dbFile == null) return;
-        this.fileDownloadUri = dbFile.getDownload_uri();
+    public static StudyFormInfoResponseDto from(StudyApplicationForm form){
+        return StudyFormInfoResponseDto.builder()
+            .studyId(form.getCompositeMemberStudy().getStudy().getId())
+            .memberId(form.getCompositeMemberStudy().getMember().getId())
+            .name(form.getName())
+            .bio(form.getBio())
+            .build();
     }
 
-    @Builder
-    public StudyFormInfoResponseDto(StudyApplicationForm form, List<String> strong, List<String> knowledgeable){
-        this.studyId = form.getCompositeMemberStudy().getStudy().getId();
-        this.memberId = form.getCompositeMemberStudy().getMember().getId();
-        this.email = form.getCompositeMemberStudy().getMember().getEmail();
-        this.nickname = form.getNickname();
-        this.city = form.getCity().name();
-        this.git = form.getGit();
-        this.twitter = form.getTwitter();
-        this.facebook = form.getFacebook();
-        this.backjoon = form.getBackjoon();
-        this.strong = strong;
-        this.knowledgeable = knowledgeable;
-        this.bio = form.getBio();
-        setFileDownloadUri(form.getDbFile());
-    }
 }

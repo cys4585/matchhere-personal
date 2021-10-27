@@ -1,7 +1,6 @@
 package com.ssafy.match.group.project.controller;
 
 import com.ssafy.match.group.project.dto.request.ProjectApplicationRequestDto;
-import com.ssafy.match.group.project.dto.response.InfoForApplyProjectFormResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormInfoResponseDto;
 import com.ssafy.match.group.project.dto.response.ProjectFormSimpleInfoResponseDto;
 import com.ssafy.match.group.project.service.ProjectService;
@@ -11,11 +10,6 @@ import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

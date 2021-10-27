@@ -18,7 +18,6 @@ public class MemberSimpleInfoResponseDto {
     private Long id;
     private String name;
     private String nickname;
-    private String email;
     @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
     private String coverPicUri;
 
@@ -27,7 +26,6 @@ public class MemberSimpleInfoResponseDto {
             .id(member.getId())
             .name(member.getName())
             .nickname(member.getNickname())
-            .email(member.getEmail())
             .coverPicUri((member.getCover_pic() == null) ? null : member.getCover_pic().getDownload_uri())
             .build();
     }

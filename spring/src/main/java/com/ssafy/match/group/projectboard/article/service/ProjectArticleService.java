@@ -142,6 +142,7 @@ public class ProjectArticleService {
     }
 
     // 프로젝트 게시글 조회수 증가
+    @Transactional
     public HttpStatus plusViewCount(Long projectArticleId) {
         findProjectArticle(projectArticleId).plusViewCount();
         return HttpStatus.OK;

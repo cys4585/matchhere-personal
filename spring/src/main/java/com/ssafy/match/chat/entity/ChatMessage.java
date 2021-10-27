@@ -27,7 +27,8 @@ public class ChatMessage {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    private LocalDateTime sent_time;
+    @Column(name = "sent_time", nullable = false)
+    private LocalDateTime sentTime;
 //    private Boolean is_read;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -37,11 +38,11 @@ public class ChatMessage {
 //    private String rawData;
 
     @Builder
-    public ChatMessage(String content, Member sender, ChatRoom chatRoom, LocalDateTime sent_time) {
+    public ChatMessage(String content, Member sender, ChatRoom chatRoom, LocalDateTime sentTime) {
         this.content = content;
         this.sender = sender;
         this.chatRoom = chatRoom;
-        this.sent_time = sent_time;
+        this.sentTime = sentTime;
     }
 
     //    public ChatMessage(String message, String sender) {
