@@ -14,12 +14,15 @@ import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.entity.ChatRoom;
 import com.ssafy.match.chat.repository.ChatMessageRepository;
 import com.ssafy.match.chat.repository.ChatRoomRepository;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,17 +114,18 @@ public class ChatService {
 //    }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageResponseDto> getHistory(Long id) {
+    public Page<ChatMessageResponseDto> getHistory(Long id, Pageable pageable) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
         String roomid = getRoomId(member.getId(), id);
         ChatRoom chatRoom = chatRoomRepository.findById(roomid).orElseThrow(() -> new NullPointerException("존재하지 않는 채팅방입니다!"));
 //        List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoom(chatRoom);
-        List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoom(chatRoom);
-        List<ChatMessageResponseDto> chatMessageResponseDtos = new ArrayList<>();
-        for (ChatMessage chatMessage:chatMessages) {
-            chatMessageResponseDtos.add(ChatMessageResponseDto.of(chatMessage));
-        }
-        return chatMessageResponseDtos;
+        Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoom(chatRoom, pageable);
+        return chatMessages.map(m -> ChatMessageResponseDto.of(m));
+//        Page<ChatMessageResponseDto> chatMessageResponseDtos = new Page<>();
+//        for (ChatMessage chatMessage:chatMessages) {
+//            chatMessageResponseDtos.add(ChatMessageResponseDto.of(chatMessage));
+//        }
+//        return chatMessageResponseDtos;
 //        ChatMessagesResponseDto chatMessagesResponseDto = ChatMessagesResponseDto.of(chatMessages);
 //        return chatMessagesResponseDto;
     }

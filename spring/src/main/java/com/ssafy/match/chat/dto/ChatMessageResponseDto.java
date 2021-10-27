@@ -23,7 +23,7 @@ public class ChatMessageResponseDto {
                 .nickname(chatMessage.getSender().getNickname())
                 .pic_uri((chatMessage.getSender().getCover_pic() == null) ? null : chatMessage.getSender().getCover_pic().getDownload_uri())
                 .sender_id(chatMessage.getSender().getId())
-                .sentTime(chatMessage.getSent_time())
+                .sentTime(chatMessage.getSentTime())
                 .dbFile(DBFileDto.of(chatMessage.getDbFile()))
                 .build();
     }
