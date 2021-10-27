@@ -6,6 +6,7 @@ import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.dto.response.ChatRoomResponseDto;
 import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
+import com.ssafy.match.chat.dto.response.MemberChatRoomResponse;
 import com.ssafy.match.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,11 @@ public class ChatController {
     @GetMapping("/chatroom")
     public ResponseEntity<List<ChatRoomResponseDto>> getChattingRooms() throws Exception {
         return ResponseEntity.ok(chatService.getChattingRooms());
+    }
+
+    @GetMapping("/member/{id}")
+    public ResponseEntity<MemberChatRoomResponse> getMemberChat(@PathVariable("id") Long id) throws Exception {
+        return ResponseEntity.ok(chatService.getChatroomId(id));
     }
 
 //    @MessageMapping("/file")
