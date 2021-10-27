@@ -105,41 +105,49 @@ const routes = [
       {
         path: ":studyId/board",
         component: StudyBoardLayout,
+        props: true,
         children: [
           {
             path: "create",
             name: "StudyBoardCreate",
             component: StudyPage.StudyBoardCreate,
+            props: true,
           },
           {
             path: ":boardId/edit",
             name: "StudyBoardEdit",
             component: StudyPage.StudyBoardEdit,
+            props: true,
           },
           {
             path: ":boardId/articles",
             name: "StudyBoardArticleList",
             component: StudyPage.StudyBoardArticleList,
+            props: true,
           },
           {
             path: ":boardId/articles/create",
             name: "StudyBoardArticleCreate",
             component: StudyPage.StudyBoardArticleCreate,
+            props: true,
           },
           {
             path: ":boardId/articles/:articleId",
             name: "StudyBoardArticleDetail",
             component: StudyPage.StudyBoardArticleDetail,
+            props: true,
           },
           {
             path: ":boardId/articles/:articleId/edit",
             name: "StudyBoardArticleEdit",
             component: StudyPage.StudyBoardArticleEdit,
+            props: true,
           },
           {
             path: "manage",
             name: "StudyManage",
             component: StudyPage.StudyManage,
+            props: true,
           },
         ],
       },

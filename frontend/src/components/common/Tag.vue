@@ -5,6 +5,7 @@
       green: type === 'green',
       red: type === 'red',
       blue: type === 'blue',
+      board: type === 'board',
     }"
   >
     {{ text }}
@@ -33,6 +34,10 @@ export default {
   }
   &.green {
     @apply bg-green-100 text-green-600;
+  }
+
+  &.board {
+    @apply py-0.5 px-2 bg-gray-100 text-gray-600;
   }
 }
 </style>
