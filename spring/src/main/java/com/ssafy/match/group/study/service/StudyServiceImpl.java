@@ -14,6 +14,9 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.entity.CompositeMemberStudy;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
@@ -151,6 +154,34 @@ public class StudyServiceImpl implements StudyService {
     @Transactional
     public HttpStatus plusViewCount(Long studyId) {
         findStudy(studyId).plusViewCount();
+        return HttpStatus.OK;
+    }
+
+    // 권한 변경
+    @Transactional
+    public HttpStatus changeAuthority(Long studyId, Long memberId, String authority) {
+        Study study = findStudy(studyId);
+        Member changer = findMember(SecurityUtil.getCurrentMemberId());
+        Member member = findMember(memberId);
+
+        MemberStudy ms = memberStudyRepository.findById(
+                new CompositeMemberStudy(member, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+
+        MemberStudy msChanger = memberStudyRepository.findById(
+                new CompositeMemberStudy(changer, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        // 권한 변경 권한에 관한 로직
+        // 소유자만이 권한을 변경할 수 있다
+        if (!msChanger.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+        // 소유자는 양도가 가능하다
+        if (authority.equals("소유자")) {
+            study.setMember(member);
+            msChanger.setAuthority(GroupAuthority.관리자);
+        }
+        ms.setAuthority(GroupAuthority.from(authority));
         return HttpStatus.OK;
     }
 

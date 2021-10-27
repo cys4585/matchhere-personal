@@ -37,6 +37,9 @@ public interface StudyService {
     // 조회 수 증가
     HttpStatus plusViewCount(Long studyId);
 
+    // 권한 변경
+    HttpStatus changeAuthority(Long studyId, Long memberId, String authority);
+
     HttpStatus delete(Long studyId);
 
     // 스터디 전체 조회

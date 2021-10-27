@@ -105,6 +105,18 @@ public class StudyController {
         return new ResponseEntity<>("처리되었습니다.", studyService.plusViewCount(studyId));
     }
 
+    @PutMapping("/authority/{studyId}/{memberId}/{authority}")
+    @ApiOperation(value = "권한 변경", notes = "<strong>받은 스터디 id와 변경 시킬 멤버의 id와 변경하고자하는 authority을 받아</strong>로 권한을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "권한이 변경되었습니다."),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "GROUP_AUTHORITY_NOT_FOUND\nMEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND\nROLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> changeAuthority(@PathVariable("studyId") Long studyId,
+        @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
+        return new ResponseEntity<>("권한이 변경되었습니다.", studyService.changeAuthority(studyId, memberId, authority));
+    }
+
     @DeleteMapping("/{studyId}")
     @ApiOperation(value = "스터디 삭제", notes = "<strong>받은 스터디 Id</strong>로 스터디 관련 정보(멤버 관계, 사진, 주제)를 삭제한다.")
     @ApiResponses({
