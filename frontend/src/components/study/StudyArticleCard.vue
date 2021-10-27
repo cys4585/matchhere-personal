@@ -1,7 +1,8 @@
 <template>
-  <div
+  <router-link
     class="study-card"
     :class="{ small }"
+    :to="{ name: 'StudyArticle', params: { studyId: 1 } }"
     @mousedown="handleMousedown"
     @mouseup="handleMouseup"
   >
@@ -35,7 +36,7 @@
         <span class="material-icons">more_vert</span>
       </button>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -71,7 +72,11 @@ export default {
 
 <style lang="scss" scoped>
 .study-card {
-  @apply rounded-md overflow-hidden shadow-md w-full flex-shrink-0 select-none;
+  @apply inline-block rounded-md overflow-hidden shadow-md w-full flex-shrink-0 select-none bg-white;
+
+  &:hover {
+    @apply bg-blue-50;
+  }
 
   &.small {
     @apply w-80;

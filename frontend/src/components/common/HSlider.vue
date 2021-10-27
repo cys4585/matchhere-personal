@@ -85,7 +85,7 @@ export default {
 
 <style lang="scss" scoped>
 .slider {
-  @apply overflow-hidden -mx-4 px-4 py-2;
+  @apply overflow-hidden -mx-4 px-4 py-2 cursor-pointer;
 
   &::-webkit-scrollbar {
     @apply hidden;
