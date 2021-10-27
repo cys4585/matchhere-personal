@@ -32,6 +32,8 @@ public interface StudyService {
     // 스터디 수정시 사진 변경
     DBFileDto changeCoverPic(Long studyId, String uuid);
 
+    DBFileDto getCoverPicUri(Long studyId);
+
     // 조회 수 증가
     HttpStatus plusViewCount(Long studyId);
 

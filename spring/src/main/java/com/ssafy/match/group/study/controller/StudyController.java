@@ -174,13 +174,23 @@ public class StudyController {
     }
 
     @GetMapping("/member/{studyId}")
-    @ApiOperation(value = "스터디 구성원", notes = "<strong>받은 스터디 Id</strong>로 스터디 관리의 구성원 조회")
+    @ApiOperation(value = "스터디 구성원 조회", notes = "<strong>받은 스터디 Id</strong>로 스터디 관리의 구성원 조회")
     @ApiResponses({
         @ApiResponse(code = 200, message = "스터디 구성원 리스트"),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
     })
     public ResponseEntity<List<MemberSimpleInfoResponseDto>> getMembersInStudy(@PathVariable("studyId") Long studyId) {
         return new ResponseEntity<>(studyService.getMembersInStudy(studyId), HttpStatus.OK);
+    }
+
+    @GetMapping("/cover-pic/{studyId}")
+    @ApiOperation(value = "스터디 사진 정보", notes = "<strong>받은 스터디 id</strong>로 스터디 사진을 가져온다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "다운로드 uri"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<DBFileDto> getCoverPicUri(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getCoverPicUri(studyId), HttpStatus.OK);
     }
 
 }
