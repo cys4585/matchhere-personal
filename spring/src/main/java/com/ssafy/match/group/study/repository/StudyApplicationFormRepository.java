@@ -19,10 +19,10 @@ public interface StudyApplicationFormRepository extends
     List<StudyFormSimpleInfoResponseDto> formByStudyId(@Param("study") Study study);
 
     // 닉네임으로 신청서 조회
-    @Query("select p from StudyApplicationForm p "
-        + "where p.compositeMemberStudy.study = :study "
-        + "and p.nickname like %:nickname% order by p.createDate desc")
-    List<StudyApplicationForm> allFormByStudyNickname(@Param("study") Study study, @Param("nickname") String nickname);
+//    @Query("select p from StudyApplicationForm p "
+//        + "where p.compositeMemberStudy.study = :study "
+//        + "and p.nickname like %:nickname% order by p.createDate desc")
+//    List<StudyApplicationForm> allFormByStudyNickname(@Param("study") Study study, @Param("nickname") String nickname);
 
     // 신청서 조회
     @Query("select s from StudyApplicationForm s where s.compositeMemberStudy = :cms")
