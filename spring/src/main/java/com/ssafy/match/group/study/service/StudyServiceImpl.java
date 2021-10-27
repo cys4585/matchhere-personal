@@ -195,7 +195,8 @@ public class StudyServiceImpl implements StudyService {
     // 스터디 전체 조회
     public Page<StudySimpleInfoResponseDto> getAllStudy(Pageable pageable) {
         return studyRepository.findAllStudy(StudyProgressState.FINISH, RecruitmentState.RECRUITMENT,
-            PublicScope.PUBLIC, pageable).map(m -> StudySimpleInfoResponseDto.of(m, getStudyTopics(m)));
+                PublicScope.PUBLIC, pageable)
+            .map(m -> StudySimpleInfoResponseDto.of(m, getStudyTopics(m)));
     }
 
     // 스터디 상세 조회
@@ -220,7 +221,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     // 현 사용자의 권한 확인
-    public String getMemberAuthority(Long studyId){
+    public String getMemberAuthority(Long studyId) {
         Study study = findStudy(studyId);
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         List<MemberStudy> mss = memberStudyRepository.findMemberRelationInStudy(study);
@@ -236,7 +237,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     // 스터디 구성원 리스트
-    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId){
+    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId) {
         return memberStudyRepository.findMemberInStudy(findStudy(studyId))
             .stream()
             .map(MemberSimpleInfoResponseDto::from)
@@ -481,19 +482,13 @@ public class StudyServiceImpl implements StudyService {
     public HttpStatus approval(Long studyId, Long memberId) {
         Study study = findStudy(studyId);
         Member member = findMember(memberId);
+        Member approver = findMember(SecurityUtil.getCurrentMemberId());
 
-        checkAlreadyJoin(study, member);
+        if (!checkAlreadyJoin(study, member)) {
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
+        }
 
-        MemberStudy ms = memberStudyRepository.findById(
-                new CompositeMemberStudy(member, study))
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
-        if (!ms.getIsActive()) {
-            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
-        }
-        // 팀원은 신청서를 조회할 권한이 없음
-        if (ms.getAuthority().equals(GroupAuthority.팀원)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
-        }
+        checkAuthorityApprovalReject(approver, study);
 
         addMember(study, member);
         reject(studyId, memberId);
@@ -501,11 +496,15 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-    //     신청서 제거
+    // 신청서 제거
     @Transactional
     public HttpStatus reject(Long studyId, Long memberId) {
+        Member rejector = findMember(SecurityUtil.getCurrentMemberId());
+        Study study = findStudy(studyId);
+        checkAuthorityApprovalReject(rejector, study);
+
         studyApplicationFormRepository.delete(
-            validStudyApplicationForm(findMember(memberId), findStudy(studyId)));
+            validStudyApplicationForm(findMember(memberId), study));
 
         return HttpStatus.OK;
     }
@@ -514,5 +513,19 @@ public class StudyServiceImpl implements StudyService {
         return studyApplicationFormRepository
             .findById(new CompositeMemberStudy(member, study))
             .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
+    }
+
+    public void checkAuthorityApprovalReject(Member member, Study study) {
+        // 승인자의 권한 체크
+        MemberStudy ms = memberStudyRepository.findById(
+                new CompositeMemberStudy(member, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!ms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
+        // 팀원은 신청서를 조회, 수락, 거절할 권한이 없음
+        if (ms.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
+        }
     }
 }

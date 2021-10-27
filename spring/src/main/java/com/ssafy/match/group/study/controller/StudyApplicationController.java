@@ -43,25 +43,34 @@ public class StudyApplicationController {
         @ApiResponse(code = 200, message = "신청서 정보"),
         @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<StudyFormInfoResponseDto> applyStudy(@PathVariable("studyId") Long studyId, @RequestBody StudyApplicationRequestDto dto) throws Exception {
+    public ResponseEntity<StudyFormInfoResponseDto> applyStudy(
+        @PathVariable("studyId") Long studyId, @RequestBody StudyApplicationRequestDto dto)
+        throws Exception {
         return ResponseEntity.ok(studyService.applyStudy(studyId, dto));
     }
 
     @PostMapping("/approval/{studyId}/{memberId}")
     @ApiOperation(value = "스터디 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_OVER"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> approval(@PathVariable("studyId") Long studyId, @PathVariable("memberId") Long memberId) throws Exception {
+    public ResponseEntity<HttpStatus> approval(@PathVariable("studyId") Long studyId,
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(studyService.approval(studyId, memberId));
     }
 
     @DeleteMapping("{studyId}/{memberId}")
     @ApiOperation(value = "신청서 삭제", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> reject(@PathVariable("studyId") Long studyId, @PathVariable("memberId") Long memberId) throws Exception{
+    public ResponseEntity<HttpStatus> reject(@PathVariable("studyId") Long studyId,
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(studyService.reject(studyId, memberId));
     }
 
@@ -72,16 +81,20 @@ public class StudyApplicationController {
         @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
         @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
     })
-    public ResponseEntity<List<StudyFormSimpleInfoResponseDto>> getAllStudyForm(@PathVariable("studyId") Long studyId) {
+    public ResponseEntity<List<StudyFormSimpleInfoResponseDto>> getAllStudyForm(
+        @PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getAllStudyForm(studyId));
     }
 
     @GetMapping("/one/{studyId}/{memberId}")
     @ApiOperation(value = "특정 신청서 조회", notes = "특정 신청서를 상세 조회한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 조회"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<StudyFormInfoResponseDto> getOneStudyForm(@PathVariable("studyId") Long studyId, @PathVariable("memberId") Long memberId) throws Exception {
+    public ResponseEntity<StudyFormInfoResponseDto> getOneStudyForm(
+        @PathVariable("studyId") Long studyId, @PathVariable("memberId") Long memberId)
+        throws Exception {
         return ResponseEntity.ok(studyService.getOneStudyForm(studyId, memberId));
     }
 
