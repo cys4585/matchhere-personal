@@ -16,8 +16,11 @@ import lombok.Setter;
 public class MemberSimpleInfoResponseDto {
 
     private Long id;
+
     private String name;
+
     private String nickname;
+
     @ApiModelProperty(example = "http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42")
     private String coverPicUri;
 

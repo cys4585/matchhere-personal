@@ -2,6 +2,7 @@ package com.ssafy.match.group.study.service;
 
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
+import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.common.exception.CustomException;
@@ -13,6 +14,9 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
@@ -44,6 +48,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,7 +138,7 @@ public class StudyServiceImpl implements StudyService {
 
     // 사진 바꾸기
     @Transactional
-    public DBFileDto changeCoverPic(Long studyId, String uuid){
+    public DBFileDto changeCoverPic(Long studyId, String uuid) {
         DBFile coverPic = findDBFile(uuid);
         Study study = findStudy(studyId);
         study.setCoverPic(coverPic);
@@ -146,7 +152,7 @@ public class StudyServiceImpl implements StudyService {
 
     // 스터디 조회수 증가
     @Transactional
-    public HttpStatus plusViewCount(Long studyId){
+    public HttpStatus plusViewCount(Long studyId) {
         findStudy(studyId).plusViewCount();
         return HttpStatus.OK;
     }
@@ -189,15 +195,11 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-//    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-//        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, StudyProgressState.PROGRESS, pageable)
-//                .map(StudyInfoResponseDto::of);
-//        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
-//            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
-//            studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
-//        }
-//        return studyInfoResponseDtos;
-//    }
+    // 스터디 전체 조회
+    public Page<StudySimpleInfoResponseDto> getAllStudy(Pageable pageable) {
+        return studyRepository.findAllStudy(StudyProgressState.FINISH, RecruitmentState.RECRUITMENT,
+            PublicScope.PUBLIC, pageable).map(m -> StudySimpleInfoResponseDto.of(m, getStudyTopics(m)));
+    }
 
     // 스터디 상세 조회
     public StudyInfoResponseDto getOneStudy(Long studyId) {
@@ -212,6 +214,12 @@ public class StudyServiceImpl implements StudyService {
         return StudyInfoResponseDto.of(study, getStudyTopics(study),
             findMemberInStudy(study).stream().map(MemberSimpleInfoResponseDto::from).collect(
                 Collectors.toList()));
+    }
+
+    // 현재 프로젝트 간편 정보 리턴
+    public StudySimpleInfoResponseDto getOneSimpleStudy(Long studyId) {
+        Study study = findStudy(studyId);
+        return StudySimpleInfoResponseDto.of(study, getStudyTopics(study));
     }
 
     @Transactional

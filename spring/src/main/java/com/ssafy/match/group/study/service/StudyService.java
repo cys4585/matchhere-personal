@@ -1,19 +1,18 @@
 package com.ssafy.match.group.study.service;
 
 import com.ssafy.match.file.dto.DBFileDto;
-import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
-import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
-import com.ssafy.match.group.study.dto.response.InfoForApplyStudyFormResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.member.entity.Member;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,9 +36,14 @@ public interface StudyService {
 
     HttpStatus delete(Long studyId);
 
-//    Page<StudyInfoResponseDto> getAllStudy(Pageable pageable);
+    // 스터디 전체 조회
+    Page<StudySimpleInfoResponseDto> getAllStudy(Pageable pageable);
 
+    // 스터디 상세 조회
     StudyInfoResponseDto getOneStudy(Long studyId);
+
+    // 현재 프로젝트 간편 정보 리턴
+    StudySimpleInfoResponseDto getOneSimpleStudy(Long studyId);
 
     StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId);
 

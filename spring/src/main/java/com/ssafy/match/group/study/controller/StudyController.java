@@ -1,11 +1,13 @@
 package com.ssafy.match.group.study.controller;
 
 import com.ssafy.match.file.dto.DBFileDto;
+import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -120,11 +122,15 @@ public class StudyController {
         return ResponseEntity.ok(studyService.removeMe(studyId));
     }
 
-//    @GetMapping
-//    @ApiOperation(value = "모든 스터디 조회", notes = "(isPublic :True, isActive:True)를 만족하는 스터디들을 작성일 기준 내림차순으로 받는다")
-//    public ResponseEntity<Page<StudyInfoResponseDto>> getAllStudy(@PageableDefault(size = 10) @SortDefault(sort = "createDate", direction= Sort.Direction.DESC) Pageable pageable) throws Exception {
-//        return ResponseEntity.ok(studyService.getAllStudy(pageable));
-//    }
+    @GetMapping
+    @ApiOperation(value = "모든 스터디 조회", notes = "스터디 종료가 아닌 // 모집 중 // 전체 공개 // 를 만족하는 스터디들을 작성일 기준 내림차순으로 받는다")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "페이징된 프로젝트 조회"),
+    })
+    public ResponseEntity<Page<StudySimpleInfoResponseDto>> getAllProject(
+        @PageableDefault(size = 10) @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(studyService.getAllStudy(pageable));
+    }
 
 //    @GetMapping("/recommend")
 //    @ApiOperation(value = "모든 스터디 조회", notes = "추천 하는 스터디들을 리턴한다")
@@ -145,6 +151,16 @@ public class StudyController {
     })
     public ResponseEntity<StudyInfoResponseDto> getOneStudy(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getOneStudy(studyId));
+    }
+
+    @GetMapping("/one/simple/{studyId}")
+    @ApiOperation(value = "스터디 간편정보 조회", notes = "<strong>받은 스터디 id</strong>로 스터디 관리 화면의 간편 정보 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "스터디 간편 정보"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nDELETED_STUDY"),
+    })
+    public ResponseEntity<StudySimpleInfoResponseDto> getOneSimpleStudy(@PathVariable("studyId") Long studyId) {
+        return ResponseEntity.ok(studyService.getOneSimpleStudy(studyId));
     }
 
 }

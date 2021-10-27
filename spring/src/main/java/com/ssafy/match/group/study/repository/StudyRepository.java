@@ -20,6 +20,4 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
         @Param("publicScope") PublicScope publicScope,
         Pageable pageable);
 
-//    Page<Study> findByIsActiveAndIsPublicAndStatusIsNot(Boolean isActive, Boolean isPublic, Enum<StudyProgressState> status, Pageable pageable);
-
 }
