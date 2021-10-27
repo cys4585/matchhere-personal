@@ -1,7 +1,6 @@
 package com.ssafy.match.group.study.controller;
 
 import com.ssafy.match.file.dto.DBFileDto;
-import com.ssafy.match.group.project.dto.response.ProjectSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
@@ -9,9 +8,11 @@ import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -125,9 +125,9 @@ public class StudyController {
     @GetMapping
     @ApiOperation(value = "모든 스터디 조회", notes = "스터디 종료가 아닌 // 모집 중 // 전체 공개 // 를 만족하는 스터디들을 작성일 기준 내림차순으로 받는다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "페이징된 프로젝트 조회"),
+        @ApiResponse(code = 200, message = "페이징된 스터디 조회"),
     })
-    public ResponseEntity<Page<StudySimpleInfoResponseDto>> getAllProject(
+    public ResponseEntity<Page<StudySimpleInfoResponseDto>> getAllStudy(
         @PageableDefault(size = 10) @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(studyService.getAllStudy(pageable));
     }
@@ -161,6 +161,26 @@ public class StudyController {
     })
     public ResponseEntity<StudySimpleInfoResponseDto> getOneSimpleStudy(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getOneSimpleStudy(studyId));
+    }
+
+    @GetMapping("/authority/{studyId}")
+    @ApiOperation(value = "현 사용자의 권한 정보", notes = "<strong>받은 스터디 id</strong>로 현 사용자에 대한 권한을 확인한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "소유자, 관리자, 게스트"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<String> getMemberAuthority(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getMemberAuthority(studyId), HttpStatus.OK);
+    }
+
+    @GetMapping("/member/{studyId}")
+    @ApiOperation(value = "스터디 구성원", notes = "<strong>받은 스터디 Id</strong>로 스터디 관리의 구성원 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "스터디 구성원 리스트"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<List<MemberSimpleInfoResponseDto>> getMembersInStudy(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getMembersInStudy(studyId), HttpStatus.OK);
     }
 
 }

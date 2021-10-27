@@ -11,6 +11,7 @@ import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -42,8 +43,13 @@ public interface StudyService {
     // 스터디 상세 조회
     StudyInfoResponseDto getOneStudy(Long studyId);
 
-    // 현재 프로젝트 간편 정보 리턴
+    // 현재 스터디 간편 정보 리턴
     StudySimpleInfoResponseDto getOneSimpleStudy(Long studyId);
+
+    String getMemberAuthority(Long studyId);
+
+    // 스터디 구성원 리스트
+    List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId);
 
     StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId);
 

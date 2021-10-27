@@ -14,6 +14,8 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
@@ -216,10 +218,34 @@ public class StudyServiceImpl implements StudyService {
                 Collectors.toList()));
     }
 
-    // 현재 프로젝트 간편 정보 리턴
+    // 현재 스터디 간편 정보 리턴
     public StudySimpleInfoResponseDto getOneSimpleStudy(Long studyId) {
         Study study = findStudy(studyId);
         return StudySimpleInfoResponseDto.of(study, getStudyTopics(study));
+    }
+
+    // 현 사용자의 권한 확인
+    public String getMemberAuthority(Long studyId){
+        Study study = findStudy(studyId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberStudy> mss = memberStudyRepository.findMemberRelationInStudy(study);
+
+        String authority = "게스트";
+        for (MemberStudy ms : mss) {
+            if (ms.getCompositeMemberStudy().getMember().getId().equals(member.getId())) {
+                authority = ms.getAuthority().toString();
+                break;
+            }
+        }
+        return authority;
+    }
+
+    // 스터디 구성원 리스트
+    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId){
+        return memberStudyRepository.findMemberInStudy(findStudy(studyId))
+            .stream()
+            .map(MemberSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional
