@@ -24,7 +24,7 @@ public class KafkaReceiverService {
     public void receive(ChatMessage message) throws Exception {
         LOGGER.info("message='{}'", message);
         HashMap<String, String> msg = new HashMap<>();
-        msg.put("sent_time", message.getSent_time().format(DateTimeFormatter.ISO_DATE_TIME));
+        msg.put("sent_time", message.getSentTime().format(DateTimeFormatter.ISO_DATE_TIME));
         msg.put("nickname", message.getSender().getNickname());
         msg.put("content", message.getContent());
         msg.put("pic_uri", (message.getSender().getCover_pic() == null) ? null : message.getSender().getCover_pic().getDownload_uri());

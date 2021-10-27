@@ -23,7 +23,7 @@ public class ChatMessageRequestDto {
                 .sender(sender)
 //                .sender_id(concurrentHashMap.get("userid"))
 //                .nickname(concurrentHashMap.get("nickname"))
-                .sent_time(LocalDateTime.now())
+                .sentTime(LocalDateTime.now())
                 .chatRoom(inner_chatroom)
                 .build();
     }
