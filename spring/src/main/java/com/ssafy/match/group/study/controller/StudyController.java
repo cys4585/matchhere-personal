@@ -6,10 +6,13 @@ import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -103,6 +105,18 @@ public class StudyController {
         return new ResponseEntity<>("처리되었습니다.", studyService.plusViewCount(studyId));
     }
 
+    @PutMapping("/authority/{studyId}/{memberId}/{authority}")
+    @ApiOperation(value = "권한 변경", notes = "<strong>받은 스터디 id와 변경 시킬 멤버의 id와 변경하고자하는 authority을 받아</strong>로 권한을 변경시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "권한이 변경되었습니다."),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_CHANGE"),
+        @ApiResponse(code = 404, message = "GROUP_AUTHORITY_NOT_FOUND\nMEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND\nROLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> changeAuthority(@PathVariable("studyId") Long studyId,
+        @PathVariable("memberId") Long memberId, @PathVariable("authority") String authority) {
+        return new ResponseEntity<>("권한이 변경되었습니다.", studyService.changeAuthority(studyId, memberId, authority));
+    }
+
     @DeleteMapping("/{studyId}")
     @ApiOperation(value = "스터디 삭제", notes = "<strong>받은 스터디 Id</strong>로 스터디 관련 정보(멤버 관계, 사진, 주제)를 삭제한다.")
     @ApiResponses({
@@ -120,11 +134,15 @@ public class StudyController {
         return ResponseEntity.ok(studyService.removeMe(studyId));
     }
 
-//    @GetMapping
-//    @ApiOperation(value = "모든 스터디 조회", notes = "(isPublic :True, isActive:True)를 만족하는 스터디들을 작성일 기준 내림차순으로 받는다")
-//    public ResponseEntity<Page<StudyInfoResponseDto>> getAllStudy(@PageableDefault(size = 10) @SortDefault(sort = "createDate", direction= Sort.Direction.DESC) Pageable pageable) throws Exception {
-//        return ResponseEntity.ok(studyService.getAllStudy(pageable));
-//    }
+    @GetMapping
+    @ApiOperation(value = "모든 스터디 조회", notes = "스터디 종료가 아닌 // 모집 중 // 전체 공개 // 를 만족하는 스터디들을 작성일 기준 내림차순으로 받는다")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "페이징된 스터디 조회"),
+    })
+    public ResponseEntity<Page<StudySimpleInfoResponseDto>> getAllStudy(
+        @PageableDefault(size = 10) @SortDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(studyService.getAllStudy(pageable));
+    }
 
 //    @GetMapping("/recommend")
 //    @ApiOperation(value = "모든 스터디 조회", notes = "추천 하는 스터디들을 리턴한다")
@@ -145,6 +163,46 @@ public class StudyController {
     })
     public ResponseEntity<StudyInfoResponseDto> getOneStudy(@PathVariable("studyId") Long studyId) {
         return ResponseEntity.ok(studyService.getOneStudy(studyId));
+    }
+
+    @GetMapping("/one/simple/{studyId}")
+    @ApiOperation(value = "스터디 간편정보 조회", notes = "<strong>받은 스터디 id</strong>로 스터디 관리 화면의 간편 정보 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "스터디 간편 정보"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND\nDELETED_STUDY"),
+    })
+    public ResponseEntity<StudySimpleInfoResponseDto> getOneSimpleStudy(@PathVariable("studyId") Long studyId) {
+        return ResponseEntity.ok(studyService.getOneSimpleStudy(studyId));
+    }
+
+    @GetMapping("/authority/{studyId}")
+    @ApiOperation(value = "현 사용자의 권한 정보", notes = "<strong>받은 스터디 id</strong>로 현 사용자에 대한 권한을 확인한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "소유자, 관리자, 게스트"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<String> getMemberAuthority(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getMemberAuthority(studyId), HttpStatus.OK);
+    }
+
+    @GetMapping("/member/{studyId}")
+    @ApiOperation(value = "스터디 구성원 조회", notes = "<strong>받은 스터디 Id</strong>로 스터디 관리의 구성원 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "스터디 구성원 리스트"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<List<MemberSimpleInfoResponseDto>> getMembersInStudy(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getMembersInStudy(studyId), HttpStatus.OK);
+    }
+
+    @GetMapping("/cover-pic/{studyId}")
+    @ApiOperation(value = "스터디 사진 정보", notes = "<strong>받은 스터디 id</strong>로 스터디 사진을 가져온다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "다운로드 uri"),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<DBFileDto> getCoverPicUri(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>(studyService.getCoverPicUri(studyId), HttpStatus.OK);
     }
 
 }

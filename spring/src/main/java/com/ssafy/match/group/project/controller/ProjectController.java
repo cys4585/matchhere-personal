@@ -235,7 +235,7 @@ public class ProjectController {
     @GetMapping("/authority/{projectId}")
     @ApiOperation(value = "현 사용자의 권한 정보", notes = "<strong>받은 프로젝트 id</strong>로 현 사용자에 대한 권한을 확인한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "다운로드 uri"),
+        @ApiResponse(code = 200, message = "소유자, 관리자, 게스트"),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nPROJECT_NOT_FOUND\nMEMBER_PROJECT_NOT_FOUND"),
     })
     public ResponseEntity<String> getMemberAuthority(@PathVariable("projectId") Long projectId) {
