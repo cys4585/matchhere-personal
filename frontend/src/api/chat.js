@@ -10,8 +10,10 @@ const getChatRoomInfo = async (email) => {
   return res.data
 }
 
-const getChatHistory = async (targetUserId) => {
-  const res = await http.get(`/messages/chatroom/${targetUserId}`)
+const getChatHistory = async (targetUserId, pageNumber, size) => {
+  const res = await http.get(`/messages/chatroom/${targetUserId}`, {
+    params: { page: pageNumber, size },
+  })
   return res.data
 }
 

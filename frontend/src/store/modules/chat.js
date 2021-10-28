@@ -28,9 +28,13 @@ export default {
         console.log(error.response)
       }
     },
-    async getChatHistory(context, targetUserId) {
+    async getChatHistory(context, { targetUserId, pageNumber, size }) {
       try {
-        const resData = await ChatAPI.getChatHistory(targetUserId)
+        const resData = await ChatAPI.getChatHistory(
+          targetUserId,
+          pageNumber,
+          size
+        )
         return resData
       } catch (error) {
         console.log(error.response)

@@ -59,7 +59,10 @@ export default {
       // just Enter
       if (!e.shiftKey) {
         e.preventDefault()
-        send(content.value)
+        if (content.value.trim()) {
+          // console.log(content.value)
+          send(content.value)
+        }
         content.value = ""
         // shift + Enter
       } else {

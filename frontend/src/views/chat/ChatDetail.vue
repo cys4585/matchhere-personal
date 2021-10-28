@@ -1,7 +1,12 @@
 <template>
-  <div class="flex-1 flex flex-col">
-    <ChatHeader />
-    <ChatListContainer :chatList="chatList" :myId="myId" />
+  <div class="flex flex-col h-screen w-screen max-w-screen">
+    <ChatHeader :targetEmail="targetEmail" />
+    <ChatListContainer
+      :chatList="chatList"
+      :myId="myId"
+      @handleScroll="handleGetHistory"
+    />
+    <hr />
     <ChatControler />
   </div>
 </template>
@@ -24,32 +29,53 @@ export default {
     const store = useStore()
 
     const roomId = ref()
+    const targetEmail = ref(route.params.email)
     const targetUserId = ref()
-    const chatList = ref()
+    const chatList = ref([])
     const myId = ref()
+    const currentPage = ref(0)
+    const lastPage = ref()
 
     onMounted(async () => {
       const { email } = route.params
       const resData = await store.dispatch("chat/getChatRoomInfo", email)
       roomId.value = resData.room_id
       targetUserId.value = resData.user_id
-      console.log(resData)
+      // console.log(resData)
 
       myId.value = roomId.value
         .split("-")
         .filter((id) => Number(id) !== targetUserId.value)[0]
 
-      const chatHistory = await store.dispatch(
-        "chat/getChatHistory",
-        targetUserId.value
-      )
-      console.log(chatHistory)
+      const chatHistory = await store.dispatch("chat/getChatHistory", {
+        targetUserId: targetUserId.value,
+        pageNumber: currentPage.value++,
+        size: 20,
+      })
+      // console.log(chatHistory)
+      lastPage.value = chatHistory.totalPages - 1
       chatList.value = chatHistory.content.reverse()
-      console.log(chatList.value)
+      // console.log(chatList.value)
       // 웹소켓 연결
       connection()
     })
     onBeforeUnmount(() => disconnection())
+
+    const handleGetHistory = async () => {
+      // console.log(currentPage.value)
+      if (currentPage.value <= lastPage.value) {
+        const chatHistory = await store.dispatch("chat/getChatHistory", {
+          targetUserId: targetUserId.value,
+          pageNumber: currentPage.value++,
+          size: 10,
+        })
+        // console.log(currentPage.value)
+        // console.log(chatHistory)
+        lastPage.value = chatHistory.totalPages - 1
+        chatList.value = [...chatHistory.content.reverse(), ...chatList.value]
+        // console.log(chatList.value)
+      }
+    }
 
     const stompClient = ref()
     const connection = () => {
@@ -66,8 +92,9 @@ export default {
           console.log("소켓 연결 성공", frame)
           // 구독
           stompClient.value.subscribe(`/room/${roomId.value}`, (msg) => {
-            chatList.value.push(JSON.parse(msg.body))
-            console.log(chatList.value)
+            // chatList.value.push(JSON.parse(msg.body))
+            chatList.value = [...chatList.value, JSON.parse(msg.body)]
+            // console.log(chatList.value)
           })
         },
         (err) => console.log(err)
@@ -86,7 +113,7 @@ export default {
       }
     }
 
-    return { chatList, myId }
+    return { chatList, myId, currentPage, handleGetHistory, targetEmail }
   },
 }
 </script>

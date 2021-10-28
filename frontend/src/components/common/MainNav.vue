@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav v-if="!isChatDetail">
     <div class="nav-center">
       <router-link class="logo" to="/">MatchHere</router-link>
       <div class="navs">
@@ -33,6 +33,7 @@ import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 export default {
   name: "MainNav",
+  props: ["isChatDetail"],
   setup() {
     const store = useStore()
     const router = useRouter()

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1">
+  <div class="flex flex-col gap-1 w-full">
     <div
       v-if="!isContinue"
       class="mt-4 flex gap-2"
@@ -17,16 +17,21 @@
         <p class="text-gray-500 text-sm">어제, 오후 06:01</p>
       </div>
     </div>
-    <span
-      class="border rounded-xl p-2 mx-12"
+    <div
+      class="border-2 rounded-xl py-1 px-2 mx-12 whitespace-pre-line break-all"
+      style="max-width: 250px"
       :class="[
         isMe
           ? 'border-blue-500 rounded-tr-none self-end'
-          : 'border-yellow-400 rounded-tl-none self-start',
+          : 'border-orange-400 rounded-tl-none self-start',
       ]"
     >
-      {{ chatItem.content }}
-    </span>
+      <span
+        class="text-sm"
+        style="font-family: 'Noto Sans KR'"
+        v-html="chatItem.content.replace(/(?:\r\n|\r|\n)/g, '<br />')"
+      ></span>
+    </div>
   </div>
 </template>
 
@@ -35,7 +40,7 @@ export default {
   name: "ChatItem",
   props: ["exChatItemId", "chatItem", "myId"],
   setup(props) {
-    console.log(props)
+    // console.log(props)
     const isContinue =
       String(props.exChatItemId) &&
       String(props.chatItem.sender_id) === String(props.exChatItemId)
