@@ -336,10 +336,17 @@ public class StudyServiceImpl implements StudyService {
         MemberStudy removerms = memberStudyRepository.findById(
                 new CompositeMemberStudy(remover, study))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!removerms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
 
         MemberStudy removedms = memberStudyRepository.findById(
                 new CompositeMemberStudy(removed, study))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!removedms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
+
         // 소유자와 관리자만이 추방 권한을 가짐
         if (removerms.getAuthority().equals(GroupAuthority.팀원)) {
             throw new CustomException(ErrorCode.COMMON_MEMBER_CANNOT_REMOVE);
