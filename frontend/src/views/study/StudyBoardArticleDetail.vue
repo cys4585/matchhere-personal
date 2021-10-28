@@ -31,13 +31,10 @@
     </article>
     <section>
       <h4 class="font-medium mb-2">3개의 댓글</h4>
-      <form @submit.prevent="" class="grid gap-2 mb-6">
-        <textarea
-          class="border rounded w-full resize-none"
-          name="comment"
-        ></textarea>
-        <button class="comment-submit-btn">작성</button>
-      </form>
+      <CommentForm />
+      <div class="comment-list">
+        <CommentListItem />
+      </div>
     </section>
   </div>
 </template>
@@ -45,12 +42,16 @@
 <script>
 import Tag from "@/components/common/Tag.vue"
 import Member from "@/components/common/Member.vue"
+import CommentListItem from "@/components/common/comment/CommentListItem.vue"
+import CommentForm from "@/components/common/comment/CommentForm.vue"
 
 export default {
   name: "StudyBoardArticleDetail",
   components: {
     Tag,
     Member,
+    CommentListItem,
+    CommentForm,
   },
 }
 </script>

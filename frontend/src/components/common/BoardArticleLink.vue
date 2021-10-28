@@ -38,11 +38,7 @@ export default {
 
 <style lang="scss" scoped>
 .article-link {
-  @apply flex p-4 rounded;
-
-  &:hover {
-    @apply bg-blue-50;
-  }
+  @apply flex p-4 rounded-md bg-white shadow-sm;
 
   .article-info {
     @apply flex-1 grid gap-2;
