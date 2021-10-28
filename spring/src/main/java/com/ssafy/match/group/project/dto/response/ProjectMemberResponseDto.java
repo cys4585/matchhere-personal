@@ -1,6 +1,7 @@
 package com.ssafy.match.group.project.dto.response;
 
 import com.ssafy.match.group.project.entity.MemberProject;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.Builder;
@@ -10,17 +11,9 @@ import lombok.Getter;
 @Builder
 public class ProjectMemberResponseDto {
 
-    @ApiModelProperty(example = "3")
-    @ApiParam(value = "멤버 ID")
-    private Long id;
-
-    @ApiModelProperty(example = "박범진")
-    @ApiParam(value = "멤버 이름")
-    private String name;
-
-    @ApiModelProperty(example = "qjawlsqjacks@gmail.com")
-    @ApiParam(value = "멤버 닉네임")
-    private String email;
+    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\", \"coverPicUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"]")
+    @ApiParam(value = "작성자 정보(id, name, nickname, email, coverPicUri)")
+    private MemberSimpleInfoResponseDto member;
 
     @ApiModelProperty(example = "팀원")
     @ApiParam(value = "권한")
@@ -33,9 +26,7 @@ public class ProjectMemberResponseDto {
 
     public static ProjectMemberResponseDto from(MemberProject mp) {
         return ProjectMemberResponseDto.builder()
-            .id(mp.getCompositeMemberProject().getMember().getId())
-            .name(mp.getCompositeMemberProject().getMember().getName())
-            .email(mp.getCompositeMemberProject().getMember().getEmail())
+            .member(MemberSimpleInfoResponseDto.from(mp.getCompositeMemberProject().getMember()))
             .authority(mp.getAuthority().toString())
             .role(mp.getRole())
             .build();

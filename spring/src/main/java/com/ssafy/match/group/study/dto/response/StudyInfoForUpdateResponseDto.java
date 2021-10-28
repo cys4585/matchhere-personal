@@ -1,116 +1,103 @@
 package com.ssafy.match.group.study.dto.response;
 
-import com.ssafy.match.file.entity.DBFile;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
-import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.Lob;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @ApiModel(value = "스터디 수정 정보", description = "스터디의  수정을 위한 정보 Response Dto Class")
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 public class StudyInfoForUpdateResponseDto {
 
-    @ApiModelProperty(name = "name", example = "알고리즘 스터디")
-    @ApiParam(value = "스터디명", required = true)
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "스터디 Id")
+    private Long id;
+
+    @ApiModelProperty(example = "["
+        + "\"id\" : 97534f05-7e7f-425d-ac3e-aae8acee8a42, "
+        + "\"file_name\" : \"썸네일\", "
+        + "\"file_type\" : \"img\", "
+        + "\"download_uri\" : \"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"]")
+    @ApiParam(value = "스터디 썸네일 정보")
+    private DBFileDto coverPic;
+
+    @ApiModelProperty(example = "알고리즘 스터디")
+    @ApiParam(value = "스터디명")
     private String name;
 
-    @ApiModelProperty(name = "schedule", example = "매주 화, 수 6시")
-    @ApiParam(value = "작업 시간", required = true)
+    @ApiModelProperty(example = "[{\"name\" : \"OS\"}, {\"name\" : \"DB\"}]")
+    @ApiParam(value = "스터디 주제 정보")
+    private List<StudyTopicResponseDto> topics;
+
+    @ApiModelProperty(example = "매주 화, 수 6시")
+    @ApiParam(value = "작업 시간")
     private String schedule;
 
-    @ApiModelProperty(name = "period", example = "7")
-    @ApiParam(value = "기간(주 단위)", required = true)
-    private int period;
-
-    @ApiModelProperty(name = "host", example = "{\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\"}")
-    @ApiParam(value = "스터디장 정보(id, name, nickname)", required = true)
-    private MemberSimpleInfoResponseDto host;
-
-    @ApiModelProperty(name = "memberCount", example = "3")
-    @ApiParam(value = "현재 인원", required = true)
+    @ApiModelProperty(example = "3")
+    @ApiParam(value = "현재 인원")
     private int memberCount;
 
     @ApiModelProperty(name = "maxCount", example = "3")
-    @ApiParam(value = "최대 인원", required = true)
     private int maxCount;
 
-    @ApiModelProperty(name = "isPublic", example = "false")
-    @ApiParam(value = "공개 비공개", required = true)
-    private Boolean isPublic;
+    @ApiModelProperty(example = "스터디 진행 중")
+    @ApiParam(value = "스터디 진행 상태")
+    private String studyProgressState;
 
-    @ApiModelProperty(name = "isParticipate", example = "false")
-    @ApiParam(value = "참여 가능 여부", required = true)
-    private Boolean isParticipate;
-
-    @ApiModelProperty(name = "city", example = "구미")
-    @ApiParam(value = "지역", required = true)
+    @ApiModelProperty(example = "경기")
+    @ApiParam(value = "지역")
     private String city;
 
-    @ApiModelProperty(name = "status", example = "모집중, 진행중, 종료됨")
-    @ApiParam(value = "스터디 상태", required = true)
-    private String status;
-
-    @ApiModelProperty(name = "clubId", example = "{\"id\": 3, \"name\": \"SSAFY\"}")
+    @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto club;
+    private ClubSimpleInfoResponseDto currentClub;
 
-    @ApiModelProperty(name = "data", example = "사진을 보이기 위한 바이트")
-    @Lob // DBFile 객체 반환시 InvalidDefinitionException: No serializer found for class
-    private byte[] data;
+    @ApiModelProperty(example = "[{\"clubId\": 1, \"clubName\": \"첫 클럽\"}, {\"clubId\": 2, \"clubName\": \"두번째 클럽\"}]")
+    @ApiParam(value = "소유자가 속해있는 클럽 목록")
+    private List<ClubSimpleInfoResponseDto> clubs;
 
-    @ApiModelProperty(name = "modifyDate", example = "2021-09-06 06:57:37.667537")
-    @ApiParam(value = "마지막 수정일")
-    private LocalDateTime modifyDate;
-
-    @ApiModelProperty(name = "bio", example = "매칭 스터디입니다.")
-    @ApiParam(value = "스터디 소개", required = true)
+    @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
+    @ApiParam(value = "프로젝트 소개")
     private String bio;
 
-    @ApiModelProperty(name = "studyTechstack", example = "[\"java\", \"python\"]")
-    @ApiParam(value = "해당 스터디가 가지고 있는 기술 스택 리스트", required = true)
-    private List<String> studyTechstack;
+    @ApiModelProperty(example = "클럽 멤버에게만 공개")
+    @ApiParam(value = "공개 범위")
+    private String publicScope;
 
-    @ApiModelProperty(name = "hostClub", example = "[{\"clubId\": 1, \"clubName\": \"첫 클럽\"}, {\"clubId\": 2, \"clubName\": \"두번째 클럽\"}]")
-    @ApiParam(value = "해당 호스트가 포함되어있는 클럽 목록 (수정시 클럽 수정을 위한)", required = true)
-    private List<ClubSimpleInfoResponseDto> clubList;
+    @ApiModelProperty(example = "모집 중")
+    @ApiParam(value = "모집 상태")
+    private String recruitmentState;
 
-    @ApiModelProperty(name = "memberDtos", example = "[{\"id\": 3, \"name\": \"문일민\", \"nickname\": \"별명\"}, {\"id\": 4, \"name\": \"박범진\", \"nickname\": \"내별명\"}]")
-    @ApiParam(value = "해당 스터디에 속한 멤버 조회", required = true)
-    private List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos;
-
-    public void setClub(Club club){
-        if(club == null) return;
-        this.club = ClubSimpleInfoResponseDto.from(club);
-    }
-
-    public void setData(DBFile dbFile){
-        if(dbFile == null) return;
-        this.data = dbFile.getData();
-    }
-
-    @Builder
-    public StudyInfoForUpdateResponseDto(Study study) {
-        this.name = study.getName();
-        this.schedule = study.getSchedule();
-        this.period = study.getPeriod();
-        this.maxCount = study.getMaxCount();
-        this.isPublic = study.getIsPublic();
-        this.isParticipate = study.getIsParticipate();
-        this.city = study.getCity().name();
-        this.status = study.getStudyProgressState().name();
-        setClub(study.getClub());
-//        setData(study.getDbFile());
-        this.modifyDate = study.getModifyDate();
-        this.bio = study.getBio();
+    public static StudyInfoForUpdateResponseDto of(Study study,
+        List<StudyTopicResponseDto> topics, List<ClubSimpleInfoResponseDto> clubs){
+        return StudyInfoForUpdateResponseDto.builder()
+            .id(study.getId())
+            .name(study.getName())
+            .studyProgressState(study.getStudyProgressState().getState())
+            .coverPic(DBFileDto.of(study.getCoverPic()))
+            .topics(topics)
+            .schedule(study.getSchedule())
+            .city(study.getCity().toString())
+            .currentClub((study.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+                study.getClub()))
+            .clubs(clubs)
+            .bio(study.getBio())
+            .memberCount(study.getMemberCount())
+            .maxCount(study.getMaxCount())
+            .publicScope(study.getPublicScope().getState())
+            .recruitmentState(study.getRecruitmentState().getState())
+            .build();
     }
 }

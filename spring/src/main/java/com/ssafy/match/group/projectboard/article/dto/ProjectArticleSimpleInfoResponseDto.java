@@ -1,7 +1,9 @@
 package com.ssafy.match.group.projectboard.article.dto;
 
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -22,8 +24,11 @@ public class ProjectArticleSimpleInfoResponseDto {
     private String title;
     @ApiModelProperty(name = "projectBoard", example = "일정게시판")
     private String projectBoard;
-    @ApiModelProperty(example = "박범진")
-    private String createdMember;
+
+    @ApiModelProperty(example = "[\"id\": 3, \"name\": \"박범진\", \"nickname\": \"BJP\", \"coverPicUri\":\"http://localhost:8080/api/downloadFile/97534f05-7e7f-425d-ac3e-aae8acee8a42\"]")
+    @ApiParam(value = "작성자 정보(id, name, nickname, email, coverPicUri)")
+    private MemberSimpleInfoResponseDto writer;
+
     @ApiModelProperty(name = "createdDate", example = "2021-10-01T13:09:53.46748")
     private LocalDateTime createdDate;
     @ApiModelProperty(name = "modifiedDate", example = "2021-10-01T13:09:53.46748")
@@ -39,7 +44,7 @@ public class ProjectArticleSimpleInfoResponseDto {
                 .articleId(projectArticle.getId())
                 .title(projectArticle.getTitle())
                 .projectBoard(projectArticle.getProjectBoard().getName())
-                .createdMember(projectArticle.getMember().getName())
+                .writer(MemberSimpleInfoResponseDto.from(projectArticle.getMember()))
                 .createdDate(projectArticle.getCreateDate())
                 .modifiedDate(projectArticle.getModifiedDate())
                 .viewCount(projectArticle.getViewCount())

@@ -39,7 +39,9 @@ public class ProjectApplicationForm {
 
     @NotBlank
     private String role;
+
     private String bio;
+
     @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 

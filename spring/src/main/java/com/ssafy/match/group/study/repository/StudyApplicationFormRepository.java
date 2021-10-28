@@ -1,5 +1,6 @@
 package com.ssafy.match.group.study.repository;
 
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
@@ -13,14 +14,15 @@ public interface StudyApplicationFormRepository extends
     JpaRepository<StudyApplicationForm, CompositeMemberStudy> {
 
     // 모든 신청서 날짜 내림차순 조회
-    @Query("select s from StudyApplicationForm s where s.compositeMemberStudy.study = :study order by s.createDate desc ")
-    List<StudyApplicationForm> formByStudyId(@Param("study") Study study);
+    @Query("select s.compositeMemberStudy.study.id as studyId, s.compositeMemberStudy.member.id as memberId"
+        + ", s.name as name from StudyApplicationForm s where s.compositeMemberStudy.study = :study order by s.createDate desc ")
+    List<StudyFormSimpleInfoResponseDto> formByStudyId(@Param("study") Study study);
 
     // 닉네임으로 신청서 조회
-    @Query("select p from StudyApplicationForm p "
-        + "where p.compositeMemberStudy.study = :study "
-        + "and p.nickname like %:nickname% order by p.createDate desc")
-    List<StudyApplicationForm> allFormByStudyNickname(@Param("study") Study study, @Param("nickname") String nickname);
+//    @Query("select p from StudyApplicationForm p "
+//        + "where p.compositeMemberStudy.study = :study "
+//        + "and p.nickname like %:nickname% order by p.createDate desc")
+//    List<StudyApplicationForm> allFormByStudyNickname(@Param("study") Study study, @Param("nickname") String nickname);
 
     // 신청서 조회
     @Query("select s from StudyApplicationForm s where s.compositeMemberStudy = :cms")

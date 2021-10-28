@@ -26,9 +26,9 @@ public class ProjectUpdateRequestDto {
     @NotBlank
     private String projectProgressState;
 
-    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
-    @ApiParam(value = "사진 고유 uuid")
-    private String uuid;
+//    @ApiModelProperty(example = "3fads23-fdfd13-23d2")
+//    @ApiParam(value = "사진 고유 uuid")
+//    private String uuid;
 
     @ApiModelProperty(example = "{\"python\":\"중\", \"java\":\"상\"}")
     @ApiParam(value = "변경된 기술 스택 리스트")
