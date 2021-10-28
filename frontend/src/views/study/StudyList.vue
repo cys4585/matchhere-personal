@@ -9,14 +9,49 @@
       </div>
       <p>여러분이 원하는 스터디를 찾아보세요!</p>
     </header>
-    <section class="grid gap-2 mb-10">
+    <section class="grid gap-4 mb-10">
       <h2>맞춤형 추천 스터디</h2>
-      <HSlider>
-        <StudyArticleCard :small="true" />
-        <StudyArticleCard :small="true" />
-        <StudyArticleCard :small="true" />
-        <StudyArticleCard :small="true" />
-      </HSlider>
+      <swiper
+        class="w-full"
+        :spaceBetween="8"
+        :breakpoints="{
+          640: {
+            slidesPerView: 2,
+          },
+          1024: {
+            slidesPerView: 3,
+          },
+          1280: {
+            slidesPerView: 4,
+          },
+        }"
+        :loop="true"
+        @swiper="handleSwiper"
+        @slideChange="handleSlideChange"
+        @resize="onResize"
+      >
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="1" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="2" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="3" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="4" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="5" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="6" />
+        </SwiperSlide>
+        <SwiperSlide>
+          <StudyArticleCard :small="true" :key="7" />
+        </SwiperSlide>
+      </swiper>
     </section>
     <section>
       <h2 class="mb-6">스터디 리스트</h2>
@@ -37,14 +72,50 @@
 </template>
 
 <script>
+import { Swiper, SwiperSlide } from "swiper/vue"
+import "swiper/swiper.scss"
 import StudyArticleCard from "@/components/study/StudyArticleCard.vue"
-import HSlider from "@/components/common/HSlider.vue"
+import { ref, onMounted, onUnmounted } from "vue"
 
 export default {
   name: "StudyList",
-  components: { StudyArticleCard, HSlider },
+  components: { StudyArticleCard, Swiper, SwiperSlide },
   setup() {
-    return {}
+    const slidesPerView = ref(1)
+
+    const handleResize = () => {
+      const { innerWidth } = window
+      if (innerWidth < 640) {
+        slidesPerView.value = 1
+      } else if (innerWidth < 1024) {
+        slidesPerView.value = 2
+      } else if (innerWidth < 1280) {
+        slidesPerView.value = 3
+      }
+    }
+
+    const handleSwiper = (swiper) => {
+      console.log(swiper)
+    }
+    const handleSlideChange = () => {
+      console.log("slide change")
+    }
+    const onResize = (swiper) => {
+      console.log(swiper)
+    }
+    onMounted(() => {
+      window.addEventListener("resize", handleResize)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener("resize", handleResize)
+    })
+    return {
+      slidesPerView,
+      onResize,
+      handleSwiper,
+      handleSlideChange,
+    }
   },
 }
 </script>

@@ -79,7 +79,7 @@ export default {
   }
 
   &.small {
-    @apply w-80;
+    /* max-width: 320px; */
   }
 
   .thumbnail-wrapper {
