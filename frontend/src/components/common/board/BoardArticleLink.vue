@@ -22,7 +22,11 @@
       </div>
     </div>
     <div class="icon-wrapper">
-      <button>수정</button>
+      <router-link
+        :to="{ name: 'StudyBoardArticleEdit', params: { articleId: 1 } }"
+      >
+        수정
+      </router-link>
     </div>
   </router-link>
 </template>

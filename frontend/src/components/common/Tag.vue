@@ -17,14 +17,17 @@ export default {
   name: "Tag",
   props: {
     text: String,
-    type: String,
+    type: {
+      type: String,
+      default: "green",
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
 .tag {
-  @apply py-1 px-2 text-sm font-bold rounded;
+  @apply py-1 px-2 text-sm font-bold rounded cursor-pointer;
 
   &.red {
     @apply bg-pink-100 text-pink-600;

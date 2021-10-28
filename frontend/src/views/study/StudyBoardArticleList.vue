@@ -9,15 +9,23 @@
     <BoardArticleLink />
     <BoardArticleLink />
   </div>
-  <button class="material-icons add-btn">add</button>
+  <router-link
+    class="material-icons add-btn"
+    :to="{ name: 'StudyBoardArticleCreate' }"
+    >add</router-link
+  >
 </template>
 
 <script>
-import BoardArticleLink from "@/components/common/BoardArticleLink.vue"
+import BoardArticleLink from "@/components/common/board/BoardArticleLink.vue"
 export default {
   name: "StudyBoardArticleList",
   components: {
     BoardArticleLink,
+  },
+  props: {
+    studyId: [String, Number],
+    boardId: [String, Number],
   },
 }
 </script>
