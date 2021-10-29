@@ -14,7 +14,7 @@
 
 <script>
 import BoardArticleItem from "@/components/project/BoardArticleItem.vue"
-import AddBoardArticleButton from "@/components/common/AddBoardArticleButton.vue"
+import AddBoardArticleButton from "@/components/common/board/AddBoardArticleButton.vue"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { onMounted, ref } from "@vue/runtime-core"

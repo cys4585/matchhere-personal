@@ -3,7 +3,7 @@
     <div class="nav-center">
       <router-link class="logo" to="/">MatchHere</router-link>
       <div class="navs">
-        <router-link to="/study">스터디</router-link>
+        <router-link :to="{ name: 'StudyList' }">스터디</router-link>
         <router-link to="/">프로젝트</router-link>
         <router-link to="/chat">채팅</router-link>
       </div>

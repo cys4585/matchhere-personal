@@ -6,8 +6,8 @@
   >
     <div class="flex flex-col gap-1 px-4 pb-4 w-full" ref="chatListDiv">
       <ChatItem v-for="(chatItem,idx) in chatList" :key="chatItem" props:
-      :myId="myId" :chatItem="chatItem" :exChatItemId="idx !== 0 &&
-      String(chatList[idx-1].sender_id)" />
+      :myId="myId" :chatItem="chatItem" :exChatItem="idx !== 0 &&
+      chatList[idx-1]" />
     </div>
   </div>
 </template>
@@ -37,17 +37,18 @@ export default {
       }
     }
 
-    const isFirstHistory = ref(false)
-    const isAddedNewMsg = ref(false)
-    const isAddedHistory = ref(false)
+    let isFirstHistory = false
+    let isAddedNewMsg = false
+    let isAddedHistory = false
     watch(
       () => props.chatList,
       (newChatList, oldChatList) => {
         const [newLength, oldLength] = [newChatList.length, oldChatList.length]
         console.log(oldLength, newLength)
-        if (oldLength === 0) isFirstHistory.value = true
-        else if (newLength - oldLength === 1) isAddedNewMsg.value = true
-        else if (newLength - oldLength === 10) isAddedHistory.value = true
+        if (oldLength === 0) isFirstHistory = true
+        else if (newChatList[0].sentTime === oldChatList[0].sentTime)
+          isAddedNewMsg = true
+        else isAddedHistory = true
       }
     )
 
@@ -57,16 +58,16 @@ export default {
       //   block: "end", // "start", "center", "end", "nearest"(default)
       //   inline: "nearest", // "start", "center", "end", "nearest"(default)
       // })
-      if (isFirstHistory.value) {
+      if (isFirstHistory) {
         chatListDiv.value.scrollIntoView(false)
-        isFirstHistory.value = false
-      } else if (isAddedNewMsg.value) {
+        isFirstHistory = false
+      } else if (isAddedNewMsg) {
         chatListDiv.value.scrollIntoView(false)
-        isAddedNewMsg.value = false
-      } else if (isAddedHistory.value) {
+        isAddedNewMsg = false
+      } else if (isAddedHistory) {
         scrollBarDiv.value.scrollTop =
           scrollBarDiv.value.scrollHeight - oldScrollHeight.value
-        isAddedHistory.value = false
+        isAddedHistory = false
       }
     })
 

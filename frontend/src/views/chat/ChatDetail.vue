@@ -35,6 +35,7 @@ export default {
     const myId = ref()
     const currentPage = ref(0)
     const lastPage = ref()
+    const sizePerPage = 20
 
     onMounted(async () => {
       const { email } = route.params
@@ -50,7 +51,7 @@ export default {
       const chatHistory = await store.dispatch("chat/getChatHistory", {
         targetUserId: targetUserId.value,
         pageNumber: currentPage.value++,
-        size: 20,
+        size: sizePerPage,
       })
       // console.log(chatHistory)
       lastPage.value = chatHistory.totalPages - 1
@@ -59,6 +60,7 @@ export default {
       // 웹소켓 연결
       connection()
     })
+
     onBeforeUnmount(() => disconnection())
 
     const handleGetHistory = async () => {
@@ -67,7 +69,7 @@ export default {
         const chatHistory = await store.dispatch("chat/getChatHistory", {
           targetUserId: targetUserId.value,
           pageNumber: currentPage.value++,
-          size: 10,
+          size: sizePerPage,
         })
         // console.log(currentPage.value)
         // console.log(chatHistory)
