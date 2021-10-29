@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MemberStudyRepository extends JpaRepository<MemberStudy, CompositeMemberStudy> {
+
     // 특정 스터디에 속한 멤버의 관계 정보
     @Query(value = "select ms from matching.member_study ms "
         + "where ms.compositeMemberStudy.study = :study and ms.isActive = true")
@@ -25,7 +26,4 @@ public interface MemberStudyRepository extends JpaRepository<MemberStudy, Compos
         + "where ms.compositeMemberStudy.member = :member and ms.isActive = true")
     List<Study> studyInMember(@Param("member") Member member);
 
-    @Query(value = "select ms.compositeMemberStudy.member from matching.member_study ms "
-            + "where ms.compositeMemberStudy.study.id = :id and ms.isActive = true")
-    List<Member> findMemberByStudyId(@Param("id") Long id);
 }
