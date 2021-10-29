@@ -4,7 +4,7 @@
     <ChatListContainer
       :chatList="chatList"
       :myId="myId"
-      @handleScroll="handleGetHistory"
+      @handleScroll="handleChatListContainerScroll"
     />
     <hr />
     <ChatControler />
@@ -43,29 +43,22 @@ export default {
       roomId.value = resData.room_id
       targetUserId.value = resData.user_id
       targetNickname.value = resData.user_nickname
-      console.log(resData)
+      // console.log(resData)
 
       myId.value = roomId.value
         .split("-")
         .filter((id) => Number(id) !== targetUserId.value)[0]
-      console.log(myId.value)
+      // console.log(myId.value)
+
+      // get 채팅 히스토리
       getHistory()
-      // const chatHistory = await store.dispatch("chat/getChatHistory", {
-      //   roomId: roomId.value,
-      //   pageNumber: currentPage.value++,
-      //   size: sizePerPage,
-      // })
-      // // console.log(chatHistory)
-      // lastPage.value = chatHistory.totalPages - 1
-      // chatList.value = chatHistory.content.reverse()
-      // console.log(chatList.value)
       // 웹소켓 연결
       connection()
     })
 
     onBeforeUnmount(() => disconnection())
 
-    const handleGetHistory = async () => {
+    const handleChatListContainerScroll = () => {
       if (currentPage.value <= lastPage.value) getHistory()
     }
 
@@ -77,10 +70,11 @@ export default {
       })
       // console.log(currentPage.value)
       if (chatHistory) {
-        console.log(chatHistory)
+        // console.log(chatHistory)
         lastPage.value = chatHistory.totalPages - 1
         chatList.value = [...chatHistory.content.reverse(), ...chatList.value]
-        // console.log(chatList.value)
+        console.log(chatList.value)
+        console.log(chatList.value.length)
       }
     }
 
@@ -121,7 +115,13 @@ export default {
       }
     }
 
-    return { chatList, myId, currentPage, handleGetHistory, targetNickname }
+    return {
+      chatList,
+      myId,
+      currentPage,
+      handleChatListContainerScroll,
+      targetNickname,
+    }
   },
 }
 </script>

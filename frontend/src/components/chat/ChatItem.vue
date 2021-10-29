@@ -51,7 +51,7 @@
 <script>
 import { ref } from "@vue/reactivity"
 import moment from "moment"
-import { onBeforeMount } from "@vue/runtime-core"
+import { onBeforeMount, onUpdated } from "@vue/runtime-core"
 
 export default {
   name: "ChatItem",
@@ -61,7 +61,7 @@ export default {
     // 나 or 너
     const isMe = ref(false)
     // 새로운 날짜
-    const isNewDay = ref(true)
+    const isNewDay = ref(false)
     const newChatDate = ref(null)
     // 이어짐 or 안이어짐 ( 같은 사람 && 같은 시간(분까지) )
     const isContinue = ref(false)
@@ -80,20 +80,22 @@ export default {
       if (props.exChatItem) {
         const exChatDateTime = moment(props.exChatItem.sentTime)
 
-        // 새로운 날짜
-        if (newChatDate.value === exChatDateTime.format("LL dddd"))
-          isNewDay.value = false
-
         // 이어짐 or 안이어짐 ( 같은 사람 && 같은 시간(분까지) )
         const isSameSender =
           String(props.chatItem.sender_id) ===
           String(props.exChatItem.sender_id)
         const isSameMinute = exChatDateTime.minute() === chatDateTime.minute()
         isContinue.value = isSameSender && isSameMinute
-      }
+      } else isNewDay.value = true // 새로운 날짜
 
       // 시간 (분 까지)
       chatTime.value = chatDateTime.format("LT")
+    })
+
+    // 새로운 날짜
+    onUpdated(() => {
+      if (props.exChatItem) isNewDay.value = false
+      else isNewDay.value = true
     })
 
     return { isContinue, isMe, isNewDay, newChatDate, chatTime }

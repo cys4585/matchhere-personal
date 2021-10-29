@@ -5,8 +5,8 @@
     ref="scrollBarDiv"
   >
     <div class="flex flex-col gap-1 px-4 pb-4 w-full" ref="chatListDiv">
-      <ChatItem v-for="(chatItem,idx) in chatList" :key="chatItem" props:
-      :myId="myId" :chatItem="chatItem" :exChatItem="idx !== 0 &&
+      <ChatItem v-for="(chatItem,idx) in chatList" :key="chatItem.sentTime"
+      props: :myId="myId" :chatItem="chatItem" :exChatItem="idx !== 0 &&
       chatList[idx-1]" />
     </div>
   </div>
