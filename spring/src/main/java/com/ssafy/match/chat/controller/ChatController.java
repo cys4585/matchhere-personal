@@ -2,11 +2,9 @@ package com.ssafy.match.chat.controller;
 
 
 import com.ssafy.match.chat.dto.ChatMessageResponseDto;
-import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.dto.response.ChatRoomResponseDto;
-import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
-import com.ssafy.match.chat.dto.response.MemberChatRoomResponse;
+import com.ssafy.match.chat.dto.response.MemberChatRoomResponseDto;
 import com.ssafy.match.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +36,7 @@ public class ChatController {
     }
 
     @GetMapping("/chatroom/{id}")
-    public ResponseEntity<Page<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") Long id,
+    public ResponseEntity<Page<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") String id,
     @PageableDefault(size = 10) @SortDefault(sort = "sentTime", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
         return ResponseEntity.ok(chatService.getHistory(id, pageable));
     }
@@ -49,13 +47,7 @@ public class ChatController {
     }
 
     @GetMapping("/member/{email}")
-    public ResponseEntity<MemberChatRoomResponse> getMemberChat(@PathVariable("email") String email) throws Exception {
+    public ResponseEntity<MemberChatRoomResponseDto> getMemberChat(@PathVariable("email") String email) throws Exception {
         return ResponseEntity.ok(chatService.getChatroomId(email));
     }
-
-//    @MessageMapping("/file")
-//    @SendTo("/topic/chat")
-//    public ChatMessage sendFile(ChatMessage message) throws Exception {
-//        return new ChatMessage(message.getFileName(), message.getRawData(), message.getSender());
-//    }
 }

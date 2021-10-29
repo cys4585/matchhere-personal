@@ -41,8 +41,8 @@ public class StudyUpdateRequestDto {
     @NotNull
     private int maxCount;
 
-    @ApiModelProperty(example = "프로젝트 진행 중")
-    @ApiParam(value = "프로젝트 진행 상태", required = true)
+    @ApiModelProperty(example = "스터디 진행 중")
+    @ApiParam(value = "스터디 진행 상태", required = true)
     @NotBlank
     private String studyProgressState;
 

@@ -64,7 +64,7 @@ public class StudyInfoResponseDto {
     @ApiParam(value = "스터디 현재 인원")
     private int memberCount;
 
-    @ApiModelProperty(name = "maxCount", example = "3")
+    @ApiModelProperty(example = "3")
     private int maxCount;
 
     @ApiModelProperty(example =
@@ -73,7 +73,7 @@ public class StudyInfoResponseDto {
     @ApiParam(value = "해당 스터디에 속한 인원정보")
     private List<MemberSimpleInfoResponseDto> members;
 
-    @ApiModelProperty(name = "city", example = "온라인")
+    @ApiModelProperty(example = "온라인")
     private String city;
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
