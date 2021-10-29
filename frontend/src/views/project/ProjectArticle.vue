@@ -321,8 +321,6 @@ export default {
     }
 
     const profilePic = ref(require("@/assets/images/test-profile.png"))
-    const javaPic = ref(require("@/assets/images/test-java.png"))
-    const pythonPic = ref(require("@/assets/images/test-python.png"))
 
     return {
       projectInfo,
@@ -332,8 +330,6 @@ export default {
       isApplyModalActivation,
       editProject,
       profilePic,
-      javaPic,
-      pythonPic,
       handleClickPhoto,
       fileInputEl,
     }

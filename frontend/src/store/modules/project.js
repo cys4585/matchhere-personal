@@ -113,7 +113,7 @@ export default {
         console.log(projectId, applyer)
         const resData = await ProjectAPI.acceptApplication(
           projectId,
-          applyer.memberId
+          applyer.writer.id
         )
         commit("ADD_MEMBER", applyer)
         return resData
