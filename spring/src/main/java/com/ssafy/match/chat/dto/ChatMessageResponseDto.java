@@ -15,7 +15,6 @@ public class ChatMessageResponseDto {
     private String pic_uri;
     private String nickname;
     private LocalDateTime sentTime;
-    private DBFileDto dbFile;
 
     public static ChatMessageResponseDto of(ChatMessage chatMessage) {
         return ChatMessageResponseDto.builder()
@@ -24,17 +23,15 @@ public class ChatMessageResponseDto {
                 .pic_uri((chatMessage.getSender().getCover_pic() == null) ? null : chatMessage.getSender().getCover_pic().getDownload_uri())
                 .sender_id(chatMessage.getSender().getId())
                 .sentTime(chatMessage.getSentTime())
-                .dbFile(DBFileDto.of(chatMessage.getDbFile()))
                 .build();
     }
 
     @Builder
-    public ChatMessageResponseDto(String content, Long sender_id, String pic_uri, String nickname, LocalDateTime sentTime, DBFileDto dbFile) {
+    public ChatMessageResponseDto(String content, Long sender_id, String pic_uri, String nickname, LocalDateTime sentTime) {
         this.content = content;
         this.sender_id = sender_id;
         this.pic_uri = pic_uri;
         this.nickname = nickname;
         this.sentTime = sentTime;
-        this.dbFile = dbFile;
     }
 }

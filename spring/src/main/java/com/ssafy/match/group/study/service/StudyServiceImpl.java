@@ -2,6 +2,7 @@ package com.ssafy.match.group.study.service;
 
 import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.entity.GroupCity;
+import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.common.entity.StudyProgressState;
 import com.ssafy.match.common.exception.CustomException;
@@ -13,19 +14,22 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.study.entity.CompositeMemberStudy;
+import com.ssafy.match.group.study.entity.MemberStudy;
 import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
-import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
-import com.ssafy.match.group.study.entity.MemberStudy;
-import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
 import com.ssafy.match.group.study.entity.StudyTopic;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
@@ -44,6 +48,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,7 +138,7 @@ public class StudyServiceImpl implements StudyService {
 
     // 사진 바꾸기
     @Transactional
-    public DBFileDto changeCoverPic(Long studyId, String uuid){
+    public DBFileDto changeCoverPic(Long studyId, String uuid) {
         DBFile coverPic = findDBFile(uuid);
         Study study = findStudy(studyId);
         study.setCoverPic(coverPic);
@@ -146,8 +152,36 @@ public class StudyServiceImpl implements StudyService {
 
     // 스터디 조회수 증가
     @Transactional
-    public HttpStatus plusViewCount(Long studyId){
+    public HttpStatus plusViewCount(Long studyId) {
         findStudy(studyId).plusViewCount();
+        return HttpStatus.OK;
+    }
+
+    // 권한 변경
+    @Transactional
+    public HttpStatus changeAuthority(Long studyId, Long memberId, String authority) {
+        Study study = findStudy(studyId);
+        Member changer = findMember(SecurityUtil.getCurrentMemberId());
+        Member member = findMember(memberId);
+
+        MemberStudy ms = memberStudyRepository.findById(
+                new CompositeMemberStudy(member, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+
+        MemberStudy msChanger = memberStudyRepository.findById(
+                new CompositeMemberStudy(changer, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        // 권한 변경 권한에 관한 로직
+        // 소유자만이 권한을 변경할 수 있다
+        if (!msChanger.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+        // 소유자는 양도가 가능하다
+        if (authority.equals("소유자")) {
+            study.setMember(member);
+            msChanger.setAuthority(GroupAuthority.관리자);
+        }
+        ms.setAuthority(GroupAuthority.from(authority));
         return HttpStatus.OK;
     }
 
@@ -189,15 +223,12 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-//    public Page<StudyInfoResponseDto> getAllStudy(Pageable pageable) {
-//        Page<StudyInfoResponseDto> studyInfoResponseDtos = studyRepository.findByIsActiveAndIsPublicAndStatusIsNot(Boolean.TRUE, Boolean.TRUE, StudyProgressState.PROGRESS, pageable)
-//                .map(StudyInfoResponseDto::of);
-//        for (StudyInfoResponseDto studyInfoResponseDto: studyInfoResponseDtos.getContent()) {
-//            studyInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberStudyRepository.findMemberByStudyId(studyInfoResponseDto.getId())));
-//            studyInfoResponseDto.setTechList(studySubjectRepository.findStudyTechstackNameByStudyId(studyInfoResponseDto.getId()));
-//        }
-//        return studyInfoResponseDtos;
-//    }
+    // 스터디 전체 조회
+    public Page<StudySimpleInfoResponseDto> getAllStudy(Pageable pageable) {
+        return studyRepository.findAllStudy(StudyProgressState.FINISH, RecruitmentState.RECRUITMENT,
+                PublicScope.PUBLIC, pageable)
+            .map(m -> StudySimpleInfoResponseDto.of(m, getStudyTopics(m)));
+    }
 
     // 스터디 상세 조회
     public StudyInfoResponseDto getOneStudy(Long studyId) {
@@ -212,6 +243,36 @@ public class StudyServiceImpl implements StudyService {
         return StudyInfoResponseDto.of(study, getStudyTopics(study),
             findMemberInStudy(study).stream().map(MemberSimpleInfoResponseDto::from).collect(
                 Collectors.toList()));
+    }
+
+    // 현재 스터디 간편 정보 리턴
+    public StudySimpleInfoResponseDto getOneSimpleStudy(Long studyId) {
+        Study study = findStudy(studyId);
+        return StudySimpleInfoResponseDto.of(study, getStudyTopics(study));
+    }
+
+    // 현 사용자의 권한 확인
+    public String getMemberAuthority(Long studyId) {
+        Study study = findStudy(studyId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberStudy> mss = memberStudyRepository.findMemberRelationInStudy(study);
+
+        String authority = "게스트";
+        for (MemberStudy ms : mss) {
+            if (ms.getCompositeMemberStudy().getMember().getId().equals(member.getId())) {
+                authority = ms.getAuthority().toString();
+                break;
+            }
+        }
+        return authority;
+    }
+
+    // 스터디 구성원 리스트
+    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId) {
+        return memberStudyRepository.findMemberInStudy(findStudy(studyId))
+            .stream()
+            .map(MemberSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional
@@ -366,7 +427,7 @@ public class StudyServiceImpl implements StudyService {
             .collect(Collectors.toList());
     }
 
-    // 신청 버튼 클릭시 신청 가능한 인원인지 확인
+    // 신청 버튼 클릭시 신청 가능한 인원인지 확인(조건 위배시 boolean? error?)
     public boolean checkCanApply(Long studyId) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Study study = findStudy(studyId);
@@ -375,6 +436,13 @@ public class StudyServiceImpl implements StudyService {
         if (study.getStudyProgressState().equals(StudyProgressState.FINISH)
             || study.getIsActive().equals(Boolean.FALSE) || study.getRecruitmentState()
             .equals(RecruitmentState.FINISH) || !checkAlreadyJoin(study, member)) {
+            return false;
+        }
+        // 신청 여부
+        CompositeMemberStudy cms = new CompositeMemberStudy(member, study);
+        Optional<StudyApplicationForm> form = studyApplicationFormRepository.findById(cms);
+        if (form.isPresent()) {
+//            throw new CustomException(ErrorCode.ALREADY_APPLY);
             return false;
         }
 
@@ -386,7 +454,8 @@ public class StudyServiceImpl implements StudyService {
         Optional<MemberStudy> ms = memberStudyRepository.findById(
             new CompositeMemberStudy(member, study));
         if (ms.isPresent() && ms.get().getIsActive()) {
-            throw new CustomException(ErrorCode.ALREADY_JOIN);
+//            throw new CustomException(ErrorCode.ALREADY_JOIN);
+            return false;
         }
         return true;
     }
@@ -397,12 +466,6 @@ public class StudyServiceImpl implements StudyService {
         Study study = findStudy(studyId);
 
         CompositeMemberStudy cms = new CompositeMemberStudy(member, study);
-
-        Optional<StudyApplicationForm> form = studyApplicationFormRepository.findById(cms);
-        if (form.isPresent()) {
-            throw new CustomException(ErrorCode.ALREADY_APPLY);
-        }
-
         StudyApplicationForm studyApplicationForm = StudyApplicationForm.of(dto, cms,
             member.getName());
 
@@ -428,7 +491,10 @@ public class StudyServiceImpl implements StudyService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
 
-        return studyApplicationFormRepository.formByStudyId(study);
+        return studyApplicationFormRepository.formByStudyId(study)
+            .stream()
+            .map(StudyFormSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회
@@ -447,19 +513,13 @@ public class StudyServiceImpl implements StudyService {
     public HttpStatus approval(Long studyId, Long memberId) {
         Study study = findStudy(studyId);
         Member member = findMember(memberId);
+        Member approver = findMember(SecurityUtil.getCurrentMemberId());
 
-        checkAlreadyJoin(study, member);
+        if (!checkAlreadyJoin(study, member)) {
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
+        }
 
-        MemberStudy ms = memberStudyRepository.findById(
-                new CompositeMemberStudy(member, study))
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
-        if (!ms.getIsActive()) {
-            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
-        }
-        // 팀원은 신청서를 조회할 권한이 없음
-        if (ms.getAuthority().equals(GroupAuthority.팀원)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
-        }
+        checkAuthorityApprovalReject(approver, study);
 
         addMember(study, member);
         reject(studyId, memberId);
@@ -467,11 +527,15 @@ public class StudyServiceImpl implements StudyService {
         return HttpStatus.OK;
     }
 
-    //     신청서 제거
+    // 신청서 제거
     @Transactional
     public HttpStatus reject(Long studyId, Long memberId) {
+        Member rejector = findMember(SecurityUtil.getCurrentMemberId());
+        Study study = findStudy(studyId);
+        checkAuthorityApprovalReject(rejector, study);
+
         studyApplicationFormRepository.delete(
-            validStudyApplicationForm(findMember(memberId), findStudy(studyId)));
+            validStudyApplicationForm(findMember(memberId), study));
 
         return HttpStatus.OK;
     }
@@ -480,5 +544,19 @@ public class StudyServiceImpl implements StudyService {
         return studyApplicationFormRepository
             .findById(new CompositeMemberStudy(member, study))
             .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
+    }
+
+    public void checkAuthorityApprovalReject(Member member, Study study) {
+        // 승인자의 권한 체크
+        MemberStudy ms = memberStudyRepository.findById(
+                new CompositeMemberStudy(member, study))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!ms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
+        // 팀원은 신청서를 조회, 수락, 거절할 권한이 없음
+        if (ms.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
+        }
     }
 }

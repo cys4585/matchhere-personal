@@ -5,6 +5,7 @@ import Home from "@/views/Home.vue"
 import AuthLayout from "@/layouts/Auth.vue"
 import ProfileLayout from "@/layouts/Profile.vue"
 import ProjectLayout from "@/layouts/Project.vue"
+import ChatLayout from "@/layouts/Chat.vue"
 import StudyLayout from "@/layouts/Study.vue"
 import StudyBoardLayout from "@/layouts/StudyBoard.vue"
 
@@ -31,7 +32,9 @@ import StudyPage from "@/views/study/index"
 import Login from "@/views/auth/Login.vue"
 import Signup from "@/views/auth/Signup.vue"
 import FindPassword from "@/views/auth/FindPassword.vue"
-// import { useStore } from "vuex"
+
+import ChatList from "@/views/chat/ChatList.vue"
+import ChatDetail from "@/views/chat/ChatDetail.vue"
 
 const routes = [
   {
@@ -181,15 +184,6 @@ const routes = [
         path: "detail/:projectId",
         name: "ProjectDetail",
         component: ProjectDetail,
-        // beforeEnter: async (to, from, next) => {
-        //   const store = useStore()
-        //   const myAuth = await store.dispatch(
-        //     "project/getAuthority",
-        //     to.params.projectId
-        //   )
-        //   console.log(myAuth)
-        //   console.log(from, next)
-        // },
         children: [
           {
             path: "manage",
@@ -239,6 +233,23 @@ const routes = [
             component: ArticleEditForm,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/chat",
+    name: "Chat",
+    component: ChatLayout,
+    children: [
+      {
+        path: "chatlist",
+        name: "ChatList",
+        component: ChatList,
+      },
+      {
+        path: ":email",
+        name: "ChatDetail",
+        component: ChatDetail,
       },
     ],
   },

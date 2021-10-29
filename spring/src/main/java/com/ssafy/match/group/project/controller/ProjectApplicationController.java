@@ -54,7 +54,7 @@ public class ProjectApplicationController {
     @ApiOperation(value = "프로젝트 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "가입 처리되었습니다."),
-        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_BELOW_ZERO\nPLANNER_COUNT_BELOW_ZERO\nDESIGNER_COUNT_BELOW_ZERO"),
+        @ApiResponse(code = 400, message = "DEVELOPER_COUNT_OVER\nPLANNER_COUNT_OVER\nDESIGNER_COUNT_OVER"),
         @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
     public ResponseEntity<String> approval(@PathVariable("projectId") Long projectId,
