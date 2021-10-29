@@ -19,14 +19,16 @@ public class ChatMessage {
 
     private String content;
 
-    private String sender_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private Member sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    private LocalDateTime sent_time;
-    private String nickname;
+    @Column(name = "sent_time", nullable = false)
+    private LocalDateTime sentTime;
 //    private Boolean is_read;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -36,12 +38,11 @@ public class ChatMessage {
 //    private String rawData;
 
     @Builder
-    public ChatMessage(String content, String sender_id, ChatRoom chatRoom, LocalDateTime sent_time, String nickname) {
+    public ChatMessage(String content, Member sender, ChatRoom chatRoom, LocalDateTime sentTime) {
         this.content = content;
-        this.sender_id = sender_id;
+        this.sender = sender;
         this.chatRoom = chatRoom;
-        this.sent_time = sent_time;
-        this.nickname = nickname;
+        this.sentTime = sentTime;
     }
 
     //    public ChatMessage(String message, String sender) {

@@ -11,7 +11,9 @@
           <h4>스터디</h4> -->
         </div>
         <router-link :to="{ name: 'EditProfile' }" class="flex">
-          <span class="material-icons hover:text-blue-500">settings</span>
+          <span class="font-medium text-gray-400 hover:text-blue-900">
+            수정
+          </span>
         </router-link>
       </div>
     </header>

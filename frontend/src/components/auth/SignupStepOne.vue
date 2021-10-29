@@ -33,7 +33,7 @@ import InputFormField from "@/components/common/formField/InputFormField.vue"
 import EmailFormField from "@/components/common/formField/EmailFormField.vue"
 import AuthCodeFormField from "@/components/common/formField/AuthCodeFormField.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
-import SelectFormField from "@/components/common/SelectFormField.vue"
+import SelectFormField from "@/components/common/formField/SelectFormField.vue"
 import { useStore } from "vuex"
 import {
   AuthCodeFormFieldMaker,

@@ -1,6 +1,5 @@
 package com.ssafy.match.group.project.entity;
 
-import com.ssafy.match.common.entity.City;
 import com.ssafy.match.common.entity.GroupCity;
 import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
@@ -25,7 +24,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -231,8 +229,11 @@ public class Project {
         this.isActive = active;
     }
 
-    public void update(ProjectUpdateRequestDto dto, Club club, DBFile coverPic) {
-        this.coverPic = coverPic;
+    public void initialCoverPic(){
+        this.coverPic = null;
+    }
+
+    public void update(ProjectUpdateRequestDto dto, Club club) {
         this.name = dto.getName();
         this.projectProgressState = ProjectProgressState.from(dto.getProjectProgressState());
         this.publicScope = PublicScope.from(dto.getPublicScope());

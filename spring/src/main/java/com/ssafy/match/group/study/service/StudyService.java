@@ -1,5 +1,7 @@
 package com.ssafy.match.group.study.service;
 
+import com.ssafy.match.file.dto.DBFileDto;
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
@@ -18,36 +20,47 @@ import org.springframework.http.HttpStatus;
 
 public interface StudyService {
 
-    StudyInfoForCreateResponseDto getInfoForCreate() throws Exception;
+    // 스터디 생성하려는 사람의 클럽 정보
+    StudyInfoForCreateResponseDto getInfoForCreate();
 
-    Long create(StudyCreateRequestDto dto) throws Exception;
+    //스터디 생성
+    StudyInfoResponseDto create(StudyCreateRequestDto dto);
 
-    HttpStatus update(Long studyId, StudyUpdateRequestDto dto) throws Exception;
+    // 스터디 수정
+    StudyInfoResponseDto update(Long studyId, StudyUpdateRequestDto dto);
 
-    HttpStatus delete(Long studyId) throws Exception;
+    // 스터디 수정시 사진 변경
+    DBFileDto changeCoverPic(Long studyId, String uuid);
+
+    // 조회 수 증가
+    HttpStatus plusViewCount(Long studyId);
+
+    HttpStatus delete(Long studyId);
 
 //    Page<StudyInfoResponseDto> getAllStudy(Pageable pageable);
 
-    StudyInfoResponseDto getOneStudy(Long studyId) throws Exception;
+    StudyInfoResponseDto getOneStudy(Long studyId);
 
-    StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId) throws Exception;
+    StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId);
 
-    void addMember(Study study, Member member) throws Exception;
+    void addMember(Study study, Member member);
 
-    HttpStatus removeMember(Long studyId) throws Exception;
+    HttpStatus removeMe(Long studyId);
 
-    InfoForApplyStudyFormResponseDto getInfoForApply(Long studyId) throws Exception;
+    HttpStatus removeMember(Long studyId, Long memberId);
 
-    HttpStatus applyStudy(Long studyId, StudyApplicationRequestDto dto) throws Exception;
+    boolean checkCanApply(Long studyId);
 
-    List<StudyFormInfoResponseDto> getAllStudyForm(Long studyId) throws Exception;
+    StudyFormInfoResponseDto applyStudy(Long studyId, StudyApplicationRequestDto dto);
 
-    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname) throws Exception;
+    List<StudyFormSimpleInfoResponseDto> getAllStudyForm(Long studyId);
 
-    StudyFormInfoResponseDto getOneStudyForm(Long studyId, Long memberId) throws Exception;
+//    List<StudyFormInfoResponseDto> getAllFormByStudyNickname(Long studyId, String nickname);
 
-    HttpStatus approval(Long studyId, Long memberId) throws Exception;
+    StudyFormInfoResponseDto getOneStudyForm(Long studyId, Long memberId);
 
-    HttpStatus reject(Long studyId, Long memberId) throws Exception;
+    HttpStatus approval(Long studyId, Long memberId);
+
+    HttpStatus reject(Long studyId, Long memberId);
 
 }

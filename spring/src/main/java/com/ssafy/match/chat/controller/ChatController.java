@@ -1,16 +1,27 @@
 package com.ssafy.match.chat.controller;
 
 
+import com.ssafy.match.chat.dto.ChatMessageResponseDto;
 import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
+import com.ssafy.match.chat.dto.response.ChatRoomResponseDto;
+import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
+import com.ssafy.match.chat.dto.response.MemberChatRoomResponse;
 import com.ssafy.match.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 //@CrossOrigin(origins = "http://localhost:3000")
@@ -26,9 +37,20 @@ public class ChatController {
         chatService.sendMessage(chatMessageRequestDto, token, id);
     }
 
-    @GetMapping("/history/{id}")
-    public ResponseEntity<ChatMessagesResponseDto> getChattingHistory(@PathVariable("id") Long id) throws Exception {
-        return ResponseEntity.ok(chatService.getHistory(id));
+    @GetMapping("/chatroom/{id}")
+    public ResponseEntity<Page<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") Long id,
+    @PageableDefault(size = 10) @SortDefault(sort = "sentTime", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
+        return ResponseEntity.ok(chatService.getHistory(id, pageable));
+    }
+
+    @GetMapping("/chatroom")
+    public ResponseEntity<List<ChatRoomResponseDto>> getChattingRooms() throws Exception {
+        return ResponseEntity.ok(chatService.getChattingRooms());
+    }
+
+    @GetMapping("/member/{email}")
+    public ResponseEntity<MemberChatRoomResponse> getMemberChat(@PathVariable("email") String email) throws Exception {
+        return ResponseEntity.ok(chatService.getChatroomId(email));
     }
 
 //    @MessageMapping("/file")

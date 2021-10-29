@@ -8,5 +8,6 @@ public interface ChatMessageInterface {
     String getSender_id();
     LocalDateTime getSent_time();
     String getNickname();
+
 //    String getDbFile();
 }

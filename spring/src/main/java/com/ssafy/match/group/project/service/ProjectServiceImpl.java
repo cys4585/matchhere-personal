@@ -45,7 +45,6 @@ import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -138,7 +137,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 권한 체크
         getProjectAuthority(member, project);
 
-        project.update(dto, findClub(dto.getClubId()), findDBFile(dto.getUuid()));
+        project.update(dto, findClub(dto.getClubId()));
         addTechstack(project, dto.getTechstacks());
 
         return getOneProject(projectId);
@@ -185,9 +184,9 @@ public class ProjectServiceImpl implements ProjectService {
             mem.deactivation();
         }
         // 프로젝트 Cover 제거
-        if (project.getCoverPic().getId() != null) {
-            dbFileRepository.delete(project.getCoverPic());
-        }
+//        if (project.getCoverPic().getId() != null) {
+//            dbFileRepository.delete(project.getCoverPic());
+//        }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
         projectTechstackRepository.deleteAllByProject(project);
         // 프로젝트 비활성화
@@ -196,16 +195,11 @@ public class ProjectServiceImpl implements ProjectService {
         return HttpStatus.OK;
     }
 
-    // 모든 프로젝트 간단 조회 (List 변환말고 Page로 한번에 변환할 수 있는 방법 찾기) + (공개 범위 고려)
-    public List<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable) {
+    // 모든 프로젝트 간단 조회  + (공개 범위 고려)
+    public Page<ProjectSimpleInfoResponseDto> getAllProject(Pageable pageable) {
         Page<Project> projects = projectRepository.findAllProject(ProjectProgressState.FINISH,
             RecruitmentState.RECRUITMENT, PublicScope.PUBLIC, pageable);
-        List<ProjectSimpleInfoResponseDto> projectInfoResponseDtos = new ArrayList<>();
-        for (Project project : projects) {
-            projectInfoResponseDtos.add(
-                ProjectSimpleInfoResponseDto.of(project, projectTechstackSimple(project)));
-        }
-        return projectInfoResponseDtos;
+        return projects.map(m -> ProjectSimpleInfoResponseDto.of(m, projectTechstackSimple(m)));
     }
 
     // 추천 프로젝트 조회
@@ -294,6 +288,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     // 프로젝트 조회수 증가
+    @Transactional
     public HttpStatus plusViewCount(Long projectId){
         findProject(projectId).plusViewCount();
         return HttpStatus.OK;
@@ -563,7 +558,11 @@ public class ProjectServiceImpl implements ProjectService {
         if (mp.getAuthority().equals(GroupAuthority.팀원)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
-        return projectApplicationFormRepository.formByProjectId(project);
+        return projectApplicationFormRepository.formByProjectId(project)
+            .stream()
+            .map(ProjectFormSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
+
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회 (프론트 방식에 따라 불필요할 수 있음)

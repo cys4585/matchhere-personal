@@ -21,7 +21,7 @@
 <script>
 import { InputFormFieldMaker } from "@/libs/func"
 import InputFormField from "@/components/common/formField/InputFormField.vue"
-import SelectFormField from "@/components/common/SelectFormField.vue"
+import SelectFormField from "@/components/common/formField/SelectFormField.vue"
 import TextAreaFormField from "@/components/common/TextAreaFormField.vue"
 import { computed, ref } from "@vue/reactivity"
 import { onMounted } from "@vue/runtime-core"

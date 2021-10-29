@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -75,15 +76,26 @@ public class FileController {
 
     }
 
-    @DeleteMapping
-    @ApiOperation(value = "파일 삭제", notes = "<strong>받은 uuid</strong>로 파일을 삭제한다.")
+    @DeleteMapping("/project")
+    @ApiOperation(value = "프로젝트 사진 삭제", notes = "<strong>받은 프로젝트 id와 uuid</strong>로 파일을 삭제한다.")
     @ApiResponses({
         @ApiResponse(code = 200, message = "파일이 삭제되었습니다."),
-        @ApiResponse(code = 404, message = "파일이 없습니다."),
+        @ApiResponse(code = 404, message = "PROJECT_NOT_FOUND"),
         @ApiResponse(code = 500, message = "로직 문제")
     })
-    public ResponseEntity<String> deleteFile(@RequestBody DeleteFileRequestDto dto){
-        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.deleteFile(dto.getUuid()));
+    public ResponseEntity<String> projectDeleteFile(@Valid @RequestBody DeleteFileRequestDto dto){
+        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.projectDeleteFile(dto));
+    }
+
+    @DeleteMapping("/study")
+    @ApiOperation(value = "스터디 사진 삭제", notes = "<strong>받은 스터디 id와 uuid로</strong>로 파일을 삭제한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "파일이 삭제되었습니다."),
+        @ApiResponse(code = 404, message = "STUDY_NOT_FOUND"),
+        @ApiResponse(code = 500, message = "로직 문제")
+    })
+    public ResponseEntity<String> studyDeleteFile(@Valid @RequestBody DeleteFileRequestDto dto){
+        return new ResponseEntity<>("파일이 삭제되었습니다.", dbFileStorageService.studyDeleteFile(dto));
     }
 
 }
