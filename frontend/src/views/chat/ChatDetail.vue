@@ -73,8 +73,7 @@ export default {
         // console.log(chatHistory)
         lastPage.value = chatHistory.totalPages - 1
         chatList.value = [...chatHistory.content.reverse(), ...chatList.value]
-        console.log(chatList.value)
-        console.log(chatList.value.length)
+        // console.log(chatList.value)
       }
     }
 
