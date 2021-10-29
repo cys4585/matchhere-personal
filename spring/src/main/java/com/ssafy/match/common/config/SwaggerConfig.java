@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -126,13 +125,13 @@ public class SwaggerConfig {
     public Docket studyApi() {
         return new Docket(DocumentationType.SWAGGER_2)
 //            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
-            .alternateTypeRules(
-                AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
+//            .alternateTypeRules(
+//                AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
             .globalRequestParameters(headers)
             .apiInfo(apiInfo)
             .groupName("Study")
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.study"))
+            .apis(RequestHandlerSelectors.basePackage("com.ssafy.match.group.study.controller"))
 
             // api 필요한 클래스패스 추가하기
             .paths(
@@ -148,8 +147,8 @@ public class SwaggerConfig {
     public Docket projectApi() {
         return new Docket(DocumentationType.SWAGGER_2)
 //            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
-            .alternateTypeRules(
-                    AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
+//            .alternateTypeRules(
+//                    AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
             .globalRequestParameters(headers)
             .apiInfo(apiInfo)
             .groupName("Project")
@@ -191,8 +190,8 @@ public class SwaggerConfig {
     public Docket projectBoardApi() {
         return new Docket(DocumentationType.SWAGGER_2)
 //            .globalRequestParameters(aParameters) // 글로벌 파라미터 필요시 추가하기
-            .alternateTypeRules(
-                AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
+//            .alternateTypeRules(
+//                AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
             .globalRequestParameters(headers)
             .apiInfo(apiInfo)
             .groupName("ProjectBoard")
