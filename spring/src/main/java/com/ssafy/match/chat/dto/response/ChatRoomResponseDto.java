@@ -14,6 +14,7 @@ public class ChatRoomResponseDto {
     private String user_nickname;
     private String pic_uri;
     private String content;
+    private String email;
     private LocalDateTime sentTime;
 
     public static ChatRoomResponseDto ofUser(ChatRoom chatRoom, ChatMessage chatMessage) {
@@ -23,6 +24,7 @@ public class ChatRoomResponseDto {
                 .user_nickname(chatRoom.getUser().getNickname())
                 .pic_uri((chatRoom.getUser().getCover_pic()==null) ? null : chatRoom.getUser().getCover_pic().getDownload_uri())
                 .content(chatMessage.getContent())
+                .email(chatRoom.getUser().getEmail())
                 .sentTime(chatMessage.getSentTime())
                 .build();
     }
@@ -34,17 +36,19 @@ public class ChatRoomResponseDto {
                 .user_nickname(chatRoom.getOther().getNickname())
                 .pic_uri((chatRoom.getOther().getCover_pic()==null) ? null : chatRoom.getOther().getCover_pic().getDownload_uri())
                 .content(chatMessage.getContent())
+                .email(chatRoom.getOther().getEmail())
                 .sentTime(chatMessage.getSentTime())
                 .build();
     }
 
     @Builder
-    public ChatRoomResponseDto(String id, Long user_id, String user_nickname, String pic_uri, String content, LocalDateTime sentTime) {
+    public ChatRoomResponseDto(String id, Long user_id, String user_nickname, String pic_uri, String content, String email, LocalDateTime sentTime) {
         this.id = id;
         this.user_id = user_id;
         this.user_nickname = user_nickname;
         this.pic_uri = pic_uri;
         this.content = content;
+        this.email = email;
         this.sentTime = sentTime;
     }
 }
