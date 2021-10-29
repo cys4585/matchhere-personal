@@ -31,12 +31,6 @@ public class ChatMessage {
     private LocalDateTime sentTime;
 //    private Boolean is_read;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id")
-    private DBFile dbFile;
-//    private String fileName;
-//    private String rawData;
-
     @Builder
     public ChatMessage(String content, Member sender, ChatRoom chatRoom, LocalDateTime sentTime) {
         this.content = content;

@@ -2,19 +2,14 @@ package com.ssafy.match.chat.service;
 
 
 import com.ssafy.match.chat.dao.ChatHistoryDao;
-import com.ssafy.match.chat.dto.ChatMessageInterface;
 import com.ssafy.match.chat.dto.ChatMessageResponseDto;
-import com.ssafy.match.chat.dto.ChatMessagesResponseDto;
-import com.ssafy.match.chat.dto.ChatRoomUserInterface;
 import com.ssafy.match.chat.dto.request.ChatMessageRequestDto;
 import com.ssafy.match.chat.dto.response.ChatRoomResponseDto;
-import com.ssafy.match.chat.dto.response.ChatRoomsResponseDto;
-import com.ssafy.match.chat.dto.response.MemberChatRoomResponse;
+import com.ssafy.match.chat.dto.response.MemberChatRoomResponseDto;
 import com.ssafy.match.chat.entity.ChatMessage;
 import com.ssafy.match.chat.entity.ChatRoom;
 import com.ssafy.match.chat.repository.ChatMessageRepository;
 import com.ssafy.match.chat.repository.ChatRoomRepository;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.jwt.TokenProvider;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -114,9 +109,9 @@ public class ChatService {
 //    }
 
     @Transactional(readOnly = true)
-    public Page<ChatMessageResponseDto> getHistory(Long id, Pageable pageable) {
+    public Page<ChatMessageResponseDto> getHistory(String roomid, Pageable pageable) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
-        String roomid = getRoomId(member.getId(), id);
+//        String roomid = getRoomId(member.getId(), id);
         ChatRoom chatRoom = chatRoomRepository.findById(roomid).orElseThrow(() -> new NullPointerException("존재하지 않는 채팅방입니다!"));
 //        List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoom(chatRoom);
         Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoom(chatRoom, pageable);
@@ -156,7 +151,7 @@ public class ChatService {
     }
 
     @Transactional
-    public MemberChatRoomResponse getChatroomId(String email) {
+    public MemberChatRoomResponseDto getChatroomId(String email) {
         Member user = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 토큰입니다!"));
         Member other = memberRepository.findByEmail(email).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자입니다!"));
         String roomid = getRoomId(user.getId(), other.getId());
@@ -164,9 +159,9 @@ public class ChatService {
         if (chatRoom.isEmpty()) {
             ChatRoom inner_chatroom = createChatRoom(roomid, user, other);
             chatRoomRepository.save(inner_chatroom);
-            return MemberChatRoomResponse.of(inner_chatroom, other.getId());
+            return MemberChatRoomResponseDto.of(inner_chatroom, other);
         } else {
-            return MemberChatRoomResponse.of(chatRoom.get(), other.getId());
+            return MemberChatRoomResponseDto.of(chatRoom.get(), other);
         }
     }
 
