@@ -19,14 +19,18 @@ import ChatListContainer from "@/components/chat/ChatListContainer.vue"
 import ChatControler from "@/components/chat/ChatControler.vue"
 import { ref } from "@vue/reactivity"
 import { onBeforeUnmount, onMounted } from "@vue/runtime-core"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 export default {
   name: "ChatDetail",
   components: { ChatHeader, ChatListContainer, ChatControler },
-  setup() {
+  emits: ["routeChat"],
+  setup(props, { emit }) {
     const route = useRoute()
+    const router = useRouter()
     const store = useStore()
+    console.log(route.name)
+    emit("routeChat", "detail")
 
     const roomId = ref()
     const targetNickname = ref()
@@ -45,15 +49,18 @@ export default {
       targetNickname.value = resData.user_nickname
       // console.log(resData)
 
-      myId.value = roomId.value
-        .split("-")
-        .filter((id) => Number(id) !== targetUserId.value)[0]
-      // console.log(myId.value)
-
-      // get 채팅 히스토리
-      getHistory()
-      // 웹소켓 연결
-      connection()
+      const userIds = roomId.value.split("-")
+      if (userIds[0] === userIds[1]) {
+        router.push({ name: "ChatList" })
+      } else {
+        myId.value = userIds.filter(
+          (id) => Number(id) !== targetUserId.value
+        )[0]
+        // get 채팅 히스토리
+        getHistory()
+        // 웹소켓 연결
+        connection()
+      }
     })
 
     onBeforeUnmount(() => disconnection())
@@ -77,8 +84,8 @@ export default {
       }
     }
 
-    const stompClient = ref()
-    const connection = () => {
+    const stompClient = ref(null)
+    const connection = async () => {
       const socket = new SockJS("http://127.0.0.1:8080/api/chat")
       stompClient.value = Stomp.over(socket)
 
@@ -86,7 +93,7 @@ export default {
       const headers = { Authorization: token }
 
       // 연결
-      stompClient.value.connect(
+      await stompClient.value.connect(
         headers,
         (frame) => {
           console.log("소켓 연결 성공", frame)

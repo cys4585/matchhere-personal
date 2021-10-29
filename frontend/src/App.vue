@@ -1,7 +1,12 @@
 <template>
   <div class="min-h-screen flex flex-col" :class="{ 'modal-open': modalOpen }">
     <MainNav :isChatDetail="isChatDetail" />
-    <main><router-view @routeChatDetail="isChatDetail = true" /></main>
+    <main>
+      <router-view
+        @routeChatDetail="isChatDetail = true"
+        @routeChatList="isChatDetail = false"
+      />
+    </main>
     <BottomNav :isChatDetail="isChatDetail" />
     <AlertMessageCenter />
   </div>
