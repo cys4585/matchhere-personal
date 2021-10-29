@@ -1,13 +1,12 @@
 package com.ssafy.match.group.studyboard.article.entity;
 
-
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,30 +16,27 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@Entity(name = "matching.study_content")
+@Entity
+@Table(name = "study_article_tag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class StudyContent {
+public class StudyArticleTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_article_id")
+    @ManyToOne
+    @JoinColumn(name = "study_article_id", nullable = false)
     private StudyArticle studyArticle;
 
     @NotBlank
-    private String content;
+    private String name;
 
-    public void setContent(String content){
-        this.content = content;
-    }
-
-    public static StudyContent of(StudyArticle studyArticle, String content) {
-        return StudyContent.builder()
+    public static StudyArticleTag of(StudyArticle studyArticle, String name){
+        return StudyArticleTag.builder()
             .studyArticle(studyArticle)
-            .content(content)
+            .name(name)
             .build();
     }
 

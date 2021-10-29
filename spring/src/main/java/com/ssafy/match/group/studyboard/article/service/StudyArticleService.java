@@ -1,32 +1,31 @@
 package com.ssafy.match.group.studyboard.article.service;
 
 
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleListDto;
-import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleCreateRequestDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleInfoDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleListDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleUpdateRequestDto;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleInfoResponseDto;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleRequestDto;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.studyboard.article.entity.StudyArticle;
+import com.ssafy.match.group.studyboard.article.entity.StudyArticleTag;
 import com.ssafy.match.group.studyboard.article.entity.StudyContent;
 import com.ssafy.match.group.studyboard.article.repository.StudyArticleRepository;
+import com.ssafy.match.group.studyboard.article.repository.StudyArticleTagRepository;
 import com.ssafy.match.group.studyboard.article.repository.StudyContentRepository;
 import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
+import com.ssafy.match.group.studyboard.comment.repository.StudyArticleCommentRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,117 +34,135 @@ public class StudyArticleService {
     private final StudyArticleRepository studyArticleRepository;
     private final StudyContentRepository studyContentRepository;
     private final MemberRepository memberRepository;
+    private final StudyArticleTagRepository studyArticleTagRepository;
+    private final StudyArticleCommentRepository studyArticleCommentRepository;
 
     @Transactional(readOnly = true)
-    public StudyArticleInfoDto getStudyArticleDetail(Long articleId) {
-        StudyArticleInfoDto studyArticleInfoDto = studyArticleRepository.findById(articleId).map(StudyArticleInfoDto::of).orElseThrow(() -> new NullPointerException("존재하지 않는 게시물입니다."));
-        StudyArticle studyArticle = studyArticleRepository.getById(articleId);
-        Optional<StudyContent> studyContent =studyContentRepository.getByStudyArticle(studyArticle);
-        if (studyContent.isEmpty()) {
-            throw new RuntimeException("내용이 존재하지 않습니다");
+    public StudyArticleInfoResponseDto getStudyArticleDetail(Long articleId) {
+        StudyArticle studyArticle = findStudyArticle(articleId);
+        StudyArticleInfoResponseDto studyArticleInfoResponseDto = StudyArticleInfoResponseDto.of(
+            studyArticle, getStudyArticleTagList(studyArticle));
+        StudyContent studyContent = findStudyContent(studyArticle);
+        studyArticleInfoResponseDto.setContent(studyContent.getContent());
+        return studyArticleInfoResponseDto;
+    }
+
+    public List<String> getStudyArticleTagList(StudyArticle studyArticle) {
+        List<StudyArticleTag> pats = studyArticleTagRepository.findAllByStudyArticle(
+            studyArticle);
+        List<String> tags = new ArrayList<>();
+        for (StudyArticleTag pat : pats) {
+            tags.add(pat.getName());
         }
-        String content = studyContent.get().getContent();
-        studyArticleInfoDto.setContent(content);
-        return studyArticleInfoDto;
+        return tags;
     }
 
     @Transactional(readOnly = true)
-    public Page<StudyArticleListDto> getStudyArticles(Integer boardId, Pageable pageable) throws Exception {
-        if (!studyBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        StudyBoard studyBoard = studyBoardRepository.getById(boardId);
-        Page<StudyArticleListDto> studyArticleListDtos = studyArticleRepository.findAllByStudyBoard(studyBoard, pageable)
-                .map(StudyArticleListDto::of);
-        return studyArticleListDtos;
-    }
-
-    @Transactional(readOnly = true)
-    public Page<StudyArticleListDto> getStudyArticlesByTitle(Integer boardId, String title, Pageable pageable) throws Exception {
-        if (!studyBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        StudyBoard studyBoard = studyBoardRepository.getById(boardId);
-        Page<StudyArticleListDto> studyArticleListDtos = studyArticleRepository.findAllByStudyBoardAndTitle(studyBoard, title, pageable)
-                .map(StudyArticleListDto::of);
-        return studyArticleListDtos;
-    }
-
-    @Transactional(readOnly = true)
-    public Page<StudyArticleListDto> getStudyArticlesByNickname(Integer boardId, String nickname, Pageable pageable) throws Exception {
-        if (!studyBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판입니다");
-        }
-        StudyBoard studyBoard = studyBoardRepository.getById(boardId);
-        Page<StudyArticleListDto> studyArticleListDtos = studyArticleRepository.findAllByStudyBoardAndNickname(studyBoard, nickname, pageable)
-            .map(StudyArticleListDto::of);
-        return studyArticleListDtos;
+    public Page<StudyArticleSimpleInfoResponseDto> getStudyArticles(Integer boardId,
+        Pageable pageable) {
+        Page<StudyArticle> studyArticles = studyArticleRepository.findAllByStudyBoard(findStudyBoard(boardId), pageable);
+        return studyArticles.map(m -> StudyArticleSimpleInfoResponseDto.of(m, getStudyArticleTagList(m)));
     }
 
     @Transactional
-    public Long createArticle(Integer boardId, StudyArticleCreateRequestDto studyArticleCreateRequestDto) throws Exception {
-        if (!studyBoardRepository.existsById(boardId)) {
-            throw new RuntimeException("존재하지 않는 게시판 입니다!");
+    public StudyArticleInfoResponseDto createArticle(StudyArticleRequestDto dto) {
+        StudyBoard studyBoard = findStudyBoard(dto.getStudyBoardId());
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        if (dto.getContent() == null) {
+            throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
-        StudyBoard studyBoard = studyBoardRepository.getById(boardId);
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
-        StudyArticle studyArticle = studyArticleCreateRequestDto.toStudyBoard(member, studyBoard);
-        if (studyArticleCreateRequestDto.getContent() == null) {
-            throw new RuntimeException("내용이 존재하지 않습니다!");
-        }
-        StudyArticle ret = studyArticleRepository.save(studyArticle);
-        addContent(studyArticle, studyArticleCreateRequestDto.getContent());
-        return ret.getId();
+        StudyArticle studyArticle = studyArticleRepository.save(
+            StudyArticle.of(dto, studyBoard, member));
+        addContent(studyArticle, dto.getContent());
+        addTags(studyArticle, dto.getTags());
+        return StudyArticleInfoResponseDto.of(studyArticle, dto.getTags());
     }
 
     @Transactional
-    public Long updateArticle(Long articleId, StudyArticleUpdateRequestDto studyArticleUpdateRequestDto) {
-        if (!studyArticleRepository.existsById(articleId)) {
-            throw new RuntimeException("존재하지 않는 게시물 입니다!");
+    public StudyArticleInfoResponseDto updateArticle(Long articleId,
+        StudyArticleRequestDto dto) {
+        // 게시글
+        StudyArticle studyArticle = findStudyArticle(articleId);
+        if (dto.getContent() == null) {
+            throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
-        StudyArticle studyArticle = studyArticleRepository.getById(articleId);
-//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("존재하지 않는 사용자 입니다."));
-        if (studyArticleUpdateRequestDto.getContent() == null) {
-            throw new RuntimeException("내용이 존재하지 않습니다!");
-        }
-        Optional<StudyContent> studyContent = studyContentRepository.getByStudyArticle(studyArticle);
-        if (studyContent.isEmpty()) {
-            throw new RuntimeException("내용이 존재하지 않습니다");
-        }
-        updateContent(studyArticle, studyArticleUpdateRequestDto.getContent(), studyContent.get());
+        // 게시글 내용
+        StudyContent studyContent = findStudyContent(studyArticle);
+        studyContent.setContent(dto.getContent());
 
-        studyArticle.setModifiedDate(LocalDateTime.now());
-        studyArticle.setTitle(studyArticleUpdateRequestDto.getTitle());
-        return studyArticle.getId();
+        studyArticle.update(dto, findStudyBoard(dto.getStudyBoardId()));
+        addTags(studyArticle, dto.getTags());
+
+        StudyArticleInfoResponseDto studyArticleInfoResponseDto = StudyArticleInfoResponseDto.of(
+            studyArticle, dto.getTags());
+        studyArticleInfoResponseDto.setContent(studyContent.getContent());
+        return studyArticleInfoResponseDto;
     }
 
     @Transactional
-    public Boolean deleteArticle(Long articleId) {
-        if (!studyArticleRepository.existsById(articleId)) {
-            throw new RuntimeException("존재하지 않는 게시물 입니다!");
-        }
-        StudyArticle studyArticle = studyArticleRepository.getById(articleId);
-        StudyContent studyContent = studyContentRepository.getByStudyArticle(studyArticle).orElseThrow(()-> new NullPointerException("내용이 존재하지 않습니다."));
+    public HttpStatus deleteArticle(Long articleId) {
+        StudyArticle studyArticle = findStudyArticle(articleId);
+        StudyContent studyContent = findStudyContent(studyArticle);
+        deleteAllCommentByStudyArticle(studyArticle);
+        studyArticleTagRepository.deleteAllTagsByStudyArticle(studyArticle);
         studyContentRepository.delete(studyContent);
         studyArticleRepository.delete(studyArticle);
-        return Boolean.TRUE;
-    }
 
-    @Transactional
-    public void updateContent(StudyArticle studyArticle, String content, StudyContent studyContent) {
-        studyContent.setContent(content);
-        studyContent.setStudyArticle(studyArticle);
+        return HttpStatus.OK;
     }
 
     @Transactional
     public void addContent(StudyArticle studyArticle, String content) {
-        StudyContent studyContent = StudyContent.builder()
-                .studyArticle(studyArticle)
-                .content(content)
-                .build();
-        studyContentRepository.save(studyContent);
+        studyContentRepository.save(StudyContent.of(studyArticle, content));
     }
 
+    // 스터디 게시글 조회수 증가
+    @Transactional
+    public HttpStatus plusViewCount(Long studyArticleId) {
+        findStudyArticle(studyArticleId).plusViewCount();
+        return HttpStatus.OK;
+    }
 
+    public StudyBoard findStudyBoard(int boardId) {
+        return studyBoardRepository.findById(boardId)
+            .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    public Member findMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if(!member.getIs_active()){
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        return member;
+    }
+
+    public StudyArticle findStudyArticle(Long studyArticleId) {
+        return studyArticleRepository.findById(studyArticleId)
+            .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+    }
+
+    public StudyContent findStudyContent(StudyArticle studyArticle) {
+        return studyContentRepository.getByStudyArticle(studyArticle)
+            .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
+    }
+
+    public void deleteAllCommentByStudyArticle(StudyArticle studyArticle){
+        studyArticleCommentRepository.deleteAllByStudyArticle(studyArticle);
+    }
+
+    // 게시글 태그 추가
+    @Transactional
+    public void addTags(StudyArticle studyArticle, List<String> tags) {
+        studyArticleTagRepository.deleteAllTagsByStudyArticle(studyArticle);
+        if (tags == null) {
+            return;
+        }
+
+        for (String tag : tags) {
+            studyArticleTagRepository.save(StudyArticleTag.of(studyArticle, tag));
+        }
+
+    }
 
 }
