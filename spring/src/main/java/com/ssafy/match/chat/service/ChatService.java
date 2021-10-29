@@ -159,9 +159,9 @@ public class ChatService {
         if (chatRoom.isEmpty()) {
             ChatRoom inner_chatroom = createChatRoom(roomid, user, other);
             chatRoomRepository.save(inner_chatroom);
-            return MemberChatRoomResponseDto.of(inner_chatroom, other.getId());
+            return MemberChatRoomResponseDto.of(inner_chatroom, other);
         } else {
-            return MemberChatRoomResponseDto.of(chatRoom.get(), other.getId());
+            return MemberChatRoomResponseDto.of(chatRoom.get(), other);
         }
     }
 

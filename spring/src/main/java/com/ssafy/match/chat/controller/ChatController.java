@@ -50,10 +50,4 @@ public class ChatController {
     public ResponseEntity<MemberChatRoomResponseDto> getMemberChat(@PathVariable("email") String email) throws Exception {
         return ResponseEntity.ok(chatService.getChatroomId(email));
     }
-
-//    @MessageMapping("/file")
-//    @SendTo("/topic/chat")
-//    public ChatMessage sendFile(ChatMessage message) throws Exception {
-//        return new ChatMessage(message.getFileName(), message.getRawData(), message.getSender());
-//    }
 }
