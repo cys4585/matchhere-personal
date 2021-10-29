@@ -36,7 +36,7 @@ public class ChatController {
     }
 
     @GetMapping("/chatroom/{id}")
-    public ResponseEntity<Page<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") Long id,
+    public ResponseEntity<Page<ChatMessageResponseDto>> getChattingHistory(@PathVariable("id") String id,
     @PageableDefault(size = 10) @SortDefault(sort = "sentTime", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
         return ResponseEntity.ok(chatService.getHistory(id, pageable));
     }

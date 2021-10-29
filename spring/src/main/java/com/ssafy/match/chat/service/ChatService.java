@@ -109,9 +109,9 @@ public class ChatService {
 //    }
 
     @Transactional(readOnly = true)
-    public Page<ChatMessageResponseDto> getHistory(Long id, Pageable pageable) {
+    public Page<ChatMessageResponseDto> getHistory(String roomid, Pageable pageable) {
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 토큰입니다."));
-        String roomid = getRoomId(member.getId(), id);
+//        String roomid = getRoomId(member.getId(), id);
         ChatRoom chatRoom = chatRoomRepository.findById(roomid).orElseThrow(() -> new NullPointerException("존재하지 않는 채팅방입니다!"));
 //        List<ChatMessageInterface> chatMessages = chatMessageRepository.findAllByRoom(chatRoom);
         Page<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoom(chatRoom, pageable);
