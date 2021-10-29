@@ -88,8 +88,7 @@ export default {
         const isSameSender =
           String(props.chatItem.sender_id) ===
           String(props.exChatItem.sender_id)
-        const isSameMinute =
-          moment.duration(chatDateTime.diff(exChatDateTime)).asMinutes() < 1
+        const isSameMinute = exChatDateTime.minute() === chatDateTime.minute()
         isContinue.value = isSameSender && isSameMinute
       }
 

@@ -43,9 +43,7 @@ export default {
     watch(
       () => props.chatList,
       (newChatList, oldChatList) => {
-        const [newLength, oldLength] = [newChatList.length, oldChatList.length]
-        console.log(oldLength, newLength)
-        if (oldLength === 0) isFirstHistory = true
+        if (oldChatList.length === 0) isFirstHistory = true
         else if (newChatList[0].sentTime === oldChatList[0].sentTime)
           isAddedNewMsg = true
         else isAddedHistory = true
