@@ -136,10 +136,12 @@ public class ChatService {
         List<ChatRoom> chatRoomsOther = chatRoomRepository.findAllByOther(user);
         List<ChatRoomResponseDto> chatRoomResponseDtos = new ArrayList<>();
         for (ChatRoom chatRoom: chatRoomsUser) {
-            chatRoomResponseDtos.add(ChatRoomResponseDto.ofOther(chatRoom));
+            ChatMessage chatMessage = chatMessageRepository.findTopByChatRoomOrderBySentTimeDesc(chatRoom);
+            chatRoomResponseDtos.add(ChatRoomResponseDto.ofOther(chatRoom, chatMessage));
         }
         for (ChatRoom chatRoom: chatRoomsOther) {
-            chatRoomResponseDtos.add(ChatRoomResponseDto.ofUser(chatRoom));
+            ChatMessage chatMessage = chatMessageRepository.findTopByChatRoomOrderBySentTimeDesc(chatRoom);
+            chatRoomResponseDtos.add(ChatRoomResponseDto.ofUser(chatRoom, chatMessage));
         }
         return chatRoomResponseDtos;
 //        List<ChatRoomUserInterface> chatRooms1 = chatRoomRepository.findAllOthersByUser_id(user_id);
