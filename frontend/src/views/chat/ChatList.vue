@@ -10,15 +10,12 @@
 import ChatUserListItem from "@/components/chat/ChatUserListItem.vue"
 import { onMounted, ref } from "@vue/runtime-core"
 import { useStore } from "vuex"
-import { useRoute } from "vue-router"
 
 export default {
   name: "ChatList",
   components: { ChatUserListItem },
   emits: ["routeChat"],
   setup(props, { emit }) {
-    const route = useRoute()
-    console.log(route.name)
     emit("routeChat", "list")
     const store = useStore()
 
@@ -32,7 +29,7 @@ export default {
           const userIds = room.id.split("-")
           return userIds[0] !== userIds[1]
         })
-        // console.log(chatRoomList.value)
+        console.log(chatRoomList.value)
       } catch (error) {
         console.log(error.message)
       }

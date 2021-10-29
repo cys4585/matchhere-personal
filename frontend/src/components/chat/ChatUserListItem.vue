@@ -19,33 +19,39 @@
             overflow-ellipsis
           "
           style="max-width: 180px"
-          >가나다라마바사아자차카타파하가나다라마바사가나다라</span
+          >{{ chatRoom.content }}</span
         >
-        <span class="text-sm text-gray-400">21.10.25</span>
+        <span class="text-sm text-gray-400">{{ sentTime }}</span>
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import moment from "moment"
 import { useRouter } from "vue-router"
+import { ref } from "@vue/reactivity"
 export default {
   name: "ChatUserListItem",
   props: {
     chatRoom: Object,
   },
-  setup() {
+  setup(props) {
     const router = useRouter()
 
     const handleClick = () => {
       // console.log(props.chatRoom)
       router.push({
         name: "ChatDetail",
-        params: { email: "soc4585@naver.com" },
+        params: { email: props.chatRoom.email },
       })
     }
 
-    return { handleClick }
+    moment.locale("ko")
+    console.log(props.chatRoom.sentTime)
+    const sentTime = ref(moment(props.chatRoom.sentTime).format("YY. MM. DD"))
+
+    return { handleClick, sentTime }
   },
 }
 </script>

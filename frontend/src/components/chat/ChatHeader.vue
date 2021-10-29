@@ -3,7 +3,7 @@
     <div class="flex gap-2 items-center">
       <span
         class="material-icons text-gray-900 cursor-pointer"
-        @click="$router.go(-1)"
+        @click="handleClick"
       >
         chevron_left
       </span>
@@ -14,10 +14,18 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router"
 export default {
   name: "ChatHeader",
   props: ["targetNickname"],
-  setup() {},
+  setup() {
+    const router = useRouter()
+    const handleClick = () => {
+      router.push({ name: "ChatList" })
+      // router.go(-1)
+    }
+    return { handleClick }
+  },
 }
 </script>
 

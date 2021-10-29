@@ -11,6 +11,7 @@
       <span
         class="material-icons text-gray-400"
         :class="{ 'text-gray-600': content }"
+        @click="handleClick"
       >
         send
       </span>
@@ -71,8 +72,12 @@ export default {
         else if (scrollHeight === 48) textareaHeight.value = "72px"
       }
     }
+    const handleClick = () => {
+      if (content.value.trim()) send(content.value)
+      content.value = ""
+    }
 
-    return { resize, textareaHeight, content, handleEnter }
+    return { resize, textareaHeight, content, handleEnter, handleClick }
   },
 }
 </script>

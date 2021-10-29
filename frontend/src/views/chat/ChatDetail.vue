@@ -29,7 +29,6 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
-    console.log(route.name)
     emit("routeChat", "detail")
 
     const roomId = ref()
