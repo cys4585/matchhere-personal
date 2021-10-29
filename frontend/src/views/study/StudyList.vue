@@ -30,26 +30,8 @@
         @slideChange="handleSlideChange"
         @resize="onResize"
       >
-        <SwiperSlide>
+        <SwiperSlide v-if="false">
           <StudyArticleCard :small="true" :key="1" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="2" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="3" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="4" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="5" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="6" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <StudyArticleCard :small="true" :key="7" />
         </SwiperSlide>
       </swiper>
     </section>
@@ -57,14 +39,11 @@
       <h2 class="mb-6">스터디 리스트</h2>
       <div class="study-card-list-wrapper-v">
         <div class="study-card-list-v">
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
-          <StudyArticleCard />
+          <StudyArticleCard
+            v-for="study in studyList"
+            :key="study.id"
+            :study="study"
+          />
         </div>
       </div>
     </section>
@@ -76,11 +55,14 @@ import { Swiper, SwiperSlide } from "swiper/vue"
 import "swiper/swiper.scss"
 import StudyArticleCard from "@/components/study/StudyArticleCard.vue"
 import { ref, onMounted, onUnmounted } from "vue"
+import { useStore } from "vuex"
 
 export default {
   name: "StudyList",
   components: { StudyArticleCard, Swiper, SwiperSlide },
   setup() {
+    const store = useStore()
+    const studyList = ref([])
     const slidesPerView = ref(1)
 
     const handleResize = () => {
@@ -103,8 +85,11 @@ export default {
     const onResize = (swiper) => {
       console.log(swiper)
     }
-    onMounted(() => {
+    onMounted(async () => {
       window.addEventListener("resize", handleResize)
+      const data = await store.dispatch("study/getStudyList")
+      console.log(data)
+      studyList.value = data.content || []
     })
 
     onUnmounted(() => {
@@ -112,6 +97,7 @@ export default {
     })
     return {
       slidesPerView,
+      studyList,
       onResize,
       handleSwiper,
       handleSlideChange,

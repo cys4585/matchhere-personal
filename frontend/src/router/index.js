@@ -99,11 +99,13 @@ const routes = [
         path: ":studyId/article",
         name: "StudyArticle",
         component: StudyPage.StudyArticle,
+        props: true,
       },
       {
         path: ":studyId/edit",
         name: "StudyEdit",
         component: StudyPage.StudyEdit,
+        props: true,
       },
       {
         path: ":studyId/board",

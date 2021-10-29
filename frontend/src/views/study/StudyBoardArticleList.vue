@@ -1,13 +1,13 @@
 <template>
   <div class="container py-4 grid gap-4">
     <BoardArticleLink />
+    <!-- <BoardArticleLink />
     <BoardArticleLink />
     <BoardArticleLink />
     <BoardArticleLink />
     <BoardArticleLink />
     <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink />
+    <BoardArticleLink /> -->
   </div>
   <router-link
     class="material-icons add-btn"
