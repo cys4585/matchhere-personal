@@ -11,7 +11,6 @@ import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
-import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
@@ -69,7 +68,7 @@ public class StudyServiceImpl implements StudyService {
 
     // 스터디 생성을 위한 정보(호스트의 클럽 정보)
     public StudyInfoForCreateResponseDto getInfoForCreate() {
-        return StudyInfoForCreateResponseDto.from(makeClubSimpleInfoResponseDtos(
+        return StudyInfoForCreateResponseDto.from(makeClubInfoForSelectResponseDtos(
             findClubInMember(findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
@@ -109,7 +108,7 @@ public class StudyServiceImpl implements StudyService {
         }
 
         return StudyInfoForUpdateResponseDto.of(study, getStudyTopics(study),
-            makeClubSimpleInfoResponseDtos(findClubInMember(member)));
+            makeClubInfoForSelectResponseDtos(findClubInMember(member)));
     }
 
     // 스터디의 주제 리스트
@@ -426,7 +425,7 @@ public class StudyServiceImpl implements StudyService {
     }
 
     // 클럽 정보 요약
-    public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
+    public List<ClubInfoForSelectResponseDto> makeClubInfoForSelectResponseDtos(List<Club> clubs) {
         return clubs.stream()
             .map(ClubInfoForSelectResponseDto::from)
             .collect(Collectors.toList());

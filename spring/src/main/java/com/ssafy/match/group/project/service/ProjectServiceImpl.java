@@ -76,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     // 프로젝트 생성을 위한 정보(회원의 클럽 리스트)
     public ProjectInfoForCreateResponseDto getInfoForCreate() {
-        return ProjectInfoForCreateResponseDto.from(makeClubSimpleInfoResponseDtos(
+        return ProjectInfoForCreateResponseDto.from(makeClubInfoForSelectResponseDtos(
             memberClubRepository.findClubByMember(findMember(SecurityUtil.getCurrentMemberId()))));
     }
 
@@ -118,7 +118,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return ProjectInfoForUpdateResponseDto.of(project,
-            projectTechstackSimple(project), makeClubSimpleInfoResponseDtos(
+            projectTechstackSimple(project), makeClubInfoForSelectResponseDtos(
                 memberClubRepository.findClubByMember(
                     findMember(SecurityUtil.getCurrentMemberId()))));
     }
@@ -487,7 +487,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
+    public List<ClubInfoForSelectResponseDto> makeClubInfoForSelectResponseDtos(List<Club> clubs) {
         return clubs.stream()
             .map(ClubInfoForSelectResponseDto::from)
             .collect(Collectors.toList());

@@ -2,7 +2,6 @@ package com.ssafy.match.group.study.dto.response;
 
 import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
-import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModel;
@@ -79,7 +78,7 @@ public class StudyInfoResponseDto {
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto currentClub;
+    private ClubInfoForSelectResponseDto currentClub;
 
     @ApiModelProperty(example = "알고리즘 스터디입니다.")
     private String bio;

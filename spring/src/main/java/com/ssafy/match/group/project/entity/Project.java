@@ -233,6 +233,10 @@ public class Project {
         this.coverPic = null;
     }
 
+    public void removeClub(){
+        this.club = null;
+    }
+
     public void update(ProjectUpdateRequestDto dto, Club club) {
         this.name = dto.getName();
         this.projectProgressState = ProjectProgressState.from(dto.getProjectProgressState());

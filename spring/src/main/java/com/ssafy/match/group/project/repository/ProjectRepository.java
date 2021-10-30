@@ -3,7 +3,9 @@ package com.ssafy.match.group.project.repository;
 import com.ssafy.match.common.entity.ProjectProgressState;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
+import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.project.entity.Project;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +25,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // 추천 프로젝트
 //    List<Project> findAll();
+
+    List<Project> findAllByClub(Club club);
 }

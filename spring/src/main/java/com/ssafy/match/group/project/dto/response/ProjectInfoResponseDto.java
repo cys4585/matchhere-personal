@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -110,7 +111,7 @@ public class ProjectInfoResponseDto {
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto currentClub;
+    private ClubInfoForSelectResponseDto currentClub;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
     @ApiParam(value = "프로젝트 소개")

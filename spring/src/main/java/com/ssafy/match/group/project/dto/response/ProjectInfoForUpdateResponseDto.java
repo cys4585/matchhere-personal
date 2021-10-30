@@ -52,11 +52,11 @@ public class ProjectInfoForUpdateResponseDto {
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto currentClub;
+    private ClubInfoForSelectResponseDto currentClub;
 
     @ApiModelProperty(example = "[{\"clubId\": 1, \"clubName\": \"첫 클럽\"}, {\"clubId\": 2, \"clubName\": \"두번째 클럽\"}]")
     @ApiParam(value = "소유자가 속해있는 클럽 목록")
-    private List<ClubSimpleInfoResponseDto> clubs;
+    private List<ClubInfoForSelectResponseDto> clubs;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
     @ApiParam(value = "프로젝트 소개")
@@ -95,7 +95,7 @@ public class ProjectInfoForUpdateResponseDto {
     private int plannerMaxCount;
 
     public static ProjectInfoForUpdateResponseDto of(Project project,
-        List<ProjectTechstackResponseDto> techstacks, List<ClubSimpleInfoResponseDto> clubs) {
+        List<ProjectTechstackResponseDto> techstacks, List<ClubInfoForSelectResponseDto> clubs) {
         return ProjectInfoForUpdateResponseDto.builder()
             .id(project.getId())
             .name(project.getName())

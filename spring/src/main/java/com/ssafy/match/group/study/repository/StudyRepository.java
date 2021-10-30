@@ -3,7 +3,9 @@ package com.ssafy.match.group.study.repository;
 import com.ssafy.match.common.entity.PublicScope;
 import com.ssafy.match.common.entity.RecruitmentState;
 import com.ssafy.match.common.entity.StudyProgressState;
+import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.study.entity.Study;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +21,7 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
         @Param("recruitmentState") RecruitmentState recruitmentState,
         @Param("publicScope") PublicScope publicScope,
         Pageable pageable);
+
+    List<Study> findAllByClub(Club club);
 
 }

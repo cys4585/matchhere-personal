@@ -14,8 +14,8 @@ public class ClubInfoForSelectResponseDto {
 
     private String name;
 
-    public static ClubSimpleInfoResponseDto from(Club club) {
-        return ClubSimpleInfoResponseDto.builder()
+    public static ClubInfoForSelectResponseDto from(Club club) {
+        return ClubInfoForSelectResponseDto.builder()
             .id(club.getId())
             .name(club.getName())
             .build();

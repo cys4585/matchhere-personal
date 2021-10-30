@@ -1,6 +1,6 @@
 package com.ssafy.match.group.study.dto.response;
 
-import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
@@ -17,10 +17,10 @@ public class StudyInfoForCreateResponseDto {
 
     @ApiModelProperty(example = "[{\"id\": 1, \"name\": \"클럽1\"}, {\"id\": 2, \"name\": \"클럽2\"}]")
     @ApiParam(value = "스터디를 생성하려는 멤버의 클럽 id, name 정보 리스트")
-    private List<ClubSimpleInfoResponseDto> clubs;
+    private List<ClubInfoForSelectResponseDto> clubs;
 
     public static StudyInfoForCreateResponseDto from(
-        List<ClubSimpleInfoResponseDto> clubs) {
+        List<ClubInfoForSelectResponseDto> clubs) {
         return StudyInfoForCreateResponseDto.builder()
             .clubs(clubs)
             .build();

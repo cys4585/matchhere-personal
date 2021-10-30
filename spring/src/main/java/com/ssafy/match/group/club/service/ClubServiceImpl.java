@@ -28,6 +28,10 @@ import com.ssafy.match.group.club.repository.ClubTopicRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
 import com.ssafy.match.group.clubboard.board.repository.ClubBoardRepository;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.project.repository.ProjectRepository;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.repository.StudyRepository;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -56,6 +60,8 @@ public class ClubServiceImpl implements ClubService {
     private final DBFileRepository dbFileRepository;
     private final ClubBoardRepository clubBoardRepository;
     private final ClubTopicRepository clubTopicRepository;
+    private final StudyRepository studyRepository;
+    private final ProjectRepository projectRepository;
 
     // 클럽 생성
     @Transactional
@@ -197,9 +203,23 @@ public class ClubServiceImpl implements ClubService {
         }
         // 클럽 주제 제거
         clubTopicRepository.deleteAllByClub(club);
+        // 속한 스터디, 프로젝트 초기화
+        initialize(club);
         // 클럽 게시판, 게시글, 댓글 삭제 정책 회의 후 생성
         club.deActivation();
         return HttpStatus.OK;
+    }
+
+    @Transactional
+    public void initialize(Club club) {
+        List<Study> studys = studyRepository.findAllByClub(club);
+        List<Project> projects = projectRepository.findAllByClub(club);
+        for (Study study : studys) {
+            study.removeClub();
+        }
+        for (Project project : projects) {
+            project.removeClub();
+        }
     }
 
     // 클럽 전체 조회
