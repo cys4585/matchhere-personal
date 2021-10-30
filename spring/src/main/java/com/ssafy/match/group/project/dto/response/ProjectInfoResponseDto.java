@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.dto.response;
 
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -110,7 +111,7 @@ public class ProjectInfoResponseDto {
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto currentClub;
+    private ClubInfoForSelectResponseDto currentClub;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
     @ApiParam(value = "프로젝트 소개")
@@ -148,7 +149,7 @@ public class ProjectInfoResponseDto {
             .designers(designers)
             .designerMaxCount(project.getDesignerMaxCount())
             .city(project.getCity().toString())
-            .currentClub((project.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+            .currentClub((project.getClub() == null) ? null : ClubInfoForSelectResponseDto.from(
                 project.getClub()))
             .bio(project.getBio())
             .authority(authority)

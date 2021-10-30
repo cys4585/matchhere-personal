@@ -1,6 +1,9 @@
 package com.ssafy.match.group.club.entity;
 
-import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.PublicScope;
+import com.ssafy.match.common.entity.RecruitmentState;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.club.dto.request.ClubCreateRequestDto;
 import com.ssafy.match.group.club.dto.request.ClubUpdateRequestDto;
@@ -17,88 +20,131 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 @Entity(name = "matching.club")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Club {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(min = 2, max = 100)
     private String name;
-    private String topic;
-    private String bio;
-    @Column(name = "member_count")
-    private int memberCount;
-    @Column(name = "max_count")
-    private int maxCount;
-
-    @Enumerated(EnumType.STRING)
-    private City city;
-    @Column(name = "create_Date")
-    private LocalDateTime createDate;
-
-    @Column(name = "is_active")
-    private Boolean isActive;
-    @Column(name = "is_public")
-    private Boolean isPublic;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "host_id")
-    private Member member;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cover_pic")
-    private DBFile dbFile;
+    private DBFile coverPic;
 
-    public void addMember(){
+    @Enumerated(EnumType.STRING)
+    @Column(name = "public_scope", nullable = false)
+    private PublicScope publicScope;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recruitment_state", nullable = false)
+    private RecruitmentState recruitmentState;
+
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
+
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "host_id", nullable = false)
+    private Member member;
+
+    @Column(name = "member_count", nullable = false)
+    private int memberCount;
+
+    @Column(name = "max_count", nullable = false)
+    @Min(1)
+    private int maxCount;
+
+    private String bio;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+    public void plusViewCount() {
+        this.viewCount++;
+    }
+
+    public void addMember() {
+        if (this.memberCount >= this.maxCount) {
+            throw new CustomException(ErrorCode.MEMBER_COUNT_OVER);
+        }
         this.memberCount++;
     }
 
-    public void removeMember(){
+    public void removeMember() {
+        if (this.memberCount <= 0) {
+            throw new CustomException(ErrorCode.MEMBER_COUNT_BELOW_ZERO);
+        }
         this.memberCount--;
     }
 
-    public void changeMember(Member member) throws Exception {
-        if(member == null){
-            throw new Exception("프로젝트장은 존재해야합니다.");
-        }
+    public void setMember(Member member) {
         this.member = member;
     }
 
-    public void setMaxCount(int num) throws Exception {
-        if(num < 1) {
-            throw new Exception("인원은 1명 이상이 되어야합니다.");
+    public void setMaxCount(int count){
+        if (this.memberCount > count || count < 1) {
+            throw new CustomException(ErrorCode.MEMBER_COUNT_OVER);
         }
-        this.maxCount = num;
+        this.maxCount = count;
     }
 
-    public void update(ClubUpdateRequestDto dto) throws Exception {
-        this.name = dto.getName();
-        this.topic = dto.getTopic();
-        this.bio = dto.getBio();
-        setMaxCount(dto.getMaxCount());
-        this.city = City.from(dto.getCity());
-        this.isPublic = dto.getIsPublic();
-    }
-
-    public Club(ClubCreateRequestDto dto) throws Exception {
-        this.name = dto.getName();
-        this.topic = dto.getTopic();
-        this.bio = dto.getBio();
-        this.memberCount = 0;
-        setMaxCount(dto.getMaxCount());
-        this.city = City.from(dto.getCity());
-        this.createDate = LocalDateTime.now();
+    public void activation(){
         this.isActive = true;
-        this.isPublic = dto.getIsPublic();
+    }
+
+    public void deActivation(){
+        this.isActive = false;
+    }
+
+    public void initialCoverPic(){
+        this.coverPic = null;
+    }
+
+    public void setCoverPic(DBFile coverPic){
+        this.coverPic = coverPic;
+    }
+
+    public void update(ClubUpdateRequestDto dto){
+        this.name = dto.getName();
+        this.publicScope = PublicScope.from(dto.getPublicScope());
+        this.recruitmentState = RecruitmentState.from(dto.getRecruitmentState());
+        setMaxCount(dto.getMaxCount());
+        this.bio = dto.getBio();
+    }
+
+    public static Club of(ClubCreateRequestDto dto, DBFile coverPic, Member member){
+        return Club.builder()
+            .coverPic(coverPic)
+            .name(dto.getName())
+            .publicScope(PublicScope.from(dto.getPublicScope()))
+            .recruitmentState(RecruitmentState.from(dto.getRecruitmentState()))
+            .viewCount(0)
+            .createdDate(LocalDateTime.now())
+            .member(member)
+            .memberCount(0)
+            .maxCount(dto.getMaxCount())
+            .bio(dto.getBio())
+            .isActive(true)
+            .build();
     }
 
 }

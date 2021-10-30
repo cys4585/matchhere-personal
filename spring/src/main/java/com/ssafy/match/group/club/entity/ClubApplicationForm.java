@@ -1,66 +1,46 @@
 package com.ssafy.match.group.club.entity;
 
-import com.ssafy.match.common.entity.City;
-import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.group.club.dto.request.ClubApplicationRequestDto;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
+@Builder
 @Table(name = "matching.club_application_form")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ClubApplicationForm {
 
     @EmbeddedId
     private CompositeMemberClub compositeMemberClub;
 
-    private String nickname;
-
-    @Enumerated(EnumType.STRING)
-    private City city;
-
-    private String git;
-
-    private String twitter;
-
-    private String facebook;
-
-    private String backjoon;
+    @NotBlank
+    @Size(min = 2, max = 30)
+    private String name;
 
     private String bio;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cover_pic")
-    private DBFile dbFile;
-
-    @Builder
-    public ClubApplicationForm(CompositeMemberClub cmp, ClubApplicationRequestDto dto) {
-        this.compositeMemberClub = cmp;
-        this.nickname = dto.getNickname();
-        this.city = City.from(dto.getCity());
-        this.git = dto.getGit();
-        this.twitter = dto.getTwitter();
-        this.facebook = dto.getFacebook();
-        this.backjoon = dto.getBackjoon();
-        this.bio = dto.getBio();
-        this.createDate = LocalDateTime.now();
+    public static ClubApplicationForm of(ClubApplicationRequestDto dto, CompositeMemberClub cm,
+        String name) {
+        return ClubApplicationForm.builder()
+            .compositeMemberClub(cm)
+            .name(name)
+            .bio(dto.getBio())
+            .createDate(LocalDateTime.now())
+            .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.dto.response;
 
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,10 +19,10 @@ public class ProjectInfoForCreateResponseDto {
 
     @ApiModelProperty(example = "[{\"id\": 1, \"name\": \"클럽1\"}, {\"id\": 2, \"name\": \"클럽2\"}]")
     @ApiParam(value = "프로젝트를 생성하려는 멤버의 클럽 id, name 정보 리스트")
-    private List<ClubSimpleInfoResponseDto> clubs;
+    private List<ClubInfoForSelectResponseDto> clubs;
 
     public static ProjectInfoForCreateResponseDto from(
-        List<ClubSimpleInfoResponseDto> clubs) {
+        List<ClubInfoForSelectResponseDto> clubs) {
         return ProjectInfoForCreateResponseDto.builder()
             .clubs(clubs)
             .build();

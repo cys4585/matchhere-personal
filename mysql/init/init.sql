@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `matching`.`club` (
   `public_scope` VARCHAR(45) NOT NULL,
   `recruitment_state` VARCHAR(45) NOT NULL,
   `view_count` INT NOT NULL,
-  `create_date` DATETIME(6) NOT NULL,
+  `created_date` DATETIME(6) NOT NULL,
   `host_id` BIGINT NOT NULL,
   `member_count` INT NOT NULL,
   `max_count` INT NOT NULL,
@@ -172,7 +172,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `matching`.`club_application_form` (
   `club_id` BIGINT NOT NULL,
   `member_id` BIGINT NOT NULL,
-  `city` VARCHAR(10) NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
   `bio` VARCHAR(145) NULL DEFAULT NULL,
   `create_date` DATETIME(6) NOT NULL,
   PRIMARY KEY (`club_id`, `member_id`),

@@ -1,15 +1,12 @@
 package com.ssafy.match.group.study.dto.response;
 
 import com.ssafy.match.file.dto.DBFileDto;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,11 +59,11 @@ public class StudyInfoForUpdateResponseDto {
 
     @ApiModelProperty(example = "{\"id\": 3, \"name\": \"SSAFY\"}")
     @ApiParam(value = "소속된 클럽 정보")
-    private ClubSimpleInfoResponseDto currentClub;
+    private ClubInfoForSelectResponseDto currentClub;
 
     @ApiModelProperty(example = "[{\"clubId\": 1, \"clubName\": \"첫 클럽\"}, {\"clubId\": 2, \"clubName\": \"두번째 클럽\"}]")
     @ApiParam(value = "소유자가 속해있는 클럽 목록")
-    private List<ClubSimpleInfoResponseDto> clubs;
+    private List<ClubInfoForSelectResponseDto> clubs;
 
     @ApiModelProperty(example = "Git 매칭 프로젝트입니다.")
     @ApiParam(value = "프로젝트 소개")
@@ -81,7 +78,7 @@ public class StudyInfoForUpdateResponseDto {
     private String recruitmentState;
 
     public static StudyInfoForUpdateResponseDto of(Study study,
-        List<StudyTopicResponseDto> topics, List<ClubSimpleInfoResponseDto> clubs){
+        List<StudyTopicResponseDto> topics, List<ClubInfoForSelectResponseDto> clubs){
         return StudyInfoForUpdateResponseDto.builder()
             .id(study.getId())
             .name(study.getName())
@@ -90,7 +87,7 @@ public class StudyInfoForUpdateResponseDto {
             .topics(topics)
             .schedule(study.getSchedule())
             .city(study.getCity().toString())
-            .currentClub((study.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+            .currentClub((study.getClub() == null) ? null : ClubInfoForSelectResponseDto.from(
                 study.getClub()))
             .clubs(clubs)
             .bio(study.getBio())

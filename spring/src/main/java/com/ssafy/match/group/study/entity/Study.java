@@ -145,6 +145,10 @@ public class Study {
         this.coverPic = coverPic;
     }
 
+    public void removeClub(){
+        this.club = null;
+    }
+
     public void update(StudyUpdateRequestDto dto, Club club){
         this.name = dto.getName();
         this.studyProgressState = StudyProgressState.from(dto.getStudyProgressState());

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MemberClubRepository extends JpaRepository<MemberClub, CompositeMemberClub> {
+
     // 특정 클럽에 속한 멤버의 관계 정보
     @Query(value = "select mc from matching.member_club mc "
         + "where mc.compositeMemberClub.club = :club and mc.isActive = true")
