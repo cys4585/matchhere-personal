@@ -61,7 +61,7 @@ const getStudy = async (studyId) => {
   }
 }
 
-const updateViewCount = async (studyId) => {
+const updateViewCountOfStudyArticle = async (studyId) => {
   try {
     await http.put(`study/view-count/${studyId}`)
   } catch (error) {
@@ -86,12 +86,99 @@ const getStudyBoards = async (studyId) => {
   }
 }
 
+// BoardArticle
+const createBoardArticle = async (data) => {
+  try {
+    await http.post(`studyboards`, data)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getBoardArticles = async (boardId) => {
+  try {
+    const res = await http.get(`studyboards/${boardId}/articles`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const updateBoardArticle = async ({ article, articleId }) => {
+  try {
+    const res = await http.put(`studyboards/${articleId}`, article)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getBoardArticle = async (articleId) => {
+  try {
+    const res = await http.get(`studyboards/article/${articleId}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const updateViewCountOfBoardArticle = async (articleId) => {
+  try {
+    await http.put(`studyboards/view-count/${articleId}`)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// BoardArticleComment
+const createArticleComment = async ({ articleId, parentId = 0, content }) => {
+  try {
+    const res = await http.post(`studycomment/${articleId}/${parentId}`, {
+      content,
+    })
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+const getArticleComment = async (articleId) => {
+  try {
+    const res = await http.get(`studycomment/${articleId}`)
+    const comments = []
+    res.data.forEach((c) => {
+      if (c.depth === 0) {
+        comments.push({ ...c, reCommentList: [] })
+      } else {
+        comments[comments.length - 1].reCommentList.push(c)
+      }
+    })
+    return comments
+  } catch (error) {
+    console.log(error)
+  }
+}
+const deleteArticleComment = async (commentId) => {
+  try {
+    await http.delete(`studycomment/${commentId}`)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export default {
   createStudy,
   editStudy,
   getStudyList,
   getStudy,
-  updateViewCount,
   submitApplication,
   getStudyBoards,
+  createBoardArticle,
+  getBoardArticles,
+  updateBoardArticle,
+  getBoardArticle,
+  updateViewCountOfStudyArticle,
+  updateViewCountOfBoardArticle,
+  createArticleComment,
+  getArticleComment,
+  deleteArticleComment,
 }

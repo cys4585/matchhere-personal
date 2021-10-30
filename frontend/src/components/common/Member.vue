@@ -1,6 +1,6 @@
 <template>
   <router-link
-    :to="{ name: 'Profile', params: { email: user.id } }"
+    :to="{ name: 'Profile', params: { email: user.email } }"
     class="flex gap-1 items-center p-1 hover:bg-yellow-100 rounded"
   >
     <div class="w-6 h-6 rounded-full border bg-pink-100">

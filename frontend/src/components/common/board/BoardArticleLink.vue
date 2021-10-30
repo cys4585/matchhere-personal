@@ -2,29 +2,25 @@
   <router-link
     :to="{
       name: 'StudyBoardArticleDetail',
-      params: { articleId: 3 },
+      params: { articleId: article.articleId },
     }"
     class="article-link"
   >
     <div class="article-info">
-      <p class="title">14회 정기 미팅 (21. 10. 10)</p>
+      <p class="title">{{ article.title }}</p>
       <div class="tags flex gap-2">
-        <Tag text="정기미팅" type="board" />
+        <Tag v-for="tag in article.tags" :key="tag" :text="tag" type="board" />
       </div>
       <div class="created flex gap-2">
-        <Member
-          :user="{
-            id: 1,
-            email: 'kepy1106@gmail.com',
-            name: '김병훈',
-            coverPicUri: 'https://picsum.photos/100/100',
-          }"
-        />
+        <Member :user="article.writer" />
       </div>
     </div>
     <div class="icon-wrapper">
       <router-link
-        :to="{ name: 'StudyBoardArticleEdit', params: { articleId: 1 } }"
+        :to="{
+          name: 'StudyBoardArticleEdit',
+          params: { articleId: article.articleId },
+        }"
       >
         수정
       </router-link>
@@ -38,6 +34,9 @@ import Member from "@/components/common/Member.vue"
 export default {
   components: { Tag, Member },
   name: "BoardArticleLink",
+  props: {
+    article: Object,
+  },
 }
 </script>
 

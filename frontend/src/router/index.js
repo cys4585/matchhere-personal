@@ -125,15 +125,15 @@ const routes = [
             props: true,
           },
           {
-            path: ":boardId/articles",
-            name: "StudyBoardArticleList",
-            component: StudyPage.StudyBoardArticleList,
+            path: "articles/create",
+            name: "StudyBoardArticleCreate",
+            component: StudyPage.StudyBoardArticleCreate,
             props: true,
           },
           {
-            path: ":boardId/articles/create",
-            name: "StudyBoardArticleCreate",
-            component: StudyPage.StudyBoardArticleCreate,
+            path: ":boardId/articles",
+            name: "StudyBoardArticleList",
+            component: StudyPage.StudyBoardArticleList,
             props: true,
           },
           {

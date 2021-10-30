@@ -1,13 +1,10 @@
 <template>
   <div class="container py-4 grid gap-4">
-    <BoardArticleLink />
-    <!-- <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink />
-    <BoardArticleLink /> -->
+    <BoardArticleLink
+      v-for="article in articles"
+      :key="article.articleId"
+      :article="article"
+    />
   </div>
   <router-link
     class="material-icons add-btn"
@@ -18,6 +15,8 @@
 
 <script>
 import BoardArticleLink from "@/components/common/board/BoardArticleLink.vue"
+import { onMounted, ref } from "@vue/runtime-core"
+import { useStore } from "vuex"
 export default {
   name: "StudyBoardArticleList",
   components: {
@@ -26,6 +25,19 @@ export default {
   props: {
     studyId: [String, Number],
     boardId: [String, Number],
+  },
+  setup(props) {
+    const store = useStore()
+    const articles = ref([])
+
+    onMounted(async () => {
+      const data = await store.dispatch("study/getBoardArticles", props.boardId)
+      console.log(data)
+      articles.value = [...data.content]
+    })
+    return {
+      articles,
+    }
   },
 }
 </script>
