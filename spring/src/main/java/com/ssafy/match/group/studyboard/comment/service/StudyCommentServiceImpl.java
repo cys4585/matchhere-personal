@@ -1,5 +1,7 @@
 package com.ssafy.match.group.studyboard.comment.service;
 
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.group.studyboard.article.entity.StudyArticle;
 import com.ssafy.match.group.studyboard.article.repository.StudyArticleRepository;
 import com.ssafy.match.group.studyboard.comment.dto.StudyArticleCommentRequestDto;
@@ -9,8 +11,8 @@ import com.ssafy.match.group.studyboard.comment.repository.StudyArticleCommentRe
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,84 +28,73 @@ public class StudyCommentServiceImpl implements StudyCommentService{
     private final StudyArticleCommentRepository studyArticleCommentRepository;
 
     @Transactional
-    public Long create(Long articleId, Long parentId, StudyArticleCommentRequestDto dto){
-        if(parentId > 0) {
-            StudyArticleComment parent = studyArticleCommentRepository.findById(parentId)
-                .orElseThrow(() -> new NullPointerException("존재하지 않는 부모 댓글입니다."));
+    public StudyArticleCommentResponseDto create(Long articleId, Long parentId, StudyArticleCommentRequestDto dto) {
+        if (parentId > 0) {
+            StudyArticleComment parent = findStudyArticleComment(parentId);
             parent.addReplyCount();
         }
 
-        StudyArticleComment studyArticleComment = StudyArticleComment.builder()
-            .member(findMember(SecurityUtil.getCurrentMemberId()))
-            .studyArticle(findArticle(articleId))
-            .parentId(parentId)
-            .studyArticleCommentRequestDto(dto)
-            .build();
-
+        StudyArticleComment studyArticleComment = StudyArticleComment.of(dto,
+            findMember(SecurityUtil.getCurrentMemberId()), findArticle(articleId));
+        studyArticleComment.setDepth(parentId);
         studyArticleCommentRepository.save(studyArticleComment);
 
-        if(parentId == 0){
+        if (parentId == 0) {
             studyArticleComment.setParentId(studyArticleComment.getId());
         }
 
-        return studyArticleComment.getId();
+        return StudyArticleCommentResponseDto.from(studyArticleComment);
     }
 
-    public List<StudyArticleCommentResponseDto> allComment(Long articleId){
-        List<StudyArticleComment> studyArticleComments = studyArticleCommentRepository.allComment(findArticle(articleId));
-        List<StudyArticleCommentResponseDto> result = new ArrayList<>();
-
-        for (StudyArticleComment sac: studyArticleComments) {
-            result.add(StudyArticleCommentResponseDto.builder()
-                .id(sac.getId())
-                .content(sac.getContent())
-                .nickname(sac.getMember().getNickname())
-                .isModified(sac.getIsModified())
-                .isDeleted(sac.getIsDeleted())
-                .parentId(sac.getParentId())
-                .depth(sac.getDepth())
-                .replyCount(sac.getReplyCount())
-                .build());
-        }
-
-        return result;
+    public List<StudyArticleCommentResponseDto> allComment(Long articleId) {
+        return studyArticleCommentRepository.allComment(findArticle(articleId))
+            .stream()
+            .map(StudyArticleCommentResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional
-    public HttpStatus update(Long commentId, StudyArticleCommentRequestDto dto) throws Exception {
-        StudyArticleComment comment = studyArticleCommentRepository.findById(commentId)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 댓글입니다."));
+    public StudyArticleCommentResponseDto update(Long commentId, StudyArticleCommentRequestDto dto) {
+        StudyArticleComment comment = findStudyArticleComment(commentId);
 
-        if(!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())){
-            throw new Exception("권한이 없습니다.");
+        if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
+            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
         comment.setContent(dto.getContent());
         comment.setIsModified(true);
 
-        return HttpStatus.OK;
+        return StudyArticleCommentResponseDto.from(comment);
     }
 
     @Transactional
-    public HttpStatus delete(Long commentId) throws Exception {
-        StudyArticleComment comment = studyArticleCommentRepository.findById(commentId)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 댓글입니다."));
+    public HttpStatus delete(Long commentId) {
+        StudyArticleComment comment = findStudyArticleComment(commentId);
 
-        if(!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())){
-            throw new Exception("권한이 없습니다.");
+        if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
-
+        // 현재 댓글이 부모댓글이 아니라면 부모 댓글의 대댓글 수 감소
+        if(comment.getParentId() != comment.getId()) {
+            findStudyArticleComment(comment.getParentId()).removeReplyCount();
+        }
         comment.setIsDeleted(true);
         return HttpStatus.OK;
     }
-    public Member findMember(Long memberId){
+
+    public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 멤버입니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    public StudyArticle findArticle(Long articleId){
+    public StudyArticle findArticle(Long articleId) {
         return studyArticleRepository.findById(articleId)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 게시글입니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+    }
+
+    public StudyArticleComment findStudyArticleComment(Long commentId) {
+        return studyArticleCommentRepository.findById(commentId)
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
 }

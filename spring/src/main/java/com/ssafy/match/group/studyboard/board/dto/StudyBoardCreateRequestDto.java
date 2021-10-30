@@ -1,35 +1,19 @@
 package com.ssafy.match.group.studyboard.board.dto;
 
 
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
-import lombok.AllArgsConstructor;
+import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
-
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class StudyBoardCreateRequestDto {
 
-//    @ApiModelProperty(name = "studyId", example = "3")
-//    @ApiParam(value = "스터디 id", required = true)
-//    @NotEmpty
-//    private Long studyId;
-
-    @ApiModelProperty(name = "name", example = "일정게시판")
-    @ApiParam(value = "게시판 이름", required = true)
+    @ApiModelProperty(example = "일정게시판")
+    @ApiParam(value = "게시판 이름")
     @NotEmpty
     private String name;
 
-    public StudyBoard toStudyBoard(Study study) {
-        return StudyBoard.builder()
-                .name(name)
-                .study(study)
-                .build();
-    }
 }

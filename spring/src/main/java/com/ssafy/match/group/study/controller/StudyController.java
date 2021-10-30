@@ -1,5 +1,6 @@
 package com.ssafy.match.group.study.controller;
 
+import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
@@ -130,8 +131,25 @@ public class StudyController {
 
     @DeleteMapping("/{studyId}/member")
     @ApiOperation(value = "스터디 탈퇴", notes = "<strong>받은 스터디 id</strong>로 스터디에서 탈퇴한다.")
-    public ResponseEntity<HttpStatus> deleteMember(@PathVariable("studyId") Long studyId) throws Exception {
-        return ResponseEntity.ok(studyService.removeMe(studyId));
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "탈퇴되었습니다."),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_BELOW_ZERO\nHOST_CANNOT_LEAVE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<String> removeMe(@PathVariable("studyId") Long studyId) {
+        return new ResponseEntity<>("탈퇴되었습니다.", studyService.removeMe(studyId));
+    }
+
+    @DeleteMapping("/{studyId}/{memberId}")
+    @ApiOperation(value = "스터디 추방", notes = "<strong>받은 스터디 id와 탈퇴시킬 멤버의 id</strong>로 스터디에서 탈퇴시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_BELOW_ZERO\nONLY_CAN_REMOVE_COMMON\nCOMMON_MEMBER_CANNOT_REMOVE"),
+        @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
+    })
+    public ResponseEntity<String> removeMember(@PathVariable("studyId") Long studyId,
+        @PathVariable("memberId") Long memberId) {
+        return new ResponseEntity<>("처리되었습니다.", studyService.removeMember(studyId, memberId));
     }
 
     @GetMapping
