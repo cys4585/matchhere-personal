@@ -1,5 +1,6 @@
 package com.ssafy.match.group.studyboard.article.entity;
 
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleRequestDto;
 import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import com.ssafy.match.member.entity.Member;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +23,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @Entity(name = "matching.study_article")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class StudyArticle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,22 +44,33 @@ public class StudyArticle {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
-    @Column(name = "modified_date")
+    @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
-    @Column(name = "view_count")
-    private Integer viewCount;
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
 
-    @Builder
-    public StudyArticle(StudyBoard studyBoard, Member member, String title, LocalDateTime createDate, LocalDateTime modifiedDate, Integer viewCount) {
+    public void plusViewCount(){
+        this.viewCount++;
+    }
+
+    public void update(StudyArticleRequestDto dto, StudyBoard studyBoard){
         this.studyBoard = studyBoard;
-        this.member = member;
-        this.title = title;
-        this.createDate = createDate;
-        this.modifiedDate = modifiedDate;
-        this.viewCount = viewCount;
+        this.title = dto.getTitle();
+        this.modifiedDate = LocalDateTime.now();
+    }
+
+    public static StudyArticle of(StudyArticleRequestDto dto, StudyBoard studyBoard, Member member){
+        return StudyArticle.builder()
+            .studyBoard(studyBoard)
+            .member(member)
+            .title(dto.getTitle())
+            .createDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .viewCount(0)
+            .build();
     }
 }
