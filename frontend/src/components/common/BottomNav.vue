@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav v-if="!isChatDetail">
     <router-link to="/study">
       <span class="material-icons">book</span>
       <span class="label">스터디</span>
@@ -12,7 +12,7 @@
       <span class="material-icons">group</span>
       <span class="label">그룹</span>
     </router-link>
-    <router-link to="/chat">
+    <router-link :to="{ name: 'ChatList' }">
       <span class="material-icons">chat</span>
       <span class="label">채팅</span>
     </router-link>
@@ -35,6 +35,7 @@ import { computed } from "@vue/reactivity"
 import { useStore } from "vuex"
 export default {
   name: "BottomNav",
+  props: ["isChatDetail"],
   setup() {
     const store = useStore()
     const isAuthenticated = computed(

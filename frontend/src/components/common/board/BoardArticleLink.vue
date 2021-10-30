@@ -14,6 +14,7 @@
       <div class="created flex gap-2">
         <Member
           :user="{
+            id: 1,
             email: 'kepy1106@gmail.com',
             name: '김병훈',
             coverPicUri: 'https://picsum.photos/100/100',

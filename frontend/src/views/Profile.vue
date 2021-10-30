@@ -43,7 +43,12 @@
           <p class="city">{{ profileData.city }}</p>
         </div>
       </div>
-      <button class="message-button">메세지</button>
+      <!-- <button class="message-button">메세지</button> -->
+      <router-link
+        class="message-button"
+        :to="{ name: 'ChatDetail', params: { email: profileData.email } }"
+        >메세지</router-link
+      >
       <div class="desc" v-if="profileData.bio">
         {{ profileData.bio }}
       </div>
@@ -274,7 +279,7 @@ section {
   }
 
   .message-button {
-    @apply border border-gray-400 rounded text-sm font-medium py-2 px-6;
+    @apply border border-gray-400 rounded text-sm font-medium py-2 px-6 text-center;
   }
 
   .desc {
