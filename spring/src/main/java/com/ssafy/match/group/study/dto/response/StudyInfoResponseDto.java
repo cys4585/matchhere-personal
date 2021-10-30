@@ -1,6 +1,7 @@
 package com.ssafy.match.group.study.dto.response;
 
 import com.ssafy.match.file.dto.DBFileDto;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -101,7 +102,7 @@ public class StudyInfoResponseDto {
             .members(members)
             .city(study.getCity().value())
             .currentClub(
-                (study.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(study.getClub()))
+                (study.getClub() == null) ? null : ClubInfoForSelectResponseDto.from(study.getClub()))
             .bio(study.getBio())
             .build();
     }

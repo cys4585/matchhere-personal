@@ -17,10 +17,10 @@ public interface ClubApplicationFormRepository extends
     List<ClubApplicationForm> formByClubId(@Param("club") Club club);
 
     // 닉네임으로 신청서 조회
-    @Query("select p from ClubApplicationForm p "
-        + "where p.compositeMemberClub.club = :club "
-        + "and p.nickname like %:nickname% order by p.createDate desc")
-    List<ClubApplicationForm> allFormByClubNickname(@Param("club") Club club, @Param("nickname") String nickname);
+//    @Query("select p from ClubApplicationForm p "
+//        + "where p.compositeMemberClub.club = :club "
+//        + "and p.nickname like %:nickname% order by p.createDate desc")
+//    List<ClubApplicationForm> allFormByClubNickname(@Param("club") Club club, @Param("nickname") String nickname);
 
     // 신청서 조회
     @Query("select c from ClubApplicationForm c where c.compositeMemberClub = :cmc")

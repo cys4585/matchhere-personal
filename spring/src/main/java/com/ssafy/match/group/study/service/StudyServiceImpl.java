@@ -10,6 +10,7 @@ import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
@@ -427,7 +428,7 @@ public class StudyServiceImpl implements StudyService {
     // 클럽 정보 요약
     public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
         return clubs.stream()
-            .map(ClubSimpleInfoResponseDto::from)
+            .map(ClubInfoForSelectResponseDto::from)
             .collect(Collectors.toList());
     }
 

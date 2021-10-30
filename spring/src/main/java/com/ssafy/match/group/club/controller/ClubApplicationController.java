@@ -1,8 +1,8 @@
 package com.ssafy.match.group.club.controller;
 
 import com.ssafy.match.group.club.dto.request.ClubApplicationRequestDto;
-import com.ssafy.match.group.club.dto.response.InfoForApplyClubFormResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubFormInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubFormSimpleInfoResponseDto;
 import com.ssafy.match.group.club.service.ClubService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -26,67 +26,75 @@ public class ClubApplicationController {
 
     private final ClubService clubService;
 
-    @GetMapping("/infoforcreate/{clubId}")
-    @ApiOperation(value = "신청서 생성을 위한 정보", notes = "<strong>클럽에 가입하기 위한</strong>신청서를 작성하기 위한 정보를 받는다")
+    @GetMapping("/check-apply/{clubId}")
+    @ApiOperation(value = "신청서 생성 가능 여부", notes = "멤버가 클럽에 신청 가능한지 여부(클럽 종료, 삭제, 모집, 이미 가입된 멤버인지 여부 확인)")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청 가능합니다."),
+        @ApiResponse(code = 400, message = "CANNOT_APPLY\nALREADY_JOIN"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<InfoForApplyClubFormResponseDto> getInfoForApply(@PathVariable("clubId") Long clubId) throws Exception {
-        return ResponseEntity.ok(clubService.getInfoForApply(clubId));
+    public ResponseEntity<Boolean> checkCanApply(@PathVariable("clubId") Long clubId) {
+        return ResponseEntity.ok(clubService.checkCanApply(clubId));
     }
 
     @PostMapping("/{clubId}")
     @ApiOperation(value = "클럽 가입 신청", notes = "<strong>받은 신청서 정보로</strong>를 사용해서 클럽에 신청을 한다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 정보"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> applyClub(@PathVariable("clubId") Long clubId, @RequestBody ClubApplicationRequestDto dto) throws Exception {
+    public ResponseEntity<ClubFormInfoResponseDto> applyClub(
+        @PathVariable("clubId") Long clubId, @RequestBody ClubApplicationRequestDto dto)
+        throws Exception {
         return ResponseEntity.ok(clubService.applyClub(clubId, dto));
     }
 
     @PostMapping("/approval/{clubId}/{memberId}")
     @ApiOperation(value = "클럽 가입 승인", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 멤버를 가입 승인한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "MEMBER_COUNT_OVER"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_CLUB_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> approval(@PathVariable("clubId") Long clubId, @PathVariable("memberId") Long memberId) throws Exception {
+    public ResponseEntity<HttpStatus> approval(@PathVariable("clubId") Long clubId,
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(clubService.approval(clubId, memberId));
     }
 
     @DeleteMapping("{clubId}/{memberId}")
     @ApiOperation(value = "신청서 삭제", notes = "<strong>받은 신청서 Id</strong>를 사용해서 해당 신청서를 제거한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_CLUB_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<HttpStatus> reject(@PathVariable("clubId") Long clubId, @PathVariable("memberId") Long memberId) throws Exception{
+    public ResponseEntity<HttpStatus> reject(@PathVariable("clubId") Long clubId,
+        @PathVariable("memberId") Long memberId) {
         return ResponseEntity.ok(clubService.reject(clubId, memberId));
-    }
-
-    @GetMapping("/all/{clubId}/{nickname}")
-    @ApiOperation(value = "특정 클럽 신청서 닉네임 포함 모든 신청서 조회", notes = "특정 클럽의 닉네임 포함 모든 신청서 리스트를 작성일 기준 내림차순으로 받는다")
-    @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
-    })
-    public ResponseEntity<List<ClubFormInfoResponseDto>> getAllFormByClubNickname(@PathVariable("clubId") Long clubId,
-        @PathVariable("nickname") String nickname) throws Exception {
-        return ResponseEntity.ok(clubService.getAllFormByClubNickname(clubId, nickname));
     }
 
     @GetMapping("/all/{clubId}")
     @ApiOperation(value = "특정 클럽 모든 신청서 조회", notes = "특정 클럽의 모든 신청서 리스트를 작성일 기준 내림차순으로 받는다")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 조회"),
+        @ApiResponse(code = 401, message = "UNAUTHORIZED_SELECT"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_NOT_FOUND\nMEMBER_CLUB_NOT_FOUND"),
     })
-    public ResponseEntity<List<ClubFormInfoResponseDto>> getAllClubForm(@PathVariable("clubId") Long clubId) throws Exception {
+    public ResponseEntity<List<ClubFormSimpleInfoResponseDto>> getAllClubForm(
+        @PathVariable("clubId") Long clubId) {
         return ResponseEntity.ok(clubService.getAllClubForm(clubId));
     }
 
     @GetMapping("/one/{clubId}/{memberId}")
     @ApiOperation(value = "특정 신청서 조회", notes = "특정 신청서를 상세 조회한다.")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "성공"),
+        @ApiResponse(code = 200, message = "신청서 조회"),
+        @ApiResponse(code = 404, message = "CLUB_NOT_FOUND\nMEMBER_NOT_FOUND\nAPPLIY_FORM_NOT_FOUND"),
     })
-    public ResponseEntity<ClubFormInfoResponseDto> getOneClubForm(@PathVariable("clubId") Long clubId, @PathVariable("memberId") Long memberId) throws Exception {
+    public ResponseEntity<ClubFormInfoResponseDto> getOneClubForm(
+        @PathVariable("clubId") Long clubId, @PathVariable("memberId") Long memberId)
+        throws Exception {
         return ResponseEntity.ok(clubService.getOneClubForm(clubId, memberId));
     }
 

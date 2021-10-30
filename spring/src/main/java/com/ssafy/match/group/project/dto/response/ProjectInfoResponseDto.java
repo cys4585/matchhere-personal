@@ -1,5 +1,6 @@
 package com.ssafy.match.group.project.dto.response;
 
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -7,7 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -148,7 +148,7 @@ public class ProjectInfoResponseDto {
             .designers(designers)
             .designerMaxCount(project.getDesignerMaxCount())
             .city(project.getCity().toString())
-            .currentClub((project.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+            .currentClub((project.getClub() == null) ? null : ClubInfoForSelectResponseDto.from(
                 project.getClub()))
             .bio(project.getBio())
             .authority(authority)

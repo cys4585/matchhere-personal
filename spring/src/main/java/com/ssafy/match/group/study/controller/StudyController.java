@@ -1,6 +1,5 @@
 package com.ssafy.match.group.study.controller;
 
-import com.ssafy.match.common.exception.ErrorCode;
 import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;

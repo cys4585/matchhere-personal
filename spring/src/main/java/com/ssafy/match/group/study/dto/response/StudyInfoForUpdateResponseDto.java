@@ -1,15 +1,12 @@
 package com.ssafy.match.group.study.dto.response;
 
 import com.ssafy.match.file.dto.DBFileDto;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -90,7 +87,7 @@ public class StudyInfoForUpdateResponseDto {
             .topics(topics)
             .schedule(study.getSchedule())
             .city(study.getCity().toString())
-            .currentClub((study.getClub() == null) ? null : ClubSimpleInfoResponseDto.from(
+            .currentClub((study.getClub() == null) ? null : ClubInfoForSelectResponseDto.from(
                 study.getClub()))
             .clubs(clubs)
             .bio(study.getBio())

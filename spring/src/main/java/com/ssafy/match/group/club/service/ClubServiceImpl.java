@@ -1,34 +1,41 @@
 package com.ssafy.match.group.club.service;
 
-import com.ssafy.match.common.entity.City;
+import com.ssafy.match.common.entity.GroupAuthority;
+import com.ssafy.match.common.entity.PublicScope;
+import com.ssafy.match.common.entity.RecruitmentState;
+import com.ssafy.match.common.exception.CustomException;
+import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
-import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
-import com.ssafy.match.group.clubboard.board.repository.ClubBoardRepository;
-import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.request.ClubApplicationRequestDto;
 import com.ssafy.match.group.club.dto.request.ClubCreateRequestDto;
 import com.ssafy.match.group.club.dto.request.ClubUpdateRequestDto;
 import com.ssafy.match.group.club.dto.response.ClubFormInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubFormSimpleInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubInfoForUpdateResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
-import com.ssafy.match.group.club.dto.response.InfoForApplyClubFormResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubTopicResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.entity.ClubApplicationForm;
+import com.ssafy.match.group.club.entity.ClubTopic;
 import com.ssafy.match.group.club.entity.CompositeMemberClub;
 import com.ssafy.match.group.club.entity.MemberClub;
 import com.ssafy.match.group.club.repository.ClubApplicationFormRepository;
 import com.ssafy.match.group.club.repository.ClubRepository;
+import com.ssafy.match.group.club.repository.ClubTopicRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
+import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
+import com.ssafy.match.group.clubboard.board.repository.ClubBoardRepository;
+import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
-import com.ssafy.match.member.entity.MemberSns;
 import com.ssafy.match.member.repository.MemberRepository;
-import com.ssafy.match.member.repository.MemberSnsRepository;
 import com.ssafy.match.util.SecurityUtil;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,81 +54,214 @@ public class ClubServiceImpl implements ClubService {
     private final MemberClubRepository memberClubRepository;
     private final ClubApplicationFormRepository clubApplicationFormRepository;
     private final DBFileRepository dbFileRepository;
-    private final MemberSnsRepository memberSnsRepository;
     private final ClubBoardRepository clubBoardRepository;
+    private final ClubTopicRepository clubTopicRepository;
 
+    // 클럽 생성
     @Transactional
-    public Long create(ClubCreateRequestDto dto) throws Exception {
-        validCity(dto.getCity());
-
-        Club club = new Club(dto);
+    public ClubInfoResponseDto create(ClubCreateRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
-        club.changeMember(member);
-        club.setDbFile(findDBFile(dto.getUuid()));
+        Club club = Club.of(dto, findDBFile(dto.getUuid()), member);
         clubRepository.save(club);
 
         makeBasicBoards(club);
-        addMember(club, member);
+        addTopics(club, dto.getTopics());
 
-        return club.getId();
+        CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
+        MemberClub memberClub = memberClubRepository
+            .findById(compositeMemberClub)
+            .orElseGet(() -> MemberClub.builder()
+                .compositeMemberClub(compositeMemberClub)
+                .isActive(true)
+                .registerDate(LocalDateTime.now())
+                .authority(GroupAuthority.소유자)
+                .build());
+
+        club.addMember();
+        memberClubRepository.save(memberClub);
+
+        return getOneClub(club.getId());
     }
 
-    @Transactional
-    public HttpStatus update(Long clubId, ClubUpdateRequestDto dto) throws Exception {
-        validCity(dto.getCity());
-
+    // 클럽 업데이트를 위한 정보
+    public ClubInfoForUpdateResponseDto getInfoForUpdateClub(Long clubId) {
         Club club = findClub(clubId);
-        Long memberId = SecurityUtil.getCurrentMemberId();
-        if (!club.getMember().getId().equals(memberId)) {
-            throw new Exception("권한이 없습니다.");
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
+
+        return ClubInfoForUpdateResponseDto.of(club, getClubTopics(club));
+    }
+
+    // 클럽의 주제 리스트
+    private List<ClubTopicResponseDto> getClubTopics(Club club) {
+        return clubTopicRepository.findAllByClub(club)
+            .stream().map(ClubTopicResponseDto::from).collect(Collectors.toList());
+    }
+
+    // 클럽 업데이트
+    @Transactional
+    public ClubInfoResponseDto update(Long clubId, ClubUpdateRequestDto dto) {
+        Club club = findClub(clubId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+
+        // 권한 체크
+        checkAuthority(member, club);
 
         club.update(dto);
-        club.changeMember(findMember(dto.getHostId()));
-        club.setDbFile(findDBFile(dto.getUuid()));
+        addTopics(club, dto.getTopics());
 
+        return getOneClub(clubId);
+    }
+
+    // 사진 바꾸기
+    @Transactional
+    public DBFileDto changeCoverPic(Long clubId, String uuid) {
+        DBFile coverPic = findDBFile(uuid);
+        Club club = findClub(clubId);
+        club.setCoverPic(coverPic);
+        return getCoverPicUri(clubId);
+    }
+
+    // 사진 정보만 가져오기
+    public DBFileDto getCoverPicUri(Long clubId) {
+        return DBFileDto.of(findClub(clubId).getCoverPic());
+    }
+
+    // 클럽 조회수 증가
+    @Transactional
+    public HttpStatus plusViewCount(Long clubId) {
+        findClub(clubId).plusViewCount();
         return HttpStatus.OK;
+    }
+
+    // 권한 변경
+    @Transactional
+    public HttpStatus changeAuthority(Long clubId, Long memberId, String authority) {
+        Club club = findClub(clubId);
+        Member changer = findMember(SecurityUtil.getCurrentMemberId());
+        Member member = findMember(memberId);
+
+        MemberClub ms = memberClubRepository.findById(
+                new CompositeMemberClub(member, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+
+        MemberClub msChanger = memberClubRepository.findById(
+                new CompositeMemberClub(changer, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        // 권한 변경 권한에 관한 로직
+        // 소유자만이 권한을 변경할 수 있다
+        if (!msChanger.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+        // 소유자는 양도가 가능하다
+        if (authority.equals("소유자")) {
+            club.setMember(member);
+            msChanger.setAuthority(GroupAuthority.관리자);
+        }
+        ms.setAuthority(GroupAuthority.from(authority));
+        return HttpStatus.OK;
+    }
+
+    // 클럽를 업데이트, 삭제할 권한이 있는지 체크
+    public void checkAuthority(Member member, Club club) {
+        MemberClub ms = memberClubRepository.findById(
+                new CompositeMemberClub(member, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!ms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!ms.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
     }
 
     @Transactional
-    public HttpStatus delete(Long clubId) throws Exception {
+    public HttpStatus delete(Long clubId) {
         Club club = findClub(clubId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
 
-        if (!club.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new Exception("권한이 없습니다.");
-        }
-
-        List<MemberClub> memberClubs = memberClubRepository.findMemberRelationInClub(club);
-        for (MemberClub mem : memberClubs) {
+        checkAuthority(member, club);
+        // 클럽 멤버 비활성화
+        List<MemberClub> memberStudies = memberClubRepository.findMemberRelationInClub(club);
+        for (MemberClub mem : memberStudies) {
             mem.deActivation();
         }
-
-        club.setIsActive(false);
-
+        // 클럽 Cover 제거
+        if (club.getCoverPic() != null) {
+            String uuid = club.getCoverPic().getId();
+            club.initialCoverPic();
+            dbFileRepository.deleteById(uuid);
+        }
+        // 클럽 주제 제거
+        clubTopicRepository.deleteAllByClub(club);
+        // 클럽 게시판, 게시글, 댓글 삭제 정책 회의 후 생성
+        club.deActivation();
         return HttpStatus.OK;
     }
 
-    public Page<ClubInfoResponseDto> getAllClub(Pageable pageable) {
-        Page<ClubInfoResponseDto> clubInfoResponseDtos = clubRepository.findByIsActiveAndIsPublic(Boolean.TRUE, Boolean.TRUE, pageable)
-                .map(ClubInfoResponseDto::of);
-
-        for (ClubInfoResponseDto clubInfoResponseDto: clubInfoResponseDtos.getContent()) {
-            clubInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberClubRepository.findMemberByClubId(clubInfoResponseDto.getId())));
-        }
-        return clubInfoResponseDtos;
+    // 클럽 전체 조회
+    public Page<ClubSimpleInfoResponseDto> getAllClub(Pageable pageable) {
+        return clubRepository.findAllClub(RecruitmentState.RECRUITMENT,
+                PublicScope.PUBLIC, pageable)
+            .map(m -> ClubSimpleInfoResponseDto.of(m, getClubTopics(m)));
     }
 
-    // 현재 클럽 정보 리턴
-    public ClubInfoResponseDto getOneClub(Long clubId) throws Exception {
+    // 클럽 상세 조회
+    public ClubInfoResponseDto getOneClub(Long clubId) {
         Club club = findClub(clubId);
 
-        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())
-            && !club.getIsPublic()) {
-            throw new Exception("비공개된 클럽입니다.");
+        // 삭제된 클럽일 경우
+        if (!club.getIsActive()) {
+            throw new CustomException(ErrorCode.DELETED_CLUB);
         }
-        ClubInfoResponseDto clubInfoResponseDto = clubRepository.findById(clubId).map(ClubInfoResponseDto::of).orElseThrow(() -> new NullPointerException("클럽이 존재하지 않습니다"));
-        clubInfoResponseDto.setMemberSimpleInfoResponseDtos(makeMemberDtos(memberClubRepository.findMemberByClubId(clubInfoResponseDto.getId())));
-        return clubInfoResponseDto;
+        return ClubInfoResponseDto.of(club, getClubTopics(club),
+            findMemberInClub(club).stream().map(MemberSimpleInfoResponseDto::from).collect(
+                Collectors.toList()));
+    }
+
+    // 현재 클럽 간편 정보 리턴
+    public ClubSimpleInfoResponseDto getOneSimpleClub(Long clubId) {
+        Club club = findClub(clubId);
+        return ClubSimpleInfoResponseDto.of(club, getClubTopics(club));
+    }
+
+    // 현 사용자의 권한 확인
+    public String getMemberAuthority(Long clubId) {
+        Club club = findClub(clubId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        List<MemberClub> memberClubs = memberClubRepository.findMemberRelationInClub(club);
+
+        String authority = "게스트";
+        for (MemberClub memberClub : memberClubs) {
+            if (memberClub.getCompositeMemberClub().getMember().getId().equals(member.getId())) {
+                authority = memberClub.getAuthority().toString();
+                break;
+            }
+        }
+        return authority;
+    }
+
+    // 클럽 구성원 리스트
+    public List<MemberSimpleInfoResponseDto> getMembersInClub(Long clubId) {
+        return memberClubRepository.findMemberInClub(findClub(clubId))
+            .stream()
+            .map(MemberSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
+    }
+
+    // 클럽 주제 추가, 변경
+    @Transactional
+    public void addTopics(Club club, List<String> topics) {
+        clubTopicRepository.deleteAllByClub(club);
+        if (topics.isEmpty()) {
+            return;
+        }
+        for (String topic : topics) {
+            clubTopicRepository.save(ClubTopic.of(club, topic));
+        }
     }
 
     @Transactional
@@ -133,65 +273,108 @@ public class ClubServiceImpl implements ClubService {
             .findById(compositeMemberClub)
             .orElseGet(() -> MemberClub.builder()
                 .compositeMemberClub(compositeMemberClub)
+                .registerDate(LocalDateTime.now())
+                .authority(GroupAuthority.팀원)
                 .build());
 
         memberClub.activation();
         club.addMember();
-
         memberClubRepository.save(memberClub);
     }
 
+    // 클럽 탈퇴
     @Transactional
-    public HttpStatus removeMember(Long clubId) throws Exception {
+    public HttpStatus removeMe(Long clubId) {
         Club club = findClub(clubId);
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new NullPointerException("잘못된 사용자 입니다.(사용자 없음)"));
-        if (club.getMember().getId().equals(member.getId())) {
-            throw new Exception("클럽장은 탈퇴할 수 없습니다.");
-        }
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        // 이미 탈퇴되었는지 여부
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
-            .orElseThrow(() -> new NullPointerException("가입 기록이 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!memberClub.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (memberClub.getAuthority().equals(GroupAuthority.소유자)) {
+            throw new CustomException(ErrorCode.HOST_CANNOT_LEAVE);
+        }
+
         memberClub.deActivation();
         club.removeMember();
         return HttpStatus.OK;
     }
 
+    // 클럽 추방
     @Transactional
-    public void makeBasicBoards(Club club){
+    public HttpStatus removeMember(Long clubId, Long memberId) {
+        Club club = findClub(clubId);
+        Member remover = findMember(SecurityUtil.getCurrentMemberId());
+        Member removed = findMember(memberId);
+
+        MemberClub removerms = memberClubRepository.findById(
+                new CompositeMemberClub(remover, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!removerms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        MemberClub removedms = memberClubRepository.findById(
+                new CompositeMemberClub(removed, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!removedms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        // 소유자와 관리자만이 추방 권한을 가짐
+        if (removerms.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.COMMON_MEMBER_CANNOT_REMOVE);
+        }
+        // 소유자와 관리자는 추방될 수 없음
+        if (!removedms.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.ONLY_CAN_REMOVE_COMMON);
+        }
+
+        removedms.deActivation();
+        club.removeMember();
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public void makeBasicBoards(Club club) {
         clubBoardRepository.save(new ClubBoard("공지사항", club));
         clubBoardRepository.save(new ClubBoard("게시판", club));
     }
 
-    // 클럽 존재 유무 확인
-    public Club findClub(Long clubId) throws Exception {
-        Club club = clubRepository.findById(clubId)
-            .orElseThrow(() -> new NullPointerException("클럽 정보가 없습니다."));
-
-        if (!club.getIsActive()) {
-            throw new Exception("삭제된 클럽입니다.");
-        }
-
-        return club;
-    }
-
-    public Member findMember(Long memberId) throws Exception {
+    public Member findMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new NullPointerException("회원 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (!member.getIs_active()) {
-            throw new Exception("삭제된 멤버입니다.");
+        if (Boolean.FALSE.equals(member.getIs_active())) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         return member;
     }
 
-    // 생성 및 업데이트에 사용
+    public Club findClub(Long clubId) {
+        if (clubId == null) {
+            return null;
+        }
+        return clubRepository.findById(clubId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CLUB_NOT_FOUND));
+    }
+
     public DBFile findDBFile(String uuid) {
         if (uuid == null) {
             return null;
         }
         return dbFileRepository.findById(uuid)
-            .orElseThrow(() -> new NullPointerException("파일 정보가 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.FILE_NOT_FOUND));
+    }
+
+    // 멤버가 가진 클럽 리스트
+    public List<Club> findClubInMember(Member member) {
+        return memberClubRepository.findClubByMember(member);
     }
 
     // 현재 클럽에 속한 멤버 리스트
@@ -199,169 +382,98 @@ public class ClubServiceImpl implements ClubService {
         return memberClubRepository.findMemberInClub(club);
     }
 
-    // 멤버의 id, name, nickname만 가져옴 (org.springframework.core.convert.ConverterNotFoundException 방지)
-    public List<MemberSimpleInfoResponseDto> makeMemberDtos(List<Member> members) {
-        List<MemberSimpleInfoResponseDto> memberSimpleInfoResponseDtos = new ArrayList<>();
-
-        for (Member member : members) {
-            memberSimpleInfoResponseDtos.add(MemberSimpleInfoResponseDto.from(member));
-        }
-
-        return memberSimpleInfoResponseDtos;
-    }
-
-    public void validCity(String city) throws Exception {
-        if (!Stream.of(City.values()).map(Enum::name)
-            .collect(Collectors.toList()).contains(city)) {
-            throw new Exception("존재하지 않는 지역입니다");
-        }
-    }
-
-    // 신청 버튼 클릭시 관련 정보 및 권한 체크
-    public InfoForApplyClubFormResponseDto getInfoForApply(Long clubId) throws Exception {
+    // 신청 버튼 클릭시 신청 가능한 인원인지 확인(조건 위배시 boolean? error?)
+    public boolean checkCanApply(Long clubId) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Club club = findClub(clubId);
 
-        List<Member> memberList = findMemberInClub(club);
-        for (Member mem : memberList) {
-            if (SecurityUtil.getCurrentMemberId().equals(mem.getId())) {
-                throw new Exception("이미 가입한 멤버입니다.");
-            }
+        // 신청 가능 확인 로직 (삭제, 모집, 이미 가입된 멤버인지 여부 확인)
+        if (club.getIsActive().equals(Boolean.FALSE) || club.getRecruitmentState()
+            .equals(RecruitmentState.FINISH) || !checkAlreadyJoin(club, member)) {
+            return false;
+        }
+        // 신청 여부
+        CompositeMemberClub cmc = new CompositeMemberClub(member, club);
+        Optional<ClubApplicationForm> form = clubApplicationFormRepository.findById(cmc);
+        if (form.isPresent()) {
+//            throw new CustomException(ErrorCode.ALREADY_APPLY);
+            return false;
         }
 
-        InfoForApplyClubFormResponseDto dto = InfoForApplyClubFormResponseDto.builder()
-            .nickname(member.getNickname())
-            .city(member.getCity())
-//            .experiencedTechstack(memberExperiencedTechstackRepository.findTechstackByMemberName(member))
-//            .beginnerTechstack(memberBeginnerTechstackRepository.findTechstackByMemberName(member))
-            .build();
+        return true;
+    }
 
-        Optional<MemberSns> git = memberSnsRepository.findByMemberAndSnsName(member, "github");
-        Optional<MemberSns> twitter = memberSnsRepository.findByMemberAndSnsName(member, "twitter");
-        Optional<MemberSns> facebook = memberSnsRepository
-            .findByMemberAndSnsName(member, "facebook");
-        Optional<MemberSns> backjoon = memberSnsRepository
-            .findByMemberAndSnsName(member, "backjoon");
-
-        if (git.isPresent()) {
-            dto.setGit(git.get().getSnsAccount());
+    // 클럽 가입 여부 확인 로직
+    public boolean checkAlreadyJoin(Club club, Member member) {
+        Optional<MemberClub> ms = memberClubRepository.findById(
+            new CompositeMemberClub(member, club));
+        if (ms.isPresent() && ms.get().getIsActive()) {
+//            throw new CustomException(ErrorCode.ALREADY_JOIN);
+            return false;
         }
-        if (twitter.isPresent()) {
-            dto.setTwitter(twitter.get().getSnsAccount());
-        }
-        if (facebook.isPresent()) {
-            dto.setFacebook(facebook.get().getSnsAccount());
-        }
-        if (backjoon.isPresent()) {
-            dto.setBackjoon(backjoon.get().getSnsAccount());
-        }
-
-        return dto;
+        return true;
     }
 
     @Transactional
-    public HttpStatus applyClub(Long clubId, ClubApplicationRequestDto dto) throws Exception {
+    public ClubFormInfoResponseDto applyClub(Long clubId, ClubApplicationRequestDto dto) {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         Club club = findClub(clubId);
 
-        CompositeMemberClub cmp = new CompositeMemberClub(member, club);
+        CompositeMemberClub cmc = new CompositeMemberClub(member, club);
+        ClubApplicationForm clubApplicationForm = ClubApplicationForm.of(dto, cmc,
+            member.getName());
 
-        Optional<ClubApplicationForm> form = clubApplicationFormRepository.findById(cmp);
-        if (form.isPresent()) {
-            throw new Exception("신청한 내역이 존재합니다.");
-        }
-
-        ClubApplicationForm clubApplicationForm = new ClubApplicationForm(cmp, dto);
-
-        clubApplicationForm.setDbFile(findDBFile(dto.getUuid()));
-
-        clubApplicationFormRepository.save(clubApplicationForm);
-        return HttpStatus.OK;
+        return ClubFormInfoResponseDto.from(
+            clubApplicationFormRepository.save(clubApplicationForm));
     }
 
     // 모든 신청서 작성일 기준 내림차순 조회
-    public List<ClubFormInfoResponseDto> getAllClubForm(Long clubId) throws Exception {
+    public List<ClubFormSimpleInfoResponseDto> getAllClubForm(Long clubId) {
         Club club = findClub(clubId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
 
-        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())) {
-            throw new Exception("조회 권한이 없습니다.");
+        // 조회 권한 확인 로직
+        MemberClub mc = memberClubRepository.findById(
+                new CompositeMemberClub(member, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!mc.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
         }
 
-        List<ClubApplicationForm> forms = clubApplicationFormRepository.formByClubId(club);
-        List<ClubFormInfoResponseDto> clubFormInfoResponseDtos = new ArrayList<>();
-
-        for (ClubApplicationForm form : forms) {
-            clubFormInfoResponseDtos.add(ClubFormInfoResponseDto.builder()
-                .form(form)
-//                .experiencedTechstack(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-//                .beginnerTechstack(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-                .build());
-
+        // 팀원은 신청서를 조회할 권한이 없음
+        if (mc.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
         }
 
-        return clubFormInfoResponseDtos;
-    }
-
-    // 닉네임으로 신청서 검색
-    public List<ClubFormInfoResponseDto> getAllFormByClubNickname(Long clubId, String nickname)
-        throws Exception {
-        Club club = findClub(clubId);
-
-        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())) {
-            throw new Exception("조회 권한이 없습니다.");
-        }
-
-        List<ClubApplicationForm> forms = clubApplicationFormRepository
-            .allFormByClubNickname(club, nickname);
-        List<ClubFormInfoResponseDto> clubFormInfoResponseDtos = new ArrayList<>();
-
-        for (ClubApplicationForm form : forms) {
-            clubFormInfoResponseDtos.add(ClubFormInfoResponseDto.builder()
-                .form(form)
-//                .experiencedTechstack(memberExperiencedTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-//                .beginnerTechstack(memberBeginnerTechstackRepository
-//                    .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-                .build());
-        }
-
-        return clubFormInfoResponseDtos;
+        return clubApplicationFormRepository.formByClubId(club)
+            .stream()
+            .map(ClubFormSimpleInfoResponseDto::from)
+            .collect(Collectors.toList());
     }
 
     // 신청서 목록의 복합 기본키를 가져와 해당 신청서 상세조회
-    public ClubFormInfoResponseDto getOneClubForm(Long clubId, Long memberId) throws Exception {
-        CompositeMemberClub cms = new CompositeMemberClub(findMember(memberId),
+    public ClubFormInfoResponseDto getOneClubForm(Long clubId, Long memberId) {
+        CompositeMemberClub cmc = new CompositeMemberClub(findMember(memberId),
             findClub(clubId));
 
-        ClubApplicationForm form = clubApplicationFormRepository.oneFormById(cms)
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다"));
+        ClubApplicationForm form = clubApplicationFormRepository.oneFormById(cmc)
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
 
-        return ClubFormInfoResponseDto.builder()
-            .form(form)
-//            .experiencedTechstack(memberExperiencedTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-//            .beginnerTechstack(memberBeginnerTechstackRepository
-//                .findTechstackByMemberName(form.getCompositeMemberClub().getMember()))
-            .build();
+        return ClubFormInfoResponseDto.from(form);
     }
 
     // 가입 승인
     @Transactional
-    public HttpStatus approval(Long clubId, Long memberId) throws Exception {
+    public HttpStatus approval(Long clubId, Long memberId) {
         Club club = findClub(clubId);
-        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())) {
-            throw new Exception("승인 권한이 없습니다");
-        }
-        List<Member> memberList = findMemberInClub(club);
         Member member = findMember(memberId);
+        Member approver = findMember(SecurityUtil.getCurrentMemberId());
 
-        for (Member mem : memberList) {
-            if (mem.getId().equals(memberId)) {
-                throw new Exception("이미 가입되어있는 회원입니다.");
-            }
+        if (!checkAlreadyJoin(club, member)) {
+            throw new CustomException(ErrorCode.ALREADY_JOIN);
         }
+
+        checkAuthorityApprovalReject(approver, club);
 
         addMember(club, member);
         reject(clubId, memberId);
@@ -369,21 +481,37 @@ public class ClubServiceImpl implements ClubService {
         return HttpStatus.OK;
     }
 
-    //     신청서 제거
+    // 신청서 제거
     @Transactional
-    public HttpStatus reject(Long clubId, Long memberId) throws Exception {
+    public HttpStatus reject(Long clubId, Long memberId) {
+        Member rejector = findMember(SecurityUtil.getCurrentMemberId());
         Club club = findClub(clubId);
+        checkAuthorityApprovalReject(rejector, club);
 
-        if (!SecurityUtil.getCurrentMemberId().equals(club.getMember().getId())
-            && !SecurityUtil.getCurrentMemberId().equals(memberId)) {
-            throw new Exception("승인 권한이 없습니다");
-        }
-
-        clubApplicationFormRepository.delete(clubApplicationFormRepository
-            .findById(new CompositeMemberClub(findMember(memberId), club))
-            .orElseThrow(() -> new NullPointerException("존재하지 않는 신청서입니다.")));
+        clubApplicationFormRepository.delete(
+            validClubApplicationForm(findMember(memberId), club));
 
         return HttpStatus.OK;
+    }
+
+    public ClubApplicationForm validClubApplicationForm(Member member, Club club) {
+        return clubApplicationFormRepository
+            .findById(new CompositeMemberClub(member, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.APPLIY_FORM_NOT_FOUND));
+    }
+
+    public void checkAuthorityApprovalReject(Member member, Club club) {
+        // 승인자의 권한 체크
+        MemberClub ms = memberClubRepository.findById(
+                new CompositeMemberClub(member, club))
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (!ms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+        // 팀원은 신청서를 조회, 수락, 거절할 권한이 없음
+        if (ms.getAuthority().equals(GroupAuthority.팀원)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_SELECT);
+        }
     }
 
 }

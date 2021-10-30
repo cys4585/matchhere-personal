@@ -13,6 +13,7 @@ import com.ssafy.match.common.repository.TechstackRepository;
 import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
+import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
@@ -488,7 +489,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     public List<ClubSimpleInfoResponseDto> makeClubSimpleInfoResponseDtos(List<Club> clubs) {
         return clubs.stream()
-            .map(ClubSimpleInfoResponseDto::from)
+            .map(ClubInfoForSelectResponseDto::from)
             .collect(Collectors.toList());
     }
 
