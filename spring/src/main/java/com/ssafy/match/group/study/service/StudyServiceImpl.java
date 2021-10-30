@@ -294,9 +294,9 @@ public class StudyServiceImpl implements StudyService {
             .orElseGet(() -> MemberStudy.builder()
                 .compositeMemberStudy(compositeMemberStudy)
                 .registerDate(LocalDateTime.now())
-                .authority(GroupAuthority.팀원)
                 .build());
 
+        memberStudy.setAuthority(GroupAuthority.팀원);
         memberStudy.activation();
         study.addMember();
         memberStudyRepository.save(memberStudy);

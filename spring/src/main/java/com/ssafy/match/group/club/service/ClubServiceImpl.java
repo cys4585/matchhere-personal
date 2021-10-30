@@ -274,9 +274,9 @@ public class ClubServiceImpl implements ClubService {
             .orElseGet(() -> MemberClub.builder()
                 .compositeMemberClub(compositeMemberClub)
                 .registerDate(LocalDateTime.now())
-                .authority(GroupAuthority.팀원)
                 .build());
 
+        memberClub.setAuthority(GroupAuthority.팀원);
         memberClub.activation();
         club.addMember();
         memberClubRepository.save(memberClub);
