@@ -77,17 +77,17 @@ COLLATE = utf8mb4_unicode_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`club` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `bio` VARCHAR(1000) NULL DEFAULT NULL,
-  `city` VARCHAR(10) NOT NULL,
-  `create_date` DATETIME(6) NOT NULL,
-  `is_active` BIT(1) NOT NULL,
-  `is_public` BIT(1) NOT NULL,
-  `max_count` INT NOT NULL,
-  `member_count` INT NOT NULL,
   `name` VARCHAR(45) NOT NULL,
-  `topic` VARCHAR(45) NOT NULL,
   `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
+  `public_scope` VARCHAR(45) NOT NULL,
+  `recruitment_state` VARCHAR(45) NOT NULL,
+  `view_count` INT NOT NULL,
+  `create_date` DATETIME(6) NOT NULL,
   `host_id` BIGINT NOT NULL,
+  `member_count` INT NOT NULL,
+  `max_count` INT NOT NULL,
+  `bio` VARCHAR(1000) NULL DEFAULT NULL,
+  `is_active` BIT(1) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_club_files1_idx` (`cover_pic` ASC) VISIBLE,
   INDEX `fk_club_member1_idx` (`host_id` ASC) VISIBLE,
@@ -170,26 +170,16 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `matching`.`club_application_form`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`club_application_form` (
-  `nickname` VARCHAR(10) NOT NULL,
-  `city` VARCHAR(10) NOT NULL,
-  `git` VARCHAR(145) NULL DEFAULT NULL,
-  `twitter` VARCHAR(145) NULL DEFAULT NULL,
-  `facebook` VARCHAR(145) NULL DEFAULT NULL,
-  `backjoon` VARCHAR(145) NULL DEFAULT NULL,
-  `bio` VARCHAR(145) NULL DEFAULT NULL,
-  `create_date` DATETIME(6) NOT NULL,
-  `cover_pic` VARCHAR(255) NULL DEFAULT NULL,
   `club_id` BIGINT NOT NULL,
   `member_id` BIGINT NOT NULL,
+  `city` VARCHAR(10) NOT NULL,
+  `bio` VARCHAR(145) NULL DEFAULT NULL,
+  `create_date` DATETIME(6) NOT NULL,
   PRIMARY KEY (`club_id`, `member_id`),
-  INDEX `fk_club_application_form_files1_idx` (`cover_pic` ASC) VISIBLE,
   INDEX `fk_club_application_form_member1_idx` (`member_id` ASC) VISIBLE,
   CONSTRAINT `fk_club_application_form_club1`
     FOREIGN KEY (`club_id`)
     REFERENCES `matching`.`club` (`id`),
-  CONSTRAINT `fk_club_application_form_files1`
-    FOREIGN KEY (`cover_pic`)
-    REFERENCES `matching`.`files` (`id`),
   CONSTRAINT `fk_club_application_form_member1`
     FOREIGN KEY (`member_id`)
     REFERENCES `matching`.`member` (`id`))
@@ -225,12 +215,12 @@ COLLATE = utf8mb4_unicode_ci;
 -- Table `matching`.`member_club`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `matching`.`member_club` (
+  `club_id` BIGINT NOT NULL,
+  `member_id` BIGINT NOT NULL,
+  `authority` VARCHAR(45) NOT NULL,
   `is_active` BIT(1) NOT NULL,
   `register_date` DATETIME(6) NULL DEFAULT NULL,
-  `member_id` BIGINT NOT NULL,
-  `club_id` BIGINT NOT NULL,
-  `authority` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`member_id`, `club_id`),
+  PRIMARY KEY (`club_id`, `member_id`),
   INDEX `fk_member_club_club1_idx` (`club_id` ASC) VISIBLE,
   CONSTRAINT `fk_member_club_club1`
     FOREIGN KEY (`club_id`)
@@ -929,6 +919,23 @@ CREATE TABLE IF NOT EXISTS `matching`.`chat_room` (
   CONSTRAINT `fk_chat_room_member2`
     FOREIGN KEY (`other_id`)
     REFERENCES `matching`.`member` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `matching`.`club_topic`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `matching`.`club_topic` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `club_id` BIGINT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_club_topic_club1_idx` (`club_id` ASC) VISIBLE,
+  CONSTRAINT `fk_club_topic_club1`
+    FOREIGN KEY (`club_id`)
+    REFERENCES `matching`.`club` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
