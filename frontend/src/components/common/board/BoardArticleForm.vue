@@ -32,7 +32,7 @@
             type="text"
             id="tag"
             v-model="fields.tag.value"
-            @keydown.enter="handleAddTag"
+            @keydown.enter.prevent="handleAddTag"
           />
           <span
             class="material-icons icon cursor-pointer"
@@ -63,7 +63,7 @@ import { onMounted } from "@vue/runtime-core"
 import { useStore } from "vuex"
 
 export default {
-  name: "StudyBoardForm",
+  name: "BoardArticleForm",
   components: { Tag, SubmitButton },
   emits: ["onSubmit"],
   props: {
@@ -119,7 +119,6 @@ export default {
         tags: [...fields.tag.selectedTags],
         title: fields.title.value,
       }
-      console.log(data)
       emit("onSubmit", data)
     }
 

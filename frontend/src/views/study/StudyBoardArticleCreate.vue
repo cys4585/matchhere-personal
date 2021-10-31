@@ -1,18 +1,18 @@
 <template>
   <div class="container max-w-xl py-10">
     <h2 class="mb-4">게시글 작성</h2>
-    <StudyBoardForm @onSubmit="handleSubmit" :studyId="studyId" />
+    <BoardArticleForm @onSubmit="handleSubmit" :studyId="studyId" />
   </div>
 </template>
 
 <script>
-import StudyBoardForm from "@/components/common/board/BoardArticleForm.vue"
+import BoardArticleForm from "@/components/common/board/BoardArticleForm.vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 
 export default {
   name: "StudyBoardArticleCreate",
-  components: { StudyBoardForm },
+  components: { BoardArticleForm },
   props: {
     studyId: [String, Number],
   },
