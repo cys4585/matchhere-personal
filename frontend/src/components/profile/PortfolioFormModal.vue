@@ -17,7 +17,7 @@
           "
           @click="handleClick"
         >
-          {{ portfolioFile.file_name }}
+          {{ portfolioFile.file_name || "파일을 업로드하세요" }}
           <span class="material-icons-outlined absolute top-2 right-3">
             file_download
           </span>
@@ -32,7 +32,7 @@
           @change="handleChangeFile"
         />
       </div>
-      <InputFormField :field="portfolioURI" v-model="portfolioURI.value" />
+      <InputFormField :field="portfolioUri" v-model="portfolioUri.value" />
     </div>
     <div class="buttons flex gap-4 w-full justify-center">
       <button
@@ -69,20 +69,19 @@ import { useStore } from "vuex"
 export default {
   name: "PortfolioFormModal",
   components: { Modal, InputFormField },
-  setup() {
+  emits: ["closeModal", "updatePortfolio"],
+  props: {
+    file: [Object, null],
+    uri: String,
+  },
+  setup(props, { emit }) {
     const store = useStore()
     const fileInput = ref(null)
-    const portfolioFile = reactive({
-      download_uri: "",
-      file_name: "포트폴리오.pdf",
-      file_type: "",
-      id: "",
-    })
-
-    const portfolioURI = reactive(
+    const portfolioFile = reactive({ ...props.file })
+    const portfolioUri = reactive(
       new InputFormFieldMaker(
         "portfolio_uri",
-        "",
+        props.uri,
         false,
         "링크",
         "string",
@@ -96,29 +95,44 @@ export default {
     }
 
     const handleChangeFile = async (e) => {
-      console.log(e)
       const files = e.target.files || e.dataTransfer.files
       if (!files.length) {
         portfolioFile.id = ""
       }
       const formData = new FormData()
       formData.append("file", files[0])
-      const uuid = await store.dispatch("file/uploadFile", formData)
-      if (uuid) {
-        portfolioFile.id = uuid
-        portfolioFile.file_name = files[0].name
+      const { fileName, id } = await store.dispatch("file/uploadFile", formData)
+      if (id) {
+        portfolioFile.id = id
+        portfolioFile.file_name = fileName
       }
     }
 
-    const handleCloseModal = () => {}
+    const handleCloseModal = () => {
+      emit("closeModal")
+    }
+
+    const handleSubmit = async () => {
+      const data = {
+        portfolio_uri: portfolioUri.value,
+        portfolio_uuid: portfolioFile.id,
+      }
+
+      const newPortfolio = await store.dispatch("member/updatePortfolio", data)
+      if (newPortfolio) {
+        emit("updatePortfolio", newPortfolio)
+        handleCloseModal()
+      }
+    }
 
     return {
       fileInput,
       portfolioFile,
-      portfolioURI,
+      portfolioUri,
       handleClick,
       handleCloseModal,
       handleChangeFile,
+      handleSubmit,
     }
   },
 }

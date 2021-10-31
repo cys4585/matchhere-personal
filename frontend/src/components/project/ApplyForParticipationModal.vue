@@ -6,7 +6,9 @@
         <section class="grid gap-4">
           <div class="flex justify-between mx-6">
             <h4 class="font-bold text-lg text-gray-700">지원하기</h4>
-            <span class="material-icons" @click="$emit('close')">close</span>
+            <button>
+              <span class="material-icons" @click="$emit('close')">close</span>
+            </button>
           </div>
           <hr />
         </section>
@@ -14,7 +16,7 @@
           <div class="mx-6 grid gap-2">
             <h5 class="font-medium text-sm">지원 포지션</h5>
             <select
-              v-model="formFields.position"
+              v-model="formFields.role"
               class="
                 border-gray-400 border
                 rounded-md
@@ -23,7 +25,7 @@
                 px-4
                 font-medium
               "
-              :class="{ 'text-gray-400': !formFields.position }"
+              :class="{ 'text-gray-400': !formFields.role }"
             >
               <option disabled value="">개발자 or 기획자 or 디자이너</option>
               <option value="개발자">개발자</option>
@@ -37,7 +39,7 @@
               class="rounded p-4 outline-none border-gray-200 border"
               style="height: 35vh"
               placeholder="프로젝트장에게 소개할 글을 작성하세요"
-              v-model="formFields.introduce"
+              v-model="formFields.bio"
             ></textarea>
           </div>
         </section>
@@ -62,20 +64,34 @@ import { useStore } from "vuex"
 export default {
   name: "ApplyForParticipationModal",
   emits: ["close"],
+  props: {
+    projectId: Number,
+  },
   setup(props, { emit }) {
     const store = useStore()
 
     const formFields = ref({
-      position: "",
-      introduce: "",
+      role: "",
+      bio: "",
     })
 
     const canSubmit = computed(
-      () => formFields.value.position && formFields.value.introduce
+      () => formFields.value.role && formFields.value.bio
     )
 
-    const submit = () => {
-      store.dispatch("project/applyForParticipation", { ...formFields.value })
+    const submit = async () => {
+      try {
+        await store.dispatch("project/applyForParticipation", {
+          reqForm: formFields.value,
+          projectId: props.projectId,
+        })
+        store.commit("ADD_MESSAGE", { text: "참가 신청 완료! 😎" })
+      } catch (error) {
+        store.commit("ADD_MESSAGE", {
+          text: "이미 참가 신청을 했어요 😅",
+          type: "warning",
+        })
+      }
       emit("close")
     }
 

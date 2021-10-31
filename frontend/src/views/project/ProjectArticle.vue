@@ -1,8 +1,38 @@
 <template>
   <div v-if="projectInfo">
-    <div class="mt-4 flex justify-center h-40">
-      <img :src="projectInfo.coverPicUri" alt="" />
+    <div class="img-wrapper">
+      <img :src="projectInfo.coverPicUri || 'https://picsum.photos/80'" />
+      <button class="photo-button" @click="handleClickPhoto">
+        <span class="material-icons"> add_photo_alternate </span>
+      </button>
+      <input
+        type="file"
+        accept="image/*"
+        class="hidden"
+        ref="fileInputEl"
+        @change="handleFileChange"
+      />
     </div>
+    <!-- <div class="mt-4 flex justify-center h-40">
+      <img
+        v-if="projectInfo.coverPicUri"
+        :src="projectInfo.coverPicUri"
+        alt=""
+      />
+      <div v-else class="self-end">
+        <label for="coverpic" class="cursor-pointer hover:text-gray-500"
+          >커버 사진 등록</label
+        >
+        <input
+          type="file"
+          accept="image/*"
+          name="coverpic"
+          id="coverpic"
+          hidden
+          @change="handleFileChange"
+        />
+      </div>
+    </div> -->
     <div class="container">
       <section class="project-section">
         <header>
@@ -32,7 +62,11 @@
               </span>
             </p>
             <p class="flex gap-2 items-center">
-              <img :src="profilePic" alt="" class="w-6 h-6" />
+              <img
+                :src="projectInfo.host.coverPicUri || profilePic"
+                alt=""
+                class="w-6 h-6 rounded-full"
+              />
               <span class="text-xs text-gray-500">{{
                 projectInfo.host.name
               }}</span>
@@ -48,15 +82,12 @@
                 :key="tech.name"
                 class="flex gap-2 items-center"
               >
-                {{ tech }}
-              </p>
-              <p class="flex gap-2 items-center">
-                <img :src="javaPic" alt="" class="w-4 h-4" />
-                <span>java</span>
-              </p>
-              <p class="flex gap-2 items-center">
-                <img :src="pythonPic" alt="" class="w-4 h-4" />
-                <span>python</span>
+                <img
+                  class="w-4 h-4"
+                  :src="tech.imgUri || require('@/assets/images/noStack.png')"
+                  alt="로고"
+                />
+                <span> {{ tech.name }}</span>
               </p>
             </div>
           </div>
@@ -64,7 +95,7 @@
             <h3>일정</h3>
             <div class="grid gap-2">
               <p>{{ projectInfo.schedule }}</p>
-              <p>{{ projectInfo.period }} 까지</p>
+              <p v-if="projectInfo.period">{{ projectInfo.period }} 까지</p>
             </div>
           </div>
           <div class="content">
@@ -91,7 +122,11 @@
                     v-for="developer in projectInfo.developers"
                     :key="developer.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="developer.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       developer.name
                     }}</span>
@@ -119,7 +154,11 @@
                     v-for="planner in projectInfo.planners"
                     :key="planner.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="planner.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       planner.name
                     }}</span>
@@ -147,7 +186,11 @@
                     v-for="designer in projectInfo.designers"
                     :key="designer.id"
                   >
-                    <img :src="profilePic" alt="" class="w-6 h-6" />
+                    <img
+                      :src="designer.coverPicUri || profilePic"
+                      alt=""
+                      class="w-6 h-6 rounded-full"
+                    />
                     <span class="text-xs text-gray-500">{{
                       designer.name
                     }}</span>
@@ -176,12 +219,17 @@
         </div>
         <div class="flex flex-col items-center gap-2 px-7">
           <button
+            v-if="projectInfo.authority === '게스트'"
             class="w-full text-white py-4 rounded-full bg-blue-500"
             @click="isApplyModalActivation = true"
           >
             프로젝트 참가 신청
           </button>
-          <button class="py-2 px-6" @click="editProject">
+          <button
+            v-if="projectInfo.authority === '소유자'"
+            class="py-2 px-6"
+            @click="editProject"
+          >
             <p class="text-gray-600 font-medium text-sm">수정</p>
           </button>
         </div>
@@ -190,6 +238,7 @@
     <ApplyForParticipationModal
       v-if="isApplyModalActivation"
       @close="isApplyModalActivation = false"
+      :projectId="projectInfo.id"
     />
   </div>
 </template>
@@ -201,7 +250,7 @@ import { useStore } from "vuex"
 import ApplyForParticipationModal from "@/components/project/ApplyForParticipationModal.vue"
 
 export default {
-  name: "Project",
+  name: "ProjectArticle",
   components: { ApplyForParticipationModal },
   setup() {
     const route = useRoute()
@@ -213,23 +262,70 @@ export default {
     const recruitmentStateColorClass = ref()
 
     onMounted(async () => {
-      projectInfo.value = await store.dispatch(
-        "project/getProject",
-        route.params.projectId
-      )
-      const projectProgressState = projectInfo.value.projectProgressState
-      if (projectProgressState === "프로젝트 준비 중") {
-        projectProgressStateColorClass.value = "bg-green-100 text-green-600"
-      } else if (projectProgressState === "프로젝트 진행 중 ") {
-        projectProgressStateColorClass.value = "bg-blue-100 text-blue-600"
-      } else {
-        projectProgressStateColorClass.value = "bg-red-100 text-red-600"
+      const projectId = route.params.projectId
+      try {
+        const viewedProject = localStorage.getItem(`hit${projectId}`)
+        console.log("이미 본 프로젝트인가 -> ", viewedProject)
+        if (!viewedProject) {
+          await store.dispatch("project/viewCount", projectId)
+          localStorage.setItem(`hit${projectId}`, true)
+        }
+        projectInfo.value = await store.dispatch(
+          "project/getProject",
+          projectId
+        )
+        console.log(projectInfo.value)
+        const projectProgressState = projectInfo.value.projectProgressState
+        if (projectProgressState === "프로젝트 준비 중") {
+          projectProgressStateColorClass.value = "bg-green-100 text-green-600"
+        } else if (projectProgressState === "프로젝트 진행 중") {
+          projectProgressStateColorClass.value = "bg-blue-100 text-blue-600"
+        } else {
+          projectProgressStateColorClass.value = "bg-red-100 text-red-600"
+        }
+        recruitmentStateColorClass.value =
+          projectInfo.value.recruitmentState === "모집 중"
+            ? "bg-green-100 text-green-600"
+            : "bg-red-100 text-red-600"
+      } catch (error) {
+        console.log(error.message)
+        store.commit("ADD_MESSAGE", {
+          text: error.message,
+          type: "error",
+        })
       }
-      recruitmentStateColorClass.value =
-        projectInfo.value.recruitmentState === "모집 중"
-          ? "bg-green-100 text-green-600"
-          : "bg-red-100 text-red-600"
     })
+
+    const fileInputEl = ref(null)
+    const handleClickPhoto = () => {
+      fileInputEl.value.click()
+    }
+
+    const handleFileChange = async (e) => {
+      try {
+        const files = e.target.files || e.dataTransfer.files
+        if (!files.length) return
+        const formData = new FormData()
+        formData.append("file", files[0])
+        const picInfo = await store.dispatch("file/uploadFile", formData)
+        // console.log(picInfo)
+        const pjtPicInfo = await store.dispatch("project/updatePicture", {
+          projectId: route.params.projectId,
+          uuid: picInfo.id,
+        })
+        // console.log(pjtPicInfo)
+        projectInfo.value.coverPicUri = pjtPicInfo.download_uri
+        store.commit("ADD_MESSAGE", {
+          text: "커버 사진을 바꿨어요! 😎",
+        })
+      } catch (error) {
+        console.log(error.message)
+        store.commit("ADD_MESSAGE", {
+          text: "변경에 실패했어요 😢",
+          type: "error",
+        })
+      }
+    }
 
     const isApplyModalActivation = ref()
 
@@ -240,12 +336,13 @@ export default {
       })
     }
 
-    const profilePic = ref(require("@/assets/test-profile.png"))
-    const javaPic = ref(require("@/assets/test-java.png"))
-    const pythonPic = ref(require("@/assets/test-python.png"))
+    const profilePic = ref(require("@/assets/images/test-profile.png"))
+    const javaPic = ref(require("@/assets/images/test-java.png"))
+    const pythonPic = ref(require("@/assets/images/test-python.png"))
 
     return {
       projectInfo,
+      handleFileChange,
       projectProgressStateColorClass,
       recruitmentStateColorClass,
       isApplyModalActivation,
@@ -253,12 +350,33 @@ export default {
       profilePic,
       javaPic,
       pythonPic,
+      handleClickPhoto,
+      fileInputEl,
     }
   },
 }
 </script>
 
 <style lang="scss" scoped>
+.img-wrapper {
+  @apply relative mt-4 flex justify-center h-40 w-full;
+
+  .photo-button {
+    @apply absolute bottom-0 right-0 flex items-center justify-center bg-white rounded-full p-1 transition-all;
+
+    span {
+      @apply text-gray-700 transition-all;
+    }
+
+    &:hover {
+      @apply bg-blue-50;
+      span {
+        @apply text-blue-500;
+      }
+    }
+  }
+}
+
 .project-section {
   @apply pt-6 pb-10 grid gap-10;
 

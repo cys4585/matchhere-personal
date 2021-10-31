@@ -1,3 +1,6 @@
+import moment from "moment"
+import "moment/locale/ko"
+
 import {
   emailValidator,
   nameValidator,
@@ -60,6 +63,34 @@ export class InputFormFieldMaker {
         this.type = "string"
         this.placeholder = "이름을 입력하세요"
         this.validators = [nameValidator]
+        break
+      }
+      case "title": {
+        this.label = "제목"
+        this.type = "string"
+        this.placeholder = "ex) DTO 사용방식에 대한 고찰"
+        this.validators = [requiredValidator]
+        break
+      }
+      case "tags": {
+        this.label = "태그"
+        this.type = "string"
+        this.placeholder = "ex) Todo, FE, BE, DB, 일정, 회의록"
+        this.validators = []
+        break
+      }
+      case "projectName": {
+        this.label = "프로젝트 이름"
+        this.type = "string"
+        this.placeholder = "11월까지 진행하는 사이드 프로젝트"
+        this.validators = [requiredValidator]
+        break
+      }
+      case "schedule": {
+        this.label = "일정"
+        this.type = "string"
+        this.placeholder = "ex) 주말 10시 - 18시 / 평일 논의"
+        this.validators = []
         break
       }
       default: {
@@ -159,6 +190,21 @@ export class AuthCodeFormFieldMaker {
       delete this.errors[type]
     } else {
       this.errors[type] = validateRes.message
+    }
+  }
+}
+
+// 2021-10-31T12:54:37.908847
+// 2021-10-31T12:57:42.164204
+
+export const dateFormatter = (date) => {
+  console.log(date)
+  switch (moment(date).diff(moment(Date.now()), "days")) {
+    case 0: {
+      return moment(date).fromNow()
+    }
+    default: {
+      return moment(date).format("YYYY-MM-DD")
     }
   }
 }

@@ -43,17 +43,6 @@
               <p class="label">{{ field.label }}</p>
               <div v-if="field.type === 'radio'">
                 <div v-for="(state, index, key) in field.stateList" :key="key">
-                  <!-- <input
-                    class="input-radio"
-                    :type="field.type"
-                    :id="field.idList[index]"
-                    :value="state"
-                    v-model="field.value"
-                    :disabled="
-                      state === '클럽 멤버에게만 공개' &&
-                      formFields.project.club.value === null
-                    "
-                  /> -->
                   <div v-if="state === '클럽 멤버에게만 공개'">
                     <input
                       class="input-radio"
@@ -179,49 +168,47 @@ export default {
     onBeforeMount(async () => {
       projectId.value = route.params.projectId
       if (projectId.value) {
-        const projectInfo = await store.dispatch(
-          "project/getInfoForUpdate",
-          projectId.value
-        )
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        projectInfo.hostPosition = "개발자"
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        // 임시
-        console.log(projectInfo)
-        for (let form in formFields.value) {
-          for (let field in formFields.value[form]) {
-            const backendKey = formFields.value[form][field].backendKey
-            console.log(backendKey)
-            console.log(projectInfo[backendKey])
-            if (backendKey === "techstacks") {
-              projectInfo.techstacks.forEach(
-                (item) =>
-                  (formFields.value.project.techStacks.value[item.name] =
-                    item.level)
-              )
-            } else if (backendKey === "clubId") {
-              formFields.value.project.club.clubList = projectInfo.clubs
-              formFields.value.project.club.options = [
-                "선택 안함",
-                ...formFields.value.project.club.clubList.map(
-                  (club) => club.name
-                ),
-              ]
-            } else {
-              formFields.value[form][field].value = projectInfo[backendKey]
+        try {
+          const projectInfo = await store.dispatch(
+            "project/getInfoForUpdate",
+            projectId.value
+          )
+          console.log(projectInfo)
+          for (let form in formFields.value) {
+            for (let field in formFields.value[form]) {
+              const backendKey = formFields.value[form][field].backendKey
+              console.log(backendKey)
+              console.log(projectInfo[backendKey])
+              if (backendKey === "techstacks") {
+                projectInfo.techstacks.forEach(
+                  (item) =>
+                    (formFields.value.project.techStacks.value[item.name] =
+                      item.level)
+                )
+              } else if (backendKey === "clubId") {
+                formFields.value.project.club.clubList = projectInfo.clubs
+                formFields.value.project.club.options = [
+                  "선택 안함",
+                  ...formFields.value.project.club.clubList.map(
+                    (club) => club.name
+                  ),
+                ]
+              } else {
+                formFields.value[form][field].value = projectInfo[backendKey]
+              }
             }
           }
+          console.log(formFields.value)
+        } catch (error) {
+          store.commit("ADD_MESSAGES", {
+            text: error.message,
+            type: "error",
+          })
+          router.push({
+            name: "ProjectArticle",
+            params: { projectId: projectId.value },
+          })
         }
-        console.log(formFields.value)
       } else {
         await store.dispatch("project/getMyClubList")
         formFields.value.project.club.clubList =
@@ -357,7 +344,7 @@ export default {
           label: "모집 상태",
           type: "radio",
           idList: ["rec-ing", "rec-done"],
-          stateList: ["모집 중", "프로젝트 종료"],
+          stateList: ["모집 중", "모집 마감"],
           value: "모집 중",
           notNull: true,
           errors: {},
@@ -412,13 +399,21 @@ export default {
     watch(
       () => formFields.value.member.hostPosition.value,
       (newVal, oldVal) => {
-        Object.values(formFields.value.member).find(
-          (obj) => obj.label === newVal
-        ).value += 1
-        if (oldVal) {
+        // 수정일 때 최초
+        if (projectId.value && !oldVal) {
+          console.log(newVal)
+          console.log(oldVal)
+        } else {
+          console.log(newVal)
+          console.log(oldVal)
           Object.values(formFields.value.member).find(
-            (obj) => obj.label === oldVal
-          ).value -= 1
+            (obj) => obj.label === newVal
+          ).value += 1
+          if (oldVal) {
+            Object.values(formFields.value.member).find(
+              (obj) => obj.label === oldVal
+            ).value -= 1
+          }
         }
       }
     )
@@ -522,11 +517,11 @@ export default {
       }
 
       if (tmpFields.ThumbnailImageFile.value) {
-        const uuid = await store.dispatch(
+        const { id } = await store.dispatch(
           "file/uploadFile",
           tmpFields.ThumbnailImageFile.value
         )
-        formData["uuid"] = uuid
+        formData["uuid"] = id
       }
 
       console.log(formData)
@@ -534,6 +529,7 @@ export default {
       try {
         if (e.target.innerText === "수정") {
           console.log(projectId.value)
+          console.log(formData)
           const resData = await store.dispatch("project/updateProject", {
             formData,
             projectId: projectId.value,
@@ -544,6 +540,7 @@ export default {
             params: { projectId: projectId.value },
           })
         } else {
+          console.log(formData)
           const projectId = await store.dispatch(
             "project/createProject",
             formData

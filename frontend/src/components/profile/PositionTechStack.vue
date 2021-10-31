@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <div v-if="!loading" class="grid gap-6">
       <div class="grid gap-6">
         <div class="grid gap-2">

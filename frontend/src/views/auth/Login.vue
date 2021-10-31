@@ -5,7 +5,7 @@
   </header>
   <section class="login-section">
     <div class="login-container">
-      <div class="form">
+      <form class="form" @submit.prevent="handleSubmit">
         <div class="fields">
           <InputFormField
             v-for="(field, key) in formFields"
@@ -14,10 +14,8 @@
             v-model="field.value"
           />
         </div>
-        <SubmitButton @click="handleSubmit" :disabled="!canSubmit">
-          로그인
-        </SubmitButton>
-      </div>
+        <SubmitButton :disabled="!canSubmit"> 로그인 </SubmitButton>
+      </form>
       <div class="links">
         <router-link :to="{ name: 'Signup' }" class="link">
           회원가입

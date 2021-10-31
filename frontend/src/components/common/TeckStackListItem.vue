@@ -15,7 +15,11 @@
           {{ level }}
         </button>
       </div>
-      <button class="close-button" @click="handleClickRemoveButton">
+      <button
+        v-if="editMode"
+        class="close-button"
+        @click="handleClickRemoveButton"
+      >
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -28,13 +32,19 @@ export default {
   props: {
     name: String,
     userLevel: String,
+    editMode: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["change:userLevel", "remove:teckStack"],
   setup(props, { emit }) {
     const levels = ["하", "중", "상"]
 
     const handleClickLevelButton = (level) => {
-      emit("change:userLevel", { key: props.name, level })
+      if (props.editMode) {
+        emit("change:userLevel", { key: props.name, level })
+      }
     }
 
     const handleClickRemoveButton = () => {

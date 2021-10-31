@@ -3,98 +3,83 @@
     <section>
       <header>
         <h3>포트폴리오</h3>
-        <button>
+        <button class="flex">
           <span
-            class="material-icons-outlined text-blue-400 hover:text-blue-500"
-            >settings</span
-          >
-        </button>
-      </header>
-      <div class="grid gap-4">
-        <div class="file flex">
-          <p class="flex-1">{{ portfolio.file_name }}</p>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            file_download
-          </span>
-        </div>
-        <div class="link flex">
-          <p class="flex-1">{{ portfolioUri }}</p>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            open_in_new
-          </span>
-        </div>
-      </div>
-    </section>
-    <section>
-      <header>
-        <h3>SNS 링크</h3>
-        <button>
-          <span
-            class="material-icons-outlined text-blue-400 hover:text-blue-500"
+            class="material-icons-outlined text-gray-400 hover:text-blue-500"
+            @click="portfolioModalOpen = true"
           >
             settings
           </span>
         </button>
       </header>
       <div class="grid gap-4">
-        <div
-          class="link flex items-center"
-          v-for="sns in snsList"
-          :key="sns.id"
-        >
-          <div class="flex-1 grid gap-2">
-            <p>{{ sns.snsAccount }}</p>
-            <p class="text-sm text-gray-700">{{ sns.snsName }}</p>
-          </div>
-          <span
-            class="material-icons-outlined text-gray-700"
-            style="font-size: 1.25rem"
-          >
-            open_in_new
-          </span>
-        </div>
+        <template v-if="portfolio.id || portfolioUri">
+          <PortfolioFile :portfolio="portfolio" />
+          <PortfolioUri :portfolioUri="portfolioUri" />
+        </template>
+        <InfoMessageContainer v-else>
+          다른 사람들이 볼 수 있도록 포트폴리오를 추가해주세요 😎
+        </InfoMessageContainer>
       </div>
     </section>
-    <PortfolioFormModal />
+    <section>
+      <header>
+        <h3>SNS 링크</h3>
+        <button class="flex">
+          <span
+            class="material-icons-outlined text-gray-400 hover:text-blue-500"
+            @click="SNSModalOpen = true"
+          >
+            settings
+          </span>
+        </button>
+      </header>
+      <div class="grid gap-4">
+        <SNSListItem v-for="sns in snsList" :key="sns.id" :sns="sns" />
+        <InfoMessageContainer v-if="!snsList.length">
+          Github, Facebook 등 SNS를 추가해주세요 😍
+        </InfoMessageContainer>
+      </div>
+    </section>
+    <PortfolioFormModal
+      v-if="portfolioModalOpen"
+      @closeModal="portfolioModalOpen = false"
+      @updatePortfolio="handleUpdatePortfolio"
+      :file="portfolio"
+      :uri="portfolioUri"
+    />
+    <SNSFormModal
+      v-if="SNSModalOpen"
+      @closeModal="SNSModalOpen = false"
+      @updateSNS="handleUpdateSNS"
+      :snsList="snsList"
+    />
   </div>
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "@vue/runtime-core"
+import { onMounted, ref } from "@vue/runtime-core"
+import { useStore } from "vuex"
 import PortfolioFormModal from "@/components/profile/PortfolioFormModal.vue"
-const DATA = {
-  portfolio: {
-    download_uri: "https://www.instagram.com/kim.gam.ja/",
-    file_name: "FE_김병훈_이력서.pdf",
-    file_type: "string",
-    id: "string",
-  },
-  portfolio_uri: "https://www.instagram.com/kim.gam.ja/",
-  snsList: [
-    {
-      id: 1,
-      snsName: "github",
-      snsAccount: "https://www.instagram.com/kim.gam.ja/",
-    },
-    {
-      id: 2,
-      snsName: "twitter",
-      snsAccount: "https://www.instagram.com/kim.gam.ja/",
-    },
-  ],
-}
+import SNSFormModal from "@/components/profile/SNSFormModal.vue"
+import PortfolioFile from "@/components/profile/PortfolioFile.vue"
+import PortfolioUri from "@/components/profile/PortfolioUri.vue"
+import SNSListItem from "@/components/profile/SNSListItem.vue"
+import InfoMessageContainer from "@/components/common/InfoMessageContainer.vue"
 
 export default {
   name: "SNSPortfolio",
-  components: { PortfolioFormModal },
+  components: {
+    PortfolioFormModal,
+    SNSFormModal,
+    PortfolioFile,
+    PortfolioUri,
+    SNSListItem,
+    InfoMessageContainer,
+  },
   setup() {
-    const portfolio = reactive({
+    const store = useStore()
+    const portfolio = ref({
       id: "",
       file_name: "",
       file_type: "",
@@ -102,18 +87,36 @@ export default {
     })
     const portfolioUri = ref("")
     const snsList = ref([])
+    const portfolioModalOpen = ref(false)
+    const SNSModalOpen = ref(false)
 
-    onMounted(() => {
-      Object.keys(DATA.portfolio).forEach((key) => {
-        portfolio[key] = DATA.portfolio[key]
-      })
-      portfolioUri.value = DATA.portfolio_uri
-      snsList.value = [...DATA.snsList]
+    const handleUpdatePortfolio = (data) => {
+      if (data.portfolio) {
+        portfolio.value = { ...data.portfolio }
+      }
+      portfolioUri.value = data.portfolio_uri || ""
+    }
+
+    const handleUpdateSNS = (data) => {
+      snsList.value = [...data.snsList]
+    }
+
+    onMounted(async () => {
+      const data = await store.dispatch("member/getSNSPortfolio")
+      if (data.portfolio) {
+        portfolio.value = { ...data.portfolio }
+      }
+      portfolioUri.value = data.portfolio_uri || ""
+      snsList.value = [...data.snsList]
     })
     return {
       portfolio,
       portfolioUri,
       snsList,
+      SNSModalOpen,
+      portfolioModalOpen,
+      handleUpdatePortfolio,
+      handleUpdateSNS,
     }
   },
 }

@@ -401,7 +401,54 @@ export default {
         )
       }
     },
+    async updatePortfolio({ commit }, data) {
+      try {
+        const portfolio = await memberAPI.updatePortfolio(data)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "포트폴리오를 업데이트했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+        return portfolio
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "포트폴리오를 업데이트하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
+    async updateSNS({ commit }, data) {
+      try {
+        const sns = await memberAPI.updateSNS(data)
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "SNS를 업데이트했습니다",
+            type: "success",
+          },
+          { root: true }
+        )
+        return sns
+      } catch (error) {
+        commit(
+          "ADD_MESSAGE",
+          {
+            text: "SNS를 업데이트하지 못했습니다",
+            type: "error",
+          },
+          { root: true }
+        )
+      }
+    },
   },
+
   getters: {
     getMyEmail(state) {
       return state.user?.email

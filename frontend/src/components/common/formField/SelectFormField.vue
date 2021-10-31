@@ -3,8 +3,8 @@
     <label class="label">{{ field.label }}</label>
     <div class="select-wrapper">
       <select @change="handleChange" :value="field.value">
-        <option disabled>{{ field.placeholder }}</option>
-        <option v-for="item in field.options" :key="item">
+        <option disabled value="">{{ field.placeholder }}</option>
+        <option v-for="item in field.options" :key="item" :value="item">
           {{ item }}
         </option>
       </select>
