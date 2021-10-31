@@ -12,6 +12,7 @@ export default createStore({
   state: {
     alertMessages: {},
     modalOpen: false,
+    isChatDetailPage: false,
   },
   mutations: {
     ADD_MESSAGE(state, message) {
@@ -24,7 +25,18 @@ export default createStore({
     SET_MODAL_OPEN(state, modalState) {
       state.modalOpen = modalState
     },
+    SET_IS_CHAT_DETAIL_PAGE(state, isChatDetailPage) {
+      console.log(state.isChatDetailPage)
+      state.isChatDetailPage = isChatDetailPage
+      console.log(state.isChatDetailPage)
+    },
   },
   actions: {},
+  modules: { auth, project, member, file, chat },
+  getters: {
+    getIsChatDetailPage(state) {
+      return state.isChatDetailPage
+    },
+  },
   modules: { auth, project, member, file, chat, study, club },
 })

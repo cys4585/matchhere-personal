@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!isChatDetail">
+  <nav v-if="!isChatDetailPage">
     <router-link to="/study">
       <span class="material-icons">book</span>
       <span class="label">스터디</span>
@@ -33,16 +33,24 @@
 <script>
 import { computed } from "@vue/reactivity"
 import { useStore } from "vuex"
+// import { useRoute } from "vue-router"
+import { watch } from "@vue/runtime-core"
 export default {
   name: "BottomNav",
-  props: ["isChatDetail"],
   setup() {
     const store = useStore()
     const isAuthenticated = computed(
       () => store.getters["auth/getIsAuthenticated"]
     )
     const user = computed(() => store.state.member.user)
-    return { isAuthenticated, user }
+
+    const isChatDetailPage = computed(
+      () => store.getters["getIsChatDetailPage"]
+    )
+    watch(isChatDetailPage, () => {
+      console.log(isChatDetailPage.value)
+    })
+    return { isAuthenticated, user, isChatDetailPage }
   },
 }
 </script>
