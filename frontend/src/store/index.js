@@ -32,7 +32,6 @@ export default createStore({
     },
   },
   actions: {},
-  modules: { auth, project, member, file, chat },
   getters: {
     getIsChatDetailPage(state) {
       return state.isChatDetailPage
