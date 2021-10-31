@@ -2,6 +2,7 @@ package com.ssafy.match.group.clubboard.board.entity;
 
 
 import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.clubboard.board.dto.ClubBoardCreateRequestDto;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,21 +13,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 @Entity(name = "matching.club_board")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ClubBoard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-//    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
@@ -35,7 +37,17 @@ public class ClubBoard {
     @Column(name = "name")
     private String name;
 
-    @Builder
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public static ClubBoard of(ClubBoardCreateRequestDto dto, Club club){
+        return ClubBoard.builder()
+            .club(club)
+            .name(dto.getName())
+            .build();
+    }
+
     public ClubBoard(String name, Club club) {
         this.name = name;
         this.club = club;

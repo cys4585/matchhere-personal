@@ -13,7 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,36 +26,38 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "club_article_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ClubArticleComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 500)
     private String content;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
-
-    @Column(name = "modified_date")
+    @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
-    private int depth;
 
+    @NotNull
+    private int depth;
     @Column(name = "parent_id")
     private Long parentId;
 
 //    @Column(name = "group_id") 뎁스가 1이 아니고 더 깊어진다면 필요
 //    private Long groupId;
 
-    @Column(name = "reply_count")
+    @Column(name = "reply_count", nullable = false)
     private int replyCount;
-
-    @Column(name = "is_modified")
+    @Column(name = "is_modified", nullable = false)
     private Boolean isModified;
-
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -65,6 +71,9 @@ public class ClubArticleComment {
     public void addReplyCount(){
         replyCount++;
     }
+    public void removeReplyCount(){
+        replyCount--;
+    }
 
     public void setDepth(Long parentId){
         if(parentId > 0){
@@ -75,16 +84,17 @@ public class ClubArticleComment {
         this.parentId = parentId;
     }
 
-    @Builder
-    public ClubArticleComment(Long parentId, ClubArticleCommentRequestDto clubArticleCommentRequestDto, Member member, ClubArticle clubArticle) {
-        this.member = member;
-        this.clubArticle = clubArticle;
-        this.content = clubArticleCommentRequestDto.getContent();
-        this.createDate = LocalDateTime.now();
-        this.modifiedDate = LocalDateTime.now();
-        this.isModified = false;
-        this.isDeleted = false;
-        setDepth(parentId);
-        this.replyCount = 0;
+    public static ClubArticleComment of(ClubArticleCommentRequestDto dto, Member member, ClubArticle clubArticle){
+        return ClubArticleComment.builder()
+            .member(member)
+            .clubArticle(clubArticle)
+            .content(dto.getContent())
+            .createDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .isModified(false)
+            .isDeleted(false)
+            .replyCount(0)
+            .build();
     }
+
 }
