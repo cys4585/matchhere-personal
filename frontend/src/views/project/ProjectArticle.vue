@@ -2,7 +2,11 @@
   <div v-if="projectInfo">
     <div class="img-wrapper">
       <img :src="projectInfo.coverPicUri || 'https://picsum.photos/80'" />
-      <button class="photo-button" @click="handleClickPhoto">
+      <button
+        class="photo-button"
+        @click="handleClickPhoto"
+        v-if="projectInfo.authority === '소유자'"
+      >
         <span class="material-icons"> add_photo_alternate </span>
       </button>
       <input
@@ -13,26 +17,6 @@
         @change="handleFileChange"
       />
     </div>
-    <!-- <div class="mt-4 flex justify-center h-40">
-      <img
-        v-if="projectInfo.coverPicUri"
-        :src="projectInfo.coverPicUri"
-        alt=""
-      />
-      <div v-else class="self-end">
-        <label for="coverpic" class="cursor-pointer hover:text-gray-500"
-          >커버 사진 등록</label
-        >
-        <input
-          type="file"
-          accept="image/*"
-          name="coverpic"
-          id="coverpic"
-          hidden
-          @change="handleFileChange"
-        />
-      </div>
-    </div> -->
     <div class="container">
       <section class="project-section">
         <header>
@@ -337,8 +321,6 @@ export default {
     }
 
     const profilePic = ref(require("@/assets/images/test-profile.png"))
-    const javaPic = ref(require("@/assets/images/test-java.png"))
-    const pythonPic = ref(require("@/assets/images/test-python.png"))
 
     return {
       projectInfo,
@@ -348,8 +330,6 @@ export default {
       isApplyModalActivation,
       editProject,
       profilePic,
-      javaPic,
-      pythonPic,
       handleClickPhoto,
       fileInputEl,
     }

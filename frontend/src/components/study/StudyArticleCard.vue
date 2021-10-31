@@ -2,35 +2,31 @@
   <router-link
     class="study-card"
     :class="{ small }"
-    :to="{ name: 'StudyArticle', params: { studyId: 1 } }"
+    :to="{ name: 'StudyArticle', params: { studyId: study.id } }"
     @mousedown="handleMousedown"
     @mouseup="handleMouseup"
   >
     <div class="thumbnail-wrapper">
-      <img
-        class=""
-        src="https://picsum.photos/500/300"
-        alt=""
-        draggable="false"
-      />
-      <p class="recruit-state">팀원 모집 중</p>
+      <img class="" :src="study.coverPicUri" alt="" draggable="false" />
+      <p class="recruit-state">{{ study.recruitmentState }}</p>
     </div>
     <div class="info-wrapper">
-      <p class="name">백준 알고리즘 스터디 하실 분</p>
+      <p class="name">{{ study.name }}</p>
       <div class="tags mb-2">
-        <p class="tag subject">알고리즘</p>
-        <p class="tag subject">Level 2</p>
+        <p class="tag subject" v-for="topic in study.topics" :key="topic.name">
+          {{ topic.name }}
+        </p>
       </div>
       <div class="tags mb-2">
-        <p class="tag study-state">스터디 진행 중</p>
+        <p class="tag study-state">{{ study.studyProgressState }}</p>
       </div>
-      <p class="city">지역: 무관(인터넷)</p>
+      <p class="city">지역: {{ study.city }}</p>
     </div>
     <div class="bottom-wrapper">
       <div class="left">
         <div class="profile-img-wrapper"></div>
-        <span class="host-name">김병훈</span>
-        <span class="created">5일 전</span>
+        <span class="host-name">{{ study.host.name }}</span>
+        <span class="created">{{ formattedDate }}</span>
       </div>
       <button>
         <span class="material-icons">more_vert</span>
@@ -40,7 +36,9 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity"
+import { computed, ref } from "vue"
+import { dateFormatter } from "@/libs/func"
+
 export default {
   name: "StudyArticleCard",
   props: {
@@ -50,8 +48,10 @@ export default {
       default: false,
     },
   },
-  setup() {
+  setup(props) {
     const mousePosition = ref([0, 0])
+    const formattedDate = computed(() => dateFormatter(props.study.createDate))
+
     const handleMousedown = (e) => {
       console.log("down")
       mousePosition.value = [e.clientX, e.clientY]
@@ -65,7 +65,7 @@ export default {
       }
       console.log("click")
     }
-    return { handleMousedown, handleMouseup }
+    return { formattedDate, handleMousedown, handleMouseup }
   },
 }
 </script>

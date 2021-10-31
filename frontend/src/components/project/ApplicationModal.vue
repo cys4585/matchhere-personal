@@ -92,6 +92,7 @@ export default {
     })
 
     onMounted(async () => {
+      console.log(props)
       application.value = await store.dispatch("project/getApplication", {
         ...props,
       })

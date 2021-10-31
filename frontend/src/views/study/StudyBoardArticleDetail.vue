@@ -1,39 +1,39 @@
 <template>
   <div class="container py-6">
-    <article class="grid gap-4 mb-4">
+    <article class="grid gap-4 mb-4" v-if="!loading">
       <header class="pb-4 border-b">
-        <h3 class="mb-4">DTO 사용방식에 대한 고찰</h3>
+        <h3 class="mb-4">{{ article.title }}</h3>
         <div class="tags flex gap-2 mb-2">
-          <Tag text="정보공유" type="board" />
-          <Tag text="정보공유" type="board" />
-          <Tag text="정보공유" type="board" />
+          <Tag
+            v-for="tag in article.tags"
+            :key="tag"
+            :text="tag"
+            type="board"
+          />
         </div>
         <div class="flex gap-2 items-center justify-between">
-          <Member
-            :user="{
-              email: 'kepy1106@gmail.com',
-              name: '김병훈',
-              coverPicUri: 'https://picsum.photos/100/100',
-            }"
-          />
-          <span class="text-sm">2021. 10. 10.</span>
+          <Member :user="article.writer" />
+          <span class="text-sm">{{ article.createdDate }}</span>
         </div>
       </header>
       <div class="pb-10 border-b">
         <p>
-          DTO 사용에 대한 Code Convention이 추가되었습니다. Entity만 사용한다면
-          발생할 수 있는 문제들이 아래와 같습니다. 1. 보안 위험성 2. 유지보수
-          어려움 따라서 Entity를 직접적으로 사용하지말고 DTO를 사용하도록
-          Convention을 작성하였습니다. 자세한 사항은 Convention 게시판을
-          참조해주세요.
+          {{ article.content }}
         </p>
       </div>
     </article>
     <section>
-      <h4 class="font-medium mb-2">3개의 댓글</h4>
-      <CommentForm />
+      <h4 class="font-medium mb-2">{{ commentList.length }}개의 댓글</h4>
+      <CommentForm @onSubmit="handleCreateComment" />
       <div class="comment-list">
-        <CommentListItem />
+        <CommentListItem
+          v-for="comment in commentList"
+          :key="comment"
+          :comment="comment"
+          :articleId="articleId"
+          @onSubmitComment="handleSubmitReComment"
+          @onDelete="handleDeleteComment"
+        />
       </div>
     </section>
   </div>
@@ -44,6 +44,9 @@ import Tag from "@/components/common/Tag.vue"
 import Member from "@/components/common/Member.vue"
 import CommentListItem from "@/components/common/comment/CommentListItem.vue"
 import CommentForm from "@/components/common/comment/CommentForm.vue"
+import { useStore } from "vuex"
+import { onMounted, ref } from "@vue/runtime-core"
+import { dateFormatter } from "@/libs/func"
 
 export default {
   name: "StudyBoardArticleDetail",
@@ -52,6 +55,91 @@ export default {
     Member,
     CommentListItem,
     CommentForm,
+  },
+  props: {
+    studyId: [String, Number],
+    boardId: [String, Number],
+    articleId: [String, Number],
+  },
+  setup(props) {
+    const store = useStore()
+    const loading = ref(true)
+    const article = ref(null)
+    const commentList = ref([])
+
+    const handleSubmitReComment = async ({ newComment, parentId }) => {
+      // TODO: 사용자 경험이 좋지 않다.
+      // 펼쳐놨던 ReComment가 다시 접힘상태가 됨
+      console.log(newComment, parentId)
+      handleGetComments()
+      // commentList.value.forEach((c) => {
+      //   if (c.id === parentId) {
+      //     c.reCommentList.push(newComment)
+      //   }
+      // })
+    }
+
+    const handleCreateComment = async (content) => {
+      console.log(content)
+      const payload = {
+        articleId: props.articleId,
+        content,
+      }
+      const newComment = await store.dispatch(
+        "study/createArticleComment",
+        payload
+      )
+      console.log(newComment)
+      handleGetComments()
+      // commentList.value.push({ ...newComment, reCommentList: [] })
+    }
+
+    const handleDeleteComment = async (targetComment) => {
+      console.log(targetComment)
+      handleGetComments()
+      // if (targetComment.id === targetComment.parentId) {
+      //   commentList.value = commentList.value.filter(
+      //     (c) => c.id !== targetComment.id
+      //   )
+      // } else {
+      //   commentList.value.forEach((c) => {
+      //     if (c.id === targetComment.parentId) {
+      //       c.reCommentList = c.reCommentList.filter(
+      //         (reComment) => reComment.id !== targetComment.id
+      //       )
+      //       c.replyCount -= 1
+      //     }
+      //   })
+      // }
+    }
+
+    const handleGetComments = async () => {
+      const commentData = await store.dispatch(
+        "study/getArticleComment",
+        props.articleId
+      )
+      commentList.value = [...commentData]
+    }
+
+    onMounted(async () => {
+      const data = await store.dispatch(
+        "study/getBoardArticle",
+        props.articleId
+      )
+      console.log(data)
+      article.value = { ...data }
+      article.value.createdDate = dateFormatter(article.value.createdDate)
+      await handleGetComments()
+      loading.value = false
+    })
+    return {
+      loading,
+      article,
+      commentList,
+      handleCreateComment,
+      handleDeleteComment,
+      handleSubmitReComment,
+    }
   },
 }
 </script>

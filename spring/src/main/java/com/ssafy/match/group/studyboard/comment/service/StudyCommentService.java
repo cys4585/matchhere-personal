@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 
 public interface StudyCommentService {
 
-    Long create(Long articleId, Long parentId, StudyArticleCommentRequestDto dto);
+    StudyArticleCommentResponseDto create(Long articleId, Long parentId, StudyArticleCommentRequestDto dto);
 
     List<StudyArticleCommentResponseDto> allComment(Long articleId);
 
-    HttpStatus update(Long commentId, StudyArticleCommentRequestDto dto) throws Exception;
+    StudyArticleCommentResponseDto update(Long commentId, StudyArticleCommentRequestDto dto);
 
-    HttpStatus delete(Long commentId) throws Exception;
+    HttpStatus delete(Long commentId);
 }

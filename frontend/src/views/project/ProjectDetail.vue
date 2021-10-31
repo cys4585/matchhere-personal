@@ -61,9 +61,12 @@ export default {
       activedView.value = route.name
     })
 
-    onUpdated(() => {
+    onUpdated(async () => {
       // console.log(activedView.value)
       if (route.name === "ArticleDetail") {
+        const resData = await store.dispatch("project/getBoardList", projectId)
+        boardList.value = resData
+
         const { boardId } = route.params
         activedView.value =
           boardId == boardList.value[0].id

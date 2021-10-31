@@ -1,23 +1,46 @@
 <template>
-  <form @submit.prevent="" class="grid gap-10">
+  <form @submit.prevent="handleSubmit" class="grid gap-10">
     <div class="grid gap-4">
       <div class="form-field">
-        <label for="name">스터디 이름</label>
-        <input type="text" id="name" v-model="fields.name.value" />
+        <label for="title">게시글 제목</label>
+        <input type="text" id="title" v-model="fields.title.value" />
       </div>
-      <SelectFormField :field="fields.board" v-model="fields.board.value" />
+      <div class="form-field">
+        <label class="label">{{ fields.board.label }}</label>
+        <div class="select-wrapper">
+          <select v-model="fields.board.value">
+            <option disabled value="">{{ fields.board.placeholder }}</option>
+            <option
+              v-for="item in fields.board.options"
+              :key="item"
+              :value="item.id"
+            >
+              {{ item.name }}
+            </option>
+          </select>
+          <span class="material-icons icon">expand_more</span>
+        </div>
+      </div>
       <div class="form-field">
         <label for="content">내용</label>
         <textarea id="content" v-model="fields.content.value" />
       </div>
       <div class="form-field">
         <label for="tag">태그</label>
-        <input
-          type="text"
-          id="tag"
-          v-model="fields.tag.value"
-          @keydown.enter="handleAddTag"
-        />
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="tag"
+            v-model="fields.tag.value"
+            @keydown.enter.prevent="handleAddTag"
+          />
+          <span
+            class="material-icons icon cursor-pointer"
+            @click="handleAddTag"
+          >
+            add
+          </span>
+        </div>
         <div class="tags">
           <Tag
             v-for="tag in fields.tag.selectedTags"
@@ -28,30 +51,36 @@
         </div>
       </div>
     </div>
-    <SubmitButton>확인</SubmitButton>
+    <SubmitButton :disabled="!canSubmit">확인</SubmitButton>
   </form>
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity"
-import SelectFormField from "@/components/common/formField/SelectFormField.vue"
+import { computed, reactive, ref } from "@vue/reactivity"
 import Tag from "@/components/common/Tag.vue"
 import SubmitButton from "@/components/common/SubmitButton.vue"
+import { onMounted } from "@vue/runtime-core"
+import { useStore } from "vuex"
 
 export default {
-  name: "StudyBoardForm",
-  components: { SelectFormField, Tag, SubmitButton },
+  name: "BoardArticleForm",
+  components: { Tag, SubmitButton },
   emits: ["onSubmit"],
-  setup() {
+  props: {
+    studyId: [String, Number],
+    article: Object,
+  },
+  setup(props, { emit }) {
+    const store = useStore()
     const fields = reactive({
-      name: {
+      title: {
         value: "",
       },
       board: {
         label: "게시판 선택",
         value: "",
         placeholder: "게시판을 선택하세요",
-        options: ["공지사항", "게시판"],
+        options: [],
       },
       content: {
         value: "",
@@ -61,9 +90,17 @@ export default {
         selectedTags: [],
       },
     })
+    const boards = ref([])
+
+    const canSubmit = computed(() => {
+      return fields.title.value && fields.board.value && fields.content.value
+    })
 
     const handleAddTag = () => {
-      if (fields.tag.selectedTags.indexOf(fields.tag.value) === -1) {
+      if (
+        fields.tag.value &&
+        fields.tag.selectedTags.indexOf(fields.tag.value) === -1
+      ) {
         fields.tag.selectedTags.push(fields.tag.value)
       }
       fields.tag.value = ""
@@ -75,13 +112,45 @@ export default {
       )
     }
 
+    const handleSubmit = () => {
+      const data = {
+        content: fields.content.value,
+        studyBoardId: fields.board.value,
+        tags: [...fields.tag.selectedTags],
+        title: fields.title.value,
+      }
+      emit("onSubmit", data)
+    }
+
+    onMounted(async () => {
+      const data = await store.dispatch("study/getStudyBoards", props.studyId)
+      fields.board.options = [...data]
+      if (props.article) {
+        const { title, studyBoard, content, tags } = props.article
+        fields.title.value = title
+        fields.board.value = fields.board.options.find(
+          (b) => b.name === studyBoard
+        ).id
+        fields.content.value = content
+        fields.tag.selectedTags = [...tags]
+        console.log(fields)
+      }
+    })
+
     return {
       fields,
+      boards,
+      canSubmit,
       handleAddTag,
       handleRemoveTag,
+      handleSubmit,
     }
   },
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.tags {
+  @apply flex flex-wrap gap-2;
+}
+</style>

@@ -31,7 +31,6 @@ const createAndMountVue = async () => {
       console.log(error)
     }
   }
-  console.clear()
   createApp(App).use(store).use(router).mount("#app")
 }
 

@@ -8,6 +8,7 @@ import ProjectLayout from "@/layouts/Project.vue"
 import ChatLayout from "@/layouts/Chat.vue"
 import StudyLayout from "@/layouts/Study.vue"
 import StudyBoardLayout from "@/layouts/StudyBoard.vue"
+import ClubLayout from "@/layouts/Club.vue"
 
 import Profile from "@/views/Profile.vue"
 import EditProfile from "@/views/EditProfile.vue"
@@ -25,6 +26,9 @@ import ArticleEditForm from "@/views/project/detail/articleform/ArticleEditForm.
 import BoardArticleList from "@/views/project/detail/board/BoardArticleList.vue"
 import ArticleDetail from "@/views/project/detail/ArticleDetail.vue"
 import NotiBoardArticleList from "@/views/project/detail/notiboard/NotiBoardArticleList.vue"
+
+// Club
+import ClubPage from "@/views/club/index"
 
 // Study
 import StudyPage from "@/views/study/index"
@@ -99,11 +103,13 @@ const routes = [
         path: ":studyId/article",
         name: "StudyArticle",
         component: StudyPage.StudyArticle,
+        props: true,
       },
       {
         path: ":studyId/edit",
         name: "StudyEdit",
         component: StudyPage.StudyEdit,
+        props: true,
       },
       {
         path: ":studyId/board",
@@ -123,15 +129,15 @@ const routes = [
             props: true,
           },
           {
-            path: ":boardId/articles",
-            name: "StudyBoardArticleList",
-            component: StudyPage.StudyBoardArticleList,
+            path: "articles/create",
+            name: "StudyBoardArticleCreate",
+            component: StudyPage.StudyBoardArticleCreate,
             props: true,
           },
           {
-            path: ":boardId/articles/create",
-            name: "StudyBoardArticleCreate",
-            component: StudyPage.StudyBoardArticleCreate,
+            path: ":boardId/articles",
+            name: "StudyBoardArticleList",
+            component: StudyPage.StudyBoardArticleList,
             props: true,
           },
           {
@@ -233,6 +239,20 @@ const routes = [
             component: ArticleEditForm,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/club",
+    component: ClubLayout,
+    children: [
+      { path: "", name: "ClubList", component: ClubPage.ClubList },
+      { path: "create", name: "ClubCreate", component: ClubPage.ClubCreate },
+      {
+        path: ":clubId/article",
+        name: "ClubArticle",
+        component: ClubPage.ClubArticle,
+        props: true,
       },
     ],
   },

@@ -1,3 +1,6 @@
+import moment from "moment"
+import "moment/locale/ko"
+
 import {
   emailValidator,
   nameValidator,
@@ -187,6 +190,21 @@ export class AuthCodeFormFieldMaker {
       delete this.errors[type]
     } else {
       this.errors[type] = validateRes.message
+    }
+  }
+}
+
+// 2021-10-31T12:54:37.908847
+// 2021-10-31T12:57:42.164204
+
+export const dateFormatter = (date) => {
+  console.log(date)
+  switch (moment(date).diff(moment(Date.now()), "days")) {
+    case 0: {
+      return moment(date).fromNow()
+    }
+    default: {
+      return moment(date).format("YYYY-MM-DD")
     }
   }
 }

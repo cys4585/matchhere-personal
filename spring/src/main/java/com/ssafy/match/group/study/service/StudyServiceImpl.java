@@ -14,22 +14,19 @@ import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
-import com.ssafy.match.group.study.entity.CompositeMemberStudy;
-import com.ssafy.match.group.study.entity.MemberStudy;
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
-import com.ssafy.match.group.study.entity.MemberStudy;
-import com.ssafy.match.group.study.entity.Study;
-import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.request.StudyApplicationRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyCreateRequestDto;
 import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyFormInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.group.study.entity.StudyApplicationForm;
 import com.ssafy.match.group.study.entity.StudyTopic;
 import com.ssafy.match.group.study.repository.MemberStudyRepository;
@@ -336,10 +333,17 @@ public class StudyServiceImpl implements StudyService {
         MemberStudy removerms = memberStudyRepository.findById(
                 new CompositeMemberStudy(remover, study))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!removerms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
 
         MemberStudy removedms = memberStudyRepository.findById(
                 new CompositeMemberStudy(removed, study))
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
+        if (!removedms.getIsActive()) {
+            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
+        }
+
         // 소유자와 관리자만이 추방 권한을 가짐
         if (removerms.getAuthority().equals(GroupAuthority.팀원)) {
             throw new CustomException(ErrorCode.COMMON_MEMBER_CANNOT_REMOVE);

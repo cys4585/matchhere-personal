@@ -4,7 +4,8 @@
       <router-link class="logo" to="/">MatchHere</router-link>
       <div class="navs">
         <router-link :to="{ name: 'StudyList' }">스터디</router-link>
-        <router-link to="/">프로젝트</router-link>
+        <router-link :to="{ name: 'ProjectList' }">프로젝트</router-link>
+        <router-link :to="{ name: 'ClubList' }">클럽</router-link>
         <router-link to="/chat">채팅</router-link>
       </div>
       <div class="buttons">
