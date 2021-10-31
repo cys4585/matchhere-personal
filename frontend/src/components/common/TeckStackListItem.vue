@@ -1,7 +1,8 @@
 <template>
   <li>
     <div class="left">
-      <img :src="require('@/assets/images/noStack.png')" alt="로고" />
+      <!-- <img :src="require('@/assets/images/noStack.png')" alt="로고" /> -->
+      <img :src="imgUri" alt="로고" />
       <span>{{ name }}</span>
     </div>
     <div class="right">
@@ -27,6 +28,9 @@
 </template>
 
 <script>
+import { teckStackObj } from "@/libs/data"
+import { ref } from "@vue/reactivity"
+
 export default {
   name: "TeckStackListItem",
   props: {
@@ -39,6 +43,7 @@ export default {
   },
   emits: ["change:userLevel", "remove:teckStack"],
   setup(props, { emit }) {
+    const imgUri = ref(teckStackObj[props.name])
     const levels = ["하", "중", "상"]
 
     const handleClickLevelButton = (level) => {
@@ -52,6 +57,7 @@ export default {
     }
 
     return {
+      imgUri,
       levels,
       handleClickLevelButton,
       handleClickRemoveButton,

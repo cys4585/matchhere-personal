@@ -5,7 +5,7 @@
   >
     <div class="flex gap-2 items-center">
       <img :src="profilePic" alt="" class="w-8 h-8" />
-      <p class="text-gray-900 font-medium">{{ applyer.name }}</p>
+      <p class="text-gray-900 font-medium">{{ applyer.writer.name }}</p>
     </div>
     <div
       class="bg-blue-100 text-gray-900 font-bold text-sm px-4 py-1 rounded-lg"
@@ -19,7 +19,7 @@
     @refuse="handleRefuse"
     v-if="isApplicationModalActivation"
     :projectId="projectId"
-    :memberId="applyer.memberId"
+    :memberId="applyer.writer.id"
   />
 </template>
 
@@ -36,6 +36,7 @@ export default {
   },
   emits: ["accept", "refuse"],
   setup(props, { emit }) {
+    console.log(props.applyer)
     const profilePic = ref(require("@/assets/images/test-profile.png"))
 
     const isApplicationModalActivation = ref(false)
@@ -45,7 +46,7 @@ export default {
       isApplicationModalActivation.value = false
     }
     const handleRefuse = async () => {
-      emit("refuse", props.applyer.memberId)
+      emit("refuse", props.applyer.writer.id)
       isApplicationModalActivation.value = false
     }
     return {

@@ -1,8 +1,12 @@
 <template>
   <div class="flex justify-between items-center">
     <div class="flex gap-2 items-center">
-      <img :src="memberInfo.coverPicUri || profilePic" alt="" class="w-8 h-8" />
-      <p class="text-gray-900 font-medium">{{ memberInfo.name }}</p>
+      <img
+        :src="memberInfo.member.coverPicUri || profilePic"
+        alt=""
+        class="w-8 h-8"
+      />
+      <p class="text-gray-900 font-medium">{{ memberInfo.member.name }}</p>
     </div>
     <div class="flex gap-2">
       <div>
@@ -83,7 +87,7 @@ export default {
     const handleRoleChange = async (e) => {
       // console.log(e.target.value)
       const projectId = route.params.projectId
-      const memberId = props.memberInfo.id
+      const memberId = props.memberInfo.member.id
       const role = e.target.value
       try {
         const resData = await store.dispatch("project/changeRole", {
@@ -110,7 +114,7 @@ export default {
 
     const handleAuthorityChange = async (e) => {
       const projectId = route.params.projectId
-      const memberId = props.memberInfo.id
+      const memberId = props.memberInfo.member.id
       const authority = e.target.value
       try {
         const resData = await store.dispatch("project/changeAuthority", {

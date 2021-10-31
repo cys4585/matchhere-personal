@@ -51,7 +51,7 @@ export default {
         })
         console.log(resData)
         applyerList.value = applyerList.value.filter(
-          (item) => item.memberId !== applyer.memberId
+          (item) => item.writer.id !== applyer.writer.id
         )
       } catch (error) {
         store.commit("ADD_MESSAGE", {
@@ -68,7 +68,7 @@ export default {
       })
       console.log(resData)
       applyerList.value = applyerList.value.filter(
-        (applyer) => applyer.memberId !== memberId
+        (applyer) => applyer.writer.id !== memberId
       )
     }
 

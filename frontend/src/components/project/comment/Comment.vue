@@ -1,9 +1,12 @@
 <template>
   <div class="grid gap-4 py-4">
     <div class="flex gap-4">
-      <img :src="profilePic" alt="" class="w-12 h-12 rounded-full" />
+      <img
+        :src="comment.writer.coverPicUri || profilePic"
+        class="w-12 h-12 rounded-full"
+      />
       <div class="grid gap-1">
-        <span class="font-medium text-gray-900">{{ comment.name }}</span>
+        <span class="font-medium text-gray-900">{{ comment.writer.name }}</span>
         <span class="text-gray-500 text-sm">{{
           comment.createDate.slice(0, 10)
         }}</span>
