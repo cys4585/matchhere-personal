@@ -21,8 +21,8 @@ export default {
   setup() {
     const router = useRouter()
     const handleClick = () => {
-      router.push({ name: "ChatList" })
-      // router.go(-1)
+      // router.push({ name: "ChatList" })
+      router.go(-1)
     }
     return { handleClick }
   },
