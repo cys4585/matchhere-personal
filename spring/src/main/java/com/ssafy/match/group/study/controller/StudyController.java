@@ -6,6 +6,7 @@ import com.ssafy.match.group.study.dto.request.StudyUpdateRequestDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyMemberResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.service.StudyService;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -208,7 +209,7 @@ public class StudyController {
         @ApiResponse(code = 200, message = "스터디 구성원 리스트"),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nSTUDY_NOT_FOUND\nMEMBER_STUDY_NOT_FOUND"),
     })
-    public ResponseEntity<List<MemberSimpleInfoResponseDto>> getMembersInStudy(@PathVariable("studyId") Long studyId) {
+    public ResponseEntity<List<StudyMemberResponseDto>> getMembersInStudy(@PathVariable("studyId") Long studyId) {
         return new ResponseEntity<>(studyService.getMembersInStudy(studyId), HttpStatus.OK);
     }
 

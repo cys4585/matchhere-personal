@@ -5,6 +5,7 @@ import com.ssafy.match.group.club.dto.request.ClubCreateRequestDto;
 import com.ssafy.match.group.club.dto.request.ClubUpdateRequestDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoForUpdateResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubMemberResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.service.ClubService;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -197,7 +198,7 @@ public class ClubController {
         @ApiResponse(code = 200, message = "클럽 구성원 리스트"),
         @ApiResponse(code = 404, message = "MEMBER_NOT_FOUND\nCLUB_NOT_FOUND\nMEMBER_CLUB_NOT_FOUND"),
     })
-    public ResponseEntity<List<MemberSimpleInfoResponseDto>> getMembersInClub(@PathVariable("clubId") Long clubId) {
+    public ResponseEntity<List<ClubMemberResponseDto>> getMembersInClub(@PathVariable("clubId") Long clubId) {
         return new ResponseEntity<>(clubService.getMembersInClub(clubId), HttpStatus.OK);
     }
 

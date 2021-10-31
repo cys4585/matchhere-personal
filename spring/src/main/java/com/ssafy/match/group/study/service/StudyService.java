@@ -9,6 +9,7 @@ import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyMemberResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.entity.Study;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -54,7 +55,7 @@ public interface StudyService {
     String getMemberAuthority(Long studyId);
 
     // 스터디 구성원 리스트
-    List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId);
+    List<StudyMemberResponseDto> getMembersInStudy(Long studyId);
 
     StudyInfoForUpdateResponseDto getInfoForUpdateStudy(Long studyId);
 

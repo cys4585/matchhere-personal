@@ -15,6 +15,7 @@ import com.ssafy.match.group.club.dto.response.ClubFormInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubFormSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoForUpdateResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubMemberResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubTopicResponseDto;
 import com.ssafy.match.group.club.entity.Club;
@@ -265,10 +266,10 @@ public class ClubServiceImpl implements ClubService {
     }
 
     // 클럽 구성원 리스트
-    public List<MemberSimpleInfoResponseDto> getMembersInClub(Long clubId) {
-        return memberClubRepository.findMemberInClub(findClub(clubId))
+    public List<ClubMemberResponseDto> getMembersInClub(Long clubId) {
+        return memberClubRepository.findMemberRelationInClub(findClub(clubId))
             .stream()
-            .map(MemberSimpleInfoResponseDto::from)
+            .map(ClubMemberResponseDto::from)
             .collect(Collectors.toList());
     }
 

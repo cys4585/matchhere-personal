@@ -8,6 +8,7 @@ import com.ssafy.match.group.club.dto.response.ClubFormInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubFormSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoForUpdateResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubMemberResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
@@ -50,7 +51,7 @@ public interface ClubService {
     String getMemberAuthority(Long clubId);
 
     // 클럽 구성원 리스트
-    List<MemberSimpleInfoResponseDto> getMembersInClub(Long clubId);
+    List<ClubMemberResponseDto> getMembersInClub(Long clubId);
 
     ClubInfoForUpdateResponseDto getInfoForUpdateClub(Long clubId);
 

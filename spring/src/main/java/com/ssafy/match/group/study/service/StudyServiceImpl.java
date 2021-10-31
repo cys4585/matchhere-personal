@@ -22,6 +22,7 @@ import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyMemberResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
@@ -265,10 +266,10 @@ public class StudyServiceImpl implements StudyService {
     }
 
     // 스터디 구성원 리스트
-    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId) {
-        return memberStudyRepository.findMemberInStudy(findStudy(studyId))
+    public List<StudyMemberResponseDto> getMembersInStudy(Long studyId) {
+        return memberStudyRepository.findMemberRelationInStudy(findStudy(studyId))
             .stream()
-            .map(MemberSimpleInfoResponseDto::from)
+            .map(StudyMemberResponseDto::from)
             .collect(Collectors.toList());
     }
 
