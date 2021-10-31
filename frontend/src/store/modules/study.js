@@ -17,6 +17,9 @@ export default {
       )
       return res
     },
+    async editStudy(_, { data, studyId }) {
+      await studyAPI.editStudy({ data, studyId })
+    },
     async getStudyList({ commit }) {
       const res = await studyAPI.getStudyList()
       if (res.type === "error") {
@@ -73,6 +76,10 @@ export default {
     },
     async deleteArticleComment(_, commentId) {
       await studyAPI.deleteArticleComment(commentId)
+    },
+    // StudyManage
+    async getManagedStudyArticle(_, studyId) {
+      return await studyAPI.getManagedStudyArticle(studyId)
     },
   },
   getters: {},

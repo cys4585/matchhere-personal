@@ -6,8 +6,8 @@
       <div class="img-wrapper">
         <img
           v-if="fields.coverpic.id"
-          :src="fields.coverpic.url"
-          :alt="fields.coverpic.name"
+          :src="fields.coverpic.download_uri"
+          :alt="fields.coverpic.file_name"
         />
         <button
           class="add-photo-btn"
@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
 import { useStore } from "vuex"
 import { cityList } from "@/libs/data"
 import SelectFormField from "@/components/common/formField/SelectFormField.vue"
@@ -183,18 +183,18 @@ export default {
       type: String,
       default: "create",
     },
-    studyId: {
-      type: [String, Number],
+    study: {
+      type: Object,
     },
   },
   emits: ["onSubmit"],
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const store = useStore()
     const fields = reactive({
       coverpic: {
         id: "",
-        url: "",
-        name: "",
+        download_uri: "",
+        file_name: "",
       },
       name: {
         value: "",
@@ -258,8 +258,8 @@ export default {
         formData
       )
       fields.coverpic.id = id
-      fields.coverpic.url = fileDownloadUri
-      fields.coverpic.name = fileName
+      fields.coverpic.download_uri = fileDownloadUri
+      fields.coverpic.file_name = fileName
     }
 
     const handleAddTopic = () => {
@@ -289,6 +289,20 @@ export default {
       emit("onSubmit", data)
       console.log(data)
     }
+
+    onMounted(() => {
+      if (props.study) {
+        fields.bio.value = props.study.bio
+        fields.city.value = props.study.city
+        fields.coverpic = { ...props.study.coverPic }
+        fields.maxCount.value = props.study.maxCount
+        fields.name.value = props.study.name
+        fields.recruitmentState.value = props.study.recruitmentState
+        fields.schedule.value = props.study.schedule
+        fields.studyProgressState.value = props.study.studyProgressState
+        topicList.value = props.study.topics.map((t) => t.name)
+      }
+    })
 
     return {
       fields,

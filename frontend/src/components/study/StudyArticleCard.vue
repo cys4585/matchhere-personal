@@ -6,7 +6,7 @@
     @mousedown="handleMousedown"
     @mouseup="handleMouseup"
   >
-    <div class="thumbnail-wrapper">
+    <div class="thumbnail-wrapper" v-if="!noImage">
       <img class="" :src="study.coverPicUri" alt="" draggable="false" />
       <p class="recruit-state">{{ study.recruitmentState }}</p>
     </div>
@@ -44,6 +44,10 @@ export default {
   props: {
     study: Object,
     small: {
+      type: Boolean,
+      default: false,
+    },
+    noImage: {
       type: Boolean,
       default: false,
     },

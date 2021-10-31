@@ -194,11 +194,7 @@ export class AuthCodeFormFieldMaker {
   }
 }
 
-// 2021-10-31T12:54:37.908847
-// 2021-10-31T12:57:42.164204
-
 export const dateFormatter = (date) => {
-  console.log(date)
   switch (moment(date).diff(moment(Date.now()), "days")) {
     case 0: {
       return moment(date).fromNow()

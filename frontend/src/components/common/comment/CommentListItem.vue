@@ -33,7 +33,7 @@ export default {
   components: { Comment, CommentForm },
   props: {
     comment: Object,
-    articleId: Number,
+    articleId: [Number, String],
   },
   emits: ["onSubmitComment", "onDelete"],
   setup(props, { emit }) {

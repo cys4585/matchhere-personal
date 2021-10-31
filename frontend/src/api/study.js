@@ -27,7 +27,11 @@ const createStudy = async (data) => {
 }
 
 const editStudy = async ({ data, studyId }) => {
-  await http.put(`/study/${studyId}`, data)
+  try {
+    await http.put(`/study/${studyId}`, data)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const getStudyList = async () => {
@@ -165,6 +169,16 @@ const deleteArticleComment = async (commentId) => {
   }
 }
 
+// StudyManage
+const getManagedStudyArticle = async (studyId) => {
+  try {
+    const res = await http.get(`study/one/simple/${studyId}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export default {
   createStudy,
   editStudy,
@@ -181,4 +195,5 @@ export default {
   createArticleComment,
   getArticleComment,
   deleteArticleComment,
+  getManagedStudyArticle,
 }
