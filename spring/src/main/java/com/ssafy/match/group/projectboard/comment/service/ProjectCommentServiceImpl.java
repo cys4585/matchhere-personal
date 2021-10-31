@@ -1,18 +1,21 @@
 package com.ssafy.match.group.projectboard.comment.service;
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.project.entity.CompositeMemberProject;
+import com.ssafy.match.group.project.entity.MemberProject;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import com.ssafy.match.group.projectboard.article.repository.ProjectArticleRepository;
 import com.ssafy.match.group.projectboard.comment.dto.ProjectArticleCommentRequestDto;
 import com.ssafy.match.group.projectboard.comment.dto.ProjectArticleCommentResponseDto;
 import com.ssafy.match.group.projectboard.comment.entity.ProjectArticleComment;
 import com.ssafy.match.group.projectboard.comment.repository.ProjectArticleCommentRepository;
-import com.ssafy.match.group.projectboard.comment.service.ProjectCommentService;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     private final MemberRepository memberRepository;
     private final ProjectArticleRepository projectArticleRepository;
     private final ProjectArticleCommentRepository projectArticleCommentRepository;
+    private final MemberProjectRepository memberProjectRepository;
 
     @Transactional
     public ProjectArticleCommentResponseDto create(Long articleId, Long parentId, ProjectArticleCommentRequestDto dto) {
@@ -36,8 +40,13 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
             parent.addReplyCount();
         }
 
-        ProjectArticleComment projectArticleComment = ProjectArticleComment.of(dto,
-            findMember(SecurityUtil.getCurrentMemberId()), findArticle(articleId));
+        ProjectArticle projectArticle = findArticle(articleId);
+        // 권한 체크 (소속원인지 확인)
+        Project project = projectArticle.getProjectBoard().getProject();
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        checkAuthority(project, member);
+
+        ProjectArticleComment projectArticleComment = ProjectArticleComment.of(dto, member, projectArticle);
         projectArticleComment.setDepth(parentId);
         projectArticleCommentRepository.save(projectArticleComment);
 
@@ -60,7 +69,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
         ProjectArticleComment comment = findProjectArticleComment(commentId);
 
         if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
         comment.setContent(dto.getContent());
@@ -72,15 +81,15 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     @Transactional
     public HttpStatus delete(Long commentId) {
         ProjectArticleComment comment = findProjectArticleComment(commentId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
 
-        if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
+        checkDeleteAuthority(comment.getProjectArticle().getProjectBoard().getProject(), member, comment);
         // 현재 댓글이 부모댓글이 아니라면 부모 댓글의 대댓글 수 감소
         if(comment.getParentId() != comment.getId()) {
             findProjectArticleComment(comment.getParentId()).removeReplyCount();
         }
-        comment.setIsDeleted(true);
+        projectArticleCommentRepository.delete(comment);
+//        comment.setIsDeleted(true);
         return HttpStatus.OK;
     }
 
@@ -97,6 +106,37 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
     public ProjectArticleComment findProjectArticleComment(Long commentId) {
         return projectArticleCommentRepository.findById(commentId)
             .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    // 가입 여부
+    public void checkAuthority(Project project, Member member) {
+        CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
+
+        MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberProject.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+    }
+
+
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
+    public void checkDeleteAuthority(Project project, Member member, ProjectArticleComment comment) {
+        CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
+
+        MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberProject.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!(memberProject.getAuthority().equals(GroupAuthority.소유자) ||
+            memberProject.getAuthority().equals(GroupAuthority.관리자) ||
+            comment.getMember().getId().equals(member.getId()))) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+
     }
 
 }

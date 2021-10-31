@@ -49,9 +49,7 @@ public class ClubArticleService {
         ClubArticle clubArticle = findClubArticle(articleId);
 
         // 권한 체크 (소속원인지 확인)
-        Club club = clubArticle.getClubBoard().getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
-        checkAuthority(club, member);
+        checkAuthority(clubArticle.getClubBoard().getClub(), findMember(SecurityUtil.getCurrentMemberId()));
 
         ClubArticleInfoResponseDto clubArticleInfoResponseDto = ClubArticleInfoResponseDto.of(
             clubArticle, getClubArticleTagList(clubArticle));
@@ -71,14 +69,10 @@ public class ClubArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ClubArticleSimpleInfoResponseDto> getClubArticles(Integer boardId,
-        Pageable pageable) {
-
+    public Page<ClubArticleSimpleInfoResponseDto> getClubArticles(Integer boardId, Pageable pageable) {
         ClubBoard clubBoard = findClubBoard(boardId);
         // 권한 체크 (소속원인지 확인)
-        Club club = clubBoard.getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
-        checkAuthority(club, member);
+        checkAuthority(clubBoard.getClub(), findMember(SecurityUtil.getCurrentMemberId()));
 
         Page<ClubArticle> clubArticles = clubArticleRepository.findAllByClubBoard(clubBoard,
             pageable);
@@ -102,29 +96,24 @@ public class ClubArticleService {
         addContent(clubArticle, dto.getContent());
         addTags(clubArticle, dto.getTags());
 
-        ClubArticleInfoResponseDto clubArticleInfoResponseDto = ClubArticleInfoResponseDto.of(clubArticle, dto.getTags());
+        ClubArticleInfoResponseDto clubArticleInfoResponseDto = ClubArticleInfoResponseDto.of(
+            clubArticle, dto.getTags());
         clubArticleInfoResponseDto.setContent(dto.getContent());
         return clubArticleInfoResponseDto;
     }
 
     @Transactional
-    public ClubArticleInfoResponseDto updateArticle(Long articleId,
-        ClubArticleRequestDto dto) {
-
-        // 게시글
+    public ClubArticleInfoResponseDto updateArticle(Long articleId, ClubArticleRequestDto dto) {
         ClubArticle clubArticle = findClubArticle(articleId);
+
         // 권한 체크 (소속원인지 확인)
-        Club club = clubArticle.getClubBoard().getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
-        checkAuthority(club, member);
-        // 작성자인지 확인
-        if (!clubArticle.getMember().getId().equals(member.getId())) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
+        checkUpdateAuthority(clubArticle.getClubBoard().getClub(),
+            findMember(SecurityUtil.getCurrentMemberId()), clubArticle);
 
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
+
         // 게시글 내용
         ClubContent clubContent = findClubContent(clubArticle);
         clubContent.setContent(dto.getContent());
@@ -142,10 +131,9 @@ public class ClubArticleService {
     public HttpStatus deleteArticle(Long articleId) {
         ClubArticle clubArticle = findClubArticle(articleId);
 
-        Club club = clubArticle.getClubBoard().getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
         // 소속원이고 작성자이거나 소유자, 관리자인지
-        checkDeleteAuthority(club, member, clubArticle);
+        checkDeleteAuthority(clubArticle.getClubBoard().getClub(),
+            findMember(SecurityUtil.getCurrentMemberId()), clubArticle);
 
         ClubContent clubContent = findClubContent(clubArticle);
         deleteAllCommentByClubArticle(clubArticle);
@@ -210,42 +198,47 @@ public class ClubArticleService {
 
     }
 
+    // 가입 여부
     public void checkAuthority(Club club, Member member) {
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
-        // 가입 여부 확인
+
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (Boolean.FALSE.equals(memberClub.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
 
     }
 
+    // 수정 권한 (가입 여부 + 작성자 확인)
     public void checkUpdateAuthority(Club club, Member member, ClubArticle clubArticle) {
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
-        // 가입 여부 확인
+
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (!memberClub.getIsActive()) {
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) {
             throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
         }
-        if (!(memberClub.getAuthority().equals(GroupAuthority.소유자) ||
-            memberClub.getAuthority().equals(GroupAuthority.관리자) ||
-            !clubArticle.getMember().getId().equals(member.getId()))) {
+
+        if (!clubArticle.getMember().getId().equals(member.getId())) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
     }
 
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
     public void checkDeleteAuthority(Club club, Member member, ClubArticle clubArticle) {
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
-        // 가입 여부 확인
+
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (!memberClub.getIsActive()) {
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) {
             throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
         }
+
         if (!(memberClub.getAuthority().equals(GroupAuthority.소유자) ||
             memberClub.getAuthority().equals(GroupAuthority.관리자) ||
-            !clubArticle.getMember().getId().equals(member.getId()))) {
+            clubArticle.getMember().getId().equals(member.getId()))) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 

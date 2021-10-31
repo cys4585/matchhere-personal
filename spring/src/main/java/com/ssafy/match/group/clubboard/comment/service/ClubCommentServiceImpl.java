@@ -46,7 +46,6 @@ public class ClubCommentServiceImpl implements ClubCommentService {
         Member member = findMember(SecurityUtil.getCurrentMemberId());
         checkAuthority(club, member);
 
-
         ClubArticleComment clubArticleComment = ClubArticleComment.of(dto, member, clubArticle);
         clubArticleComment.setDepth(parentId);
         clubArticleCommentRepository.save(clubArticleComment);
@@ -109,29 +108,32 @@ public class ClubCommentServiceImpl implements ClubCommentService {
             .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
+    // 가입 여부
     public void checkAuthority(Club club, Member member) {
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
-        // 가입 여부 확인
+
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (!memberClub.getIsActive()) {
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) {
             throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
         }
 
     }
 
+
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
     public void checkDeleteAuthority(Club club, Member member, ClubArticleComment comment) {
         CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
-        // 가입 여부 확인
+
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (!memberClub.getIsActive()) {
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) {
             throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
         }
-        // 삭제 권한
+
         if (!(memberClub.getAuthority().equals(GroupAuthority.소유자) ||
             memberClub.getAuthority().equals(GroupAuthority.관리자) ||
-            !comment.getMember().getId().equals(member.getId()))) {
+            comment.getMember().getId().equals(member.getId()))) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
