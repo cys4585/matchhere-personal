@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 
 public interface ClubCommentService {
 
-    Long create(Long articleId, Long parentId, ClubArticleCommentRequestDto dto);
+    ClubArticleCommentResponseDto create(Long articleId, Long parentId, ClubArticleCommentRequestDto dto);
 
     List<ClubArticleCommentResponseDto> allComment(Long articleId);
 
-    HttpStatus update(Long commentId, ClubArticleCommentRequestDto dto) throws Exception;
+    ClubArticleCommentResponseDto update(Long commentId, ClubArticleCommentRequestDto dto);
 
-    HttpStatus delete(Long commentId) throws Exception;
+    HttpStatus delete(Long commentId);
 }

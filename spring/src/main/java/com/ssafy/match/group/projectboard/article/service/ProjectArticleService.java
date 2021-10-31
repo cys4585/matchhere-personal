@@ -1,11 +1,16 @@
 package com.ssafy.match.group.projectboard.article.service;
 
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.project.entity.CompositeMemberProject;
+import com.ssafy.match.group.project.entity.MemberProject;
+import com.ssafy.match.group.project.entity.Project;
+import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.group.projectboard.article.dto.ProjectArticleInfoResponseDto;
-import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.projectboard.article.dto.ProjectArticleRequestDto;
+import com.ssafy.match.group.projectboard.article.dto.ProjectArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticleTag;
 import com.ssafy.match.group.projectboard.article.entity.ProjectContent;
@@ -14,14 +19,12 @@ import com.ssafy.match.group.projectboard.article.repository.ProjectArticleTagRe
 import com.ssafy.match.group.projectboard.article.repository.ProjectContentRepository;
 import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
 import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
-import com.ssafy.match.group.projectboard.comment.entity.ProjectArticleComment;
 import com.ssafy.match.group.projectboard.comment.repository.ProjectArticleCommentRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
 import com.ssafy.match.util.SecurityUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,10 +42,15 @@ public class ProjectArticleService {
     private final MemberRepository memberRepository;
     private final ProjectArticleTagRepository projectArticleTagRepository;
     private final ProjectArticleCommentRepository projectArticleCommentRepository;
+    private final MemberProjectRepository memberProjectRepository;
 
     @Transactional(readOnly = true)
     public ProjectArticleInfoResponseDto getProjectArticleDetail(Long articleId) {
         ProjectArticle projectArticle = findProjectArticle(articleId);
+
+        // 권한 체크 (소속원인지 확인)
+        checkAuthority(projectArticle.getProjectBoard().getProject(), findMember(SecurityUtil.getCurrentMemberId()));
+
         ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.of(
             projectArticle, getProjectArticleTagList(projectArticle));
         ProjectContent projectContent = findProjectContent(projectArticle);
@@ -61,38 +69,25 @@ public class ProjectArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticles(Integer boardId,
-        Pageable pageable) {
-        Page<ProjectArticle> projectArticles = projectArticleRepository.findAllByProjectBoard(findProjectBoard(boardId), pageable);
-        return projectArticles.map(m -> ProjectArticleSimpleInfoResponseDto.of(m, getProjectArticleTagList(m)));
+    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticles(Integer boardId, Pageable pageable) {
+        ProjectBoard projectBoard = findProjectBoard(boardId);
+        // 권한 체크 (소속원인지 확인)
+        checkAuthority(projectBoard.getProject(), findMember(SecurityUtil.getCurrentMemberId()));
+
+        Page<ProjectArticle> projectArticles = projectArticleRepository.findAllByProjectBoard(projectBoard,
+            pageable);
+        return projectArticles.map(
+            m -> ProjectArticleSimpleInfoResponseDto.of(m, getProjectArticleTagList(m)));
     }
-
-//    @Transactional(readOnly = true)
-//    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticlesByTitle(Integer boardId, String title, Pageable pageable) throws Exception {
-//        if (!projectBoardRepository.existsById(boardId)) {
-//            throw new RuntimeException("존재하지 않는 게시판입니다");
-//        }
-//        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
-//        Page<ProjectArticleSimpleInfoResponseDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndTitle(projectBoard, title, pageable)
-//            .map(ProjectArticleSimpleInfoResponseDto::of);
-//        return projectArticleListDtos;
-//    }
-
-//    @Transactional(readOnly = true)
-//    public Page<ProjectArticleSimpleInfoResponseDto> getProjectArticlesByNickname(Integer boardId, String nickname, Pageable pageable) throws Exception {
-//        if (!projectBoardRepository.existsById(boardId)) {
-//            throw new RuntimeException("존재하지 않는 게시판입니다");
-//        }
-//        ProjectBoard projectBoard = projectBoardRepository.getById(boardId);
-//        Page<ProjectArticleSimpleInfoResponseDto> projectArticleListDtos = projectArticleRepository.findAllByProjectBoardAndNickname(projectBoard, nickname, pageable)
-//            .map(ProjectArticleSimpleInfoResponseDto::of);
-//        return projectArticleListDtos;
-//    }
 
     @Transactional
     public ProjectArticleInfoResponseDto createArticle(ProjectArticleRequestDto dto) {
         ProjectBoard projectBoard = findProjectBoard(dto.getProjectBoardId());
+        // 권한 체크 (소속원인지 확인)
+        Project project = projectBoard.getProject();
         Member member = findMember(SecurityUtil.getCurrentMemberId());
+        checkAuthority(project, member);
+
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
@@ -100,17 +95,25 @@ public class ProjectArticleService {
             ProjectArticle.of(dto, projectBoard, member));
         addContent(projectArticle, dto.getContent());
         addTags(projectArticle, dto.getTags());
-        return ProjectArticleInfoResponseDto.of(projectArticle, dto.getTags());
+
+        ProjectArticleInfoResponseDto projectArticleInfoResponseDto = ProjectArticleInfoResponseDto.of(
+            projectArticle, dto.getTags());
+        projectArticleInfoResponseDto.setContent(dto.getContent());
+        return projectArticleInfoResponseDto;
     }
 
     @Transactional
-    public ProjectArticleInfoResponseDto updateArticle(Long articleId,
-        ProjectArticleRequestDto dto) {
-        // 게시글
+    public ProjectArticleInfoResponseDto updateArticle(Long articleId, ProjectArticleRequestDto dto) {
         ProjectArticle projectArticle = findProjectArticle(articleId);
+
+        // 권한 체크 (소속원인지 확인)
+        checkUpdateAuthority(projectArticle.getProjectBoard().getProject(),
+            findMember(SecurityUtil.getCurrentMemberId()), projectArticle);
+
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
+
         // 게시글 내용
         ProjectContent projectContent = findProjectContent(projectArticle);
         projectContent.setContent(dto.getContent());
@@ -127,8 +130,13 @@ public class ProjectArticleService {
     @Transactional
     public HttpStatus deleteArticle(Long articleId) {
         ProjectArticle projectArticle = findProjectArticle(articleId);
+
+        // 소속원이고 작성자이거나 소유자, 관리자인지
+        checkDeleteAuthority(projectArticle.getProjectBoard().getProject(),
+            findMember(SecurityUtil.getCurrentMemberId()), projectArticle);
+
         ProjectContent projectContent = findProjectContent(projectArticle);
-        deleteAllByProjectArticle(projectArticle);
+        deleteAllCommentByProjectArticle(projectArticle);
         projectArticleTagRepository.deleteAllTagsByProjectArticle(projectArticle);
         projectContentRepository.delete(projectContent);
         projectArticleRepository.delete(projectArticle);
@@ -141,7 +149,7 @@ public class ProjectArticleService {
         projectContentRepository.save(ProjectContent.of(projectArticle, content));
     }
 
-    // 프로젝트 게시글 조회수 증가
+    // 클럽 게시글 조회수 증가
     @Transactional
     public HttpStatus plusViewCount(Long projectArticleId) {
         findProjectArticle(projectArticleId).plusViewCount();
@@ -154,8 +162,12 @@ public class ProjectArticleService {
     }
 
     public Member findMember(Long memberId) {
-        return memberRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (!member.getIs_active()) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        return member;
     }
 
     public ProjectArticle findProjectArticle(Long projectArticleId) {
@@ -168,7 +180,7 @@ public class ProjectArticleService {
             .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
     }
 
-    public void deleteAllByProjectArticle(ProjectArticle projectArticle){
+    public void deleteAllCommentByProjectArticle(ProjectArticle projectArticle) {
         projectArticleCommentRepository.deleteAllByProjectArticle(projectArticle);
     }
 
@@ -182,6 +194,52 @@ public class ProjectArticleService {
 
         for (String tag : tags) {
             projectArticleTagRepository.save(ProjectArticleTag.of(projectArticle, tag));
+        }
+
+    }
+
+    // 가입 여부
+    public void checkAuthority(Project project, Member member) {
+        CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
+
+        MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberProject.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+    }
+
+    // 수정 권한 (가입 여부 + 작성자 확인)
+    public void checkUpdateAuthority(Project project, Member member, ProjectArticle projectArticle) {
+        CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
+
+        MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberProject.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!projectArticle.getMember().getId().equals(member.getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+
+    }
+
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
+    public void checkDeleteAuthority(Project project, Member member, ProjectArticle projectArticle) {
+        CompositeMemberProject compositeMemberProject = new CompositeMemberProject(member, project);
+
+        MemberProject memberProject = memberProjectRepository.findById(compositeMemberProject)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberProject.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!(memberProject.getAuthority().equals(GroupAuthority.소유자) ||
+            memberProject.getAuthority().equals(GroupAuthority.관리자) ||
+            projectArticle.getMember().getId().equals(member.getId()))) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
     }

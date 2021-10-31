@@ -44,26 +44,38 @@ public class StudyBoardService {
 
     @Transactional(readOnly = true)
     public List<StudyBoardInfoDto> getStudyBoards(Long studyId) {
-        return studyBoardRepository.findAllByStudy(findStudy(studyId))
-            .stream()
+        Study study = findStudy(studyId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+
+        // 가입 여부 확인
+        checkAuthority(study, member);
+
+        return studyBoardRepository.findAllByStudy(study).stream()
             .map(StudyBoardInfoDto::from)
             .collect(Collectors.toList());
     }
 
     @Transactional
     public StudyBoardInfoDto createBoard(Long studyId, StudyBoardCreateRequestDto dto) {
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
         Study study = findStudy(studyId);
 
-        checkAuthority(study, member);
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        checkChangeAuthority(study, findMember(SecurityUtil.getCurrentMemberId()));
+
         return StudyBoardInfoDto.from(
             studyBoardRepository.save(StudyBoard.of(dto, study)));
     }
 
     @Transactional // 권한 확인 로직 필요
     public HttpStatus deleteBoard(Integer boardId) {
-        List<StudyArticle> studyArticles = studyArticleRepository.findAllByStudyBoard(
-            findBoard(boardId));
+        StudyBoard studyBoard = findBoard(boardId);
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        Study study = studyBoard.getStudy();
+        checkChangeAuthority(study, findMember(SecurityUtil.getCurrentMemberId()));
+
+        List<StudyArticle> studyArticles = studyArticleRepository.findAllByStudyBoard(studyBoard);
+
         for (StudyArticle studyArticle : studyArticles) {
             StudyContent studyContent = findStudyContent(studyArticle);
             studyContentRepository.delete(studyContent);
@@ -74,23 +86,28 @@ public class StudyBoardService {
 
         studyBoardRepository.delete(studyBoardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND)));
+
         return HttpStatus.OK;
     }
 
     @Transactional  // 권한 확인 로직 필요
     public StudyBoardInfoDto updateBoard(Integer boardId, StudyBoardUpdateDto studyBoardUpdateDto) {
         StudyBoard studyBoard = findBoard(boardId);
+
+        // 권한 체크 (팀원이면 x)
+        checkChangeAuthority(studyBoard.getStudy(), findMember(SecurityUtil.getCurrentMemberId()));
+
         studyBoard.setName(studyBoardUpdateDto.getName());
         return StudyBoardInfoDto.from(studyBoard);
     }
 
-    // 스터디 찾기
+    // 클럽 찾기
     public Study findStudy(Long studyId) {
         Study study = studyRepository.findById(studyId)
-            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.CLUB_NOT_FOUND));
 
         if (Boolean.FALSE.equals(study.getIsActive())) {
-            throw new CustomException(ErrorCode.DELETED_STUDY);
+            throw new CustomException(ErrorCode.DELETED_CLUB);
         }
         return study;
     }
@@ -126,14 +143,23 @@ public class StudyBoardService {
 
     public void checkAuthority(Study study, Member member){
         CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+        // 가입 여부 확인
         MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND));
-        if (!memberStudy.getIsActive()) {
-            throw new CustomException(ErrorCode.MEMBER_STUDY_NOT_FOUND);
-        }
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
 
-        if (memberStudy.getAuthority().equals(GroupAuthority.팀원)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
+    }
+
+    public void checkChangeAuthority(Study study, Member member){
+
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+        // 가입 여부 확인
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+
+        // 팀원이면 권한 x
+        if (memberStudy.getAuthority().equals(GroupAuthority.팀원)) throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+
     }
 }

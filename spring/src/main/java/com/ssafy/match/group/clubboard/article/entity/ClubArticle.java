@@ -1,5 +1,6 @@
 package com.ssafy.match.group.clubboard.article.entity;
 
+import com.ssafy.match.group.clubboard.article.dto.ClubArticleRequestDto;
 import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
 import com.ssafy.match.member.entity.Member;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +23,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @Entity(name = "matching.club_article")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ClubArticle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,13 +53,24 @@ public class ClubArticle {
     @Column(name = "view_count")
     private Integer viewCount;
 
-    @Builder
-    public ClubArticle(ClubBoard clubBoard, Member member, String title, LocalDateTime createDate, LocalDateTime modifiedDate, Integer viewCount) {
+    public void plusViewCount(){
+        this.viewCount++;
+    }
+
+    public void update(ClubArticleRequestDto dto, ClubBoard clubBoard){
         this.clubBoard = clubBoard;
-        this.member = member;
-        this.title = title;
-        this.createDate = createDate;
-        this.modifiedDate = modifiedDate;
-        this.viewCount = viewCount;
+        this.title = dto.getTitle();
+        this.modifiedDate = LocalDateTime.now();
+    }
+
+    public static ClubArticle of(ClubArticleRequestDto dto, ClubBoard clubBoard, Member member){
+        return ClubArticle.builder()
+            .clubBoard(clubBoard)
+            .member(member)
+            .title(dto.getTitle())
+            .createDate(LocalDateTime.now())
+            .modifiedDate(LocalDateTime.now())
+            .viewCount(0)
+            .build();
     }
 }

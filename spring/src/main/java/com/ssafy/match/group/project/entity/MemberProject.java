@@ -40,6 +40,10 @@ public class MemberProject {
         this.isActive = false;
     }
 
+    public boolean getIsActive(){
+        return isActive;
+    }
+
 //    public static MemberProject of(CompositeMemberProject compositeMemberProject, String role,
 //        String authority){
 //        return MemberProject.builder()

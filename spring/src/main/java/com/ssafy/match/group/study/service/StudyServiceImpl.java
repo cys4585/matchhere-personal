@@ -22,6 +22,7 @@ import com.ssafy.match.group.study.dto.response.StudyFormSimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForCreateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoForUpdateResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyInfoResponseDto;
+import com.ssafy.match.group.study.dto.response.StudyMemberResponseDto;
 import com.ssafy.match.group.study.dto.response.StudySimpleInfoResponseDto;
 import com.ssafy.match.group.study.dto.response.StudyTopicResponseDto;
 import com.ssafy.match.group.study.entity.CompositeMemberStudy;
@@ -35,6 +36,7 @@ import com.ssafy.match.group.study.repository.StudyRepository;
 import com.ssafy.match.group.study.repository.StudyTopicRepository;
 import com.ssafy.match.group.studyboard.board.entity.StudyBoard;
 import com.ssafy.match.group.studyboard.board.repository.StudyBoardRepository;
+import com.ssafy.match.group.studyboard.board.service.StudyBoardService;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -65,6 +67,7 @@ public class StudyServiceImpl implements StudyService {
     private final DBFileRepository dbFileRepository;
     private final StudyBoardRepository studyBoardRepository;
     private final StudyTopicRepository studyTopicRepository;
+    private final StudyBoardService studyBoardService;
 
     // 스터디 생성을 위한 정보(호스트의 클럽 정보)
     public StudyInfoForCreateResponseDto getInfoForCreate() {
@@ -215,7 +218,11 @@ public class StudyServiceImpl implements StudyService {
         }
         // 스터디 주제 제거
         studyTopicRepository.deleteAllByStudy(study);
-        // 스터디 게시판, 게시글, 댓글 삭제 정책 회의 후 생성
+        // 스터디 게시판, 게시글, 댓글 삭제
+        List<StudyBoard> studyBoards = studyBoardRepository.findAllByStudy(study);
+        for (StudyBoard studyBoard : studyBoards) {
+            studyBoardService.deleteBoard(studyBoard.getId());
+        }
         study.deActivation();
         return HttpStatus.OK;
     }
@@ -265,10 +272,10 @@ public class StudyServiceImpl implements StudyService {
     }
 
     // 스터디 구성원 리스트
-    public List<MemberSimpleInfoResponseDto> getMembersInStudy(Long studyId) {
-        return memberStudyRepository.findMemberInStudy(findStudy(studyId))
+    public List<StudyMemberResponseDto> getMembersInStudy(Long studyId) {
+        return memberStudyRepository.findMemberRelationInStudy(findStudy(studyId))
             .stream()
-            .map(MemberSimpleInfoResponseDto::from)
+            .map(StudyMemberResponseDto::from)
             .collect(Collectors.toList());
     }
 

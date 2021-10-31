@@ -15,6 +15,7 @@ import com.ssafy.match.group.club.dto.response.ClubFormInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubFormSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoForUpdateResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubInfoResponseDto;
+import com.ssafy.match.group.club.dto.response.ClubMemberResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.dto.response.ClubTopicResponseDto;
 import com.ssafy.match.group.club.entity.Club;
@@ -28,6 +29,7 @@ import com.ssafy.match.group.club.repository.ClubTopicRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
 import com.ssafy.match.group.clubboard.board.entity.ClubBoard;
 import com.ssafy.match.group.clubboard.board.repository.ClubBoardRepository;
+import com.ssafy.match.group.clubboard.board.service.ClubBoardService;
 import com.ssafy.match.group.project.entity.Project;
 import com.ssafy.match.group.project.repository.ProjectRepository;
 import com.ssafy.match.group.study.entity.Study;
@@ -62,6 +64,7 @@ public class ClubServiceImpl implements ClubService {
     private final ClubTopicRepository clubTopicRepository;
     private final StudyRepository studyRepository;
     private final ProjectRepository projectRepository;
+    private final ClubBoardService clubBoardService;
 
     // 클럽 생성
     @Transactional
@@ -205,7 +208,11 @@ public class ClubServiceImpl implements ClubService {
         clubTopicRepository.deleteAllByClub(club);
         // 속한 스터디, 프로젝트 초기화
         initialize(club);
-        // 클럽 게시판, 게시글, 댓글 삭제 정책 회의 후 생성
+        // 클럽 게시판, 게시글, 댓글 삭제
+        List<ClubBoard> clubBoards = clubBoardRepository.findAllByClub(club);
+        for (ClubBoard clubBoard : clubBoards) {
+            clubBoardService.deleteBoard(clubBoard.getId());
+        }
         club.deActivation();
         return HttpStatus.OK;
     }
@@ -265,10 +272,10 @@ public class ClubServiceImpl implements ClubService {
     }
 
     // 클럽 구성원 리스트
-    public List<MemberSimpleInfoResponseDto> getMembersInClub(Long clubId) {
-        return memberClubRepository.findMemberInClub(findClub(clubId))
+    public List<ClubMemberResponseDto> getMembersInClub(Long clubId) {
+        return memberClubRepository.findMemberRelationInClub(findClub(clubId))
             .stream()
-            .map(MemberSimpleInfoResponseDto::from)
+            .map(ClubMemberResponseDto::from)
             .collect(Collectors.toList());
     }
 

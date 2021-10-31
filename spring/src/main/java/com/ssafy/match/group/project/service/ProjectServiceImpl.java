@@ -14,7 +14,6 @@ import com.ssafy.match.file.dto.DBFileDto;
 import com.ssafy.match.file.entity.DBFile;
 import com.ssafy.match.file.repository.DBFileRepository;
 import com.ssafy.match.group.club.dto.response.ClubInfoForSelectResponseDto;
-import com.ssafy.match.group.club.dto.response.ClubSimpleInfoResponseDto;
 import com.ssafy.match.group.club.entity.Club;
 import com.ssafy.match.group.club.repository.ClubRepository;
 import com.ssafy.match.group.club.repository.MemberClubRepository;
@@ -41,6 +40,7 @@ import com.ssafy.match.group.project.repository.ProjectRepository;
 import com.ssafy.match.group.project.repository.ProjectTechstackRepository;
 import com.ssafy.match.group.projectboard.board.entity.ProjectBoard;
 import com.ssafy.match.group.projectboard.board.repository.ProjectBoardRepository;
+import com.ssafy.match.group.projectboard.board.service.ProjectBoardService;
 import com.ssafy.match.member.dto.MemberSimpleInfoResponseDto;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
@@ -73,6 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectTechstackRepository projectTechstackRepository;
     private final DBFileRepository dbFileRepository;
     private final ProjectBoardRepository projectBoardRepository;
+    private final ProjectBoardService projectBoardService;
 
     // 프로젝트 생성을 위한 정보(회원의 클럽 리스트)
     public ProjectInfoForCreateResponseDto getInfoForCreate() {
@@ -190,6 +191,11 @@ public class ProjectServiceImpl implements ProjectService {
 //        }
         // 프로젝트 기술 스택 제거 (안지워도 될수도?)
         projectTechstackRepository.deleteAllByProject(project);
+        // 프로젝트 게시판, 게시글, 댓글 삭제
+        List<ProjectBoard> projectBoards = projectBoardRepository.findAllByProject(project);
+        for (ProjectBoard projectBoard : projectBoards) {
+            projectBoardService.deleteBoard(projectBoard.getId());
+        }
         // 프로젝트 비활성화
         project.setIsActive(Boolean.FALSE);
 

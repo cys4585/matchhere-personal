@@ -1,7 +1,12 @@
 package com.ssafy.match.group.studyboard.comment.service;
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.study.entity.CompositeMemberStudy;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.group.studyboard.article.entity.StudyArticle;
 import com.ssafy.match.group.studyboard.article.repository.StudyArticleRepository;
 import com.ssafy.match.group.studyboard.comment.dto.StudyArticleCommentRequestDto;
@@ -26,6 +31,7 @@ public class StudyCommentServiceImpl implements StudyCommentService{
     private final MemberRepository memberRepository;
     private final StudyArticleRepository studyArticleRepository;
     private final StudyArticleCommentRepository studyArticleCommentRepository;
+    private final MemberStudyRepository memberStudyRepository;
 
     @Transactional
     public StudyArticleCommentResponseDto create(Long articleId, Long parentId, StudyArticleCommentRequestDto dto) {
@@ -34,8 +40,13 @@ public class StudyCommentServiceImpl implements StudyCommentService{
             parent.addReplyCount();
         }
 
-        StudyArticleComment studyArticleComment = StudyArticleComment.of(dto,
-            findMember(SecurityUtil.getCurrentMemberId()), findArticle(articleId));
+        StudyArticle studyArticle = findArticle(articleId);
+        // 권한 체크 (소속원인지 확인)
+        Study study = studyArticle.getStudyBoard().getStudy();
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+        checkAuthority(study, member);
+
+        StudyArticleComment studyArticleComment = StudyArticleComment.of(dto, member, studyArticle);
         studyArticleComment.setDepth(parentId);
         studyArticleCommentRepository.save(studyArticleComment);
 
@@ -58,7 +69,7 @@ public class StudyCommentServiceImpl implements StudyCommentService{
         StudyArticleComment comment = findStudyArticleComment(commentId);
 
         if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new CustomException(ErrorCode.COMMENT_NOT_FOUND);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
         comment.setContent(dto.getContent());
@@ -70,15 +81,15 @@ public class StudyCommentServiceImpl implements StudyCommentService{
     @Transactional
     public HttpStatus delete(Long commentId) {
         StudyArticleComment comment = findStudyArticleComment(commentId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
 
-        if (!comment.getMember().getId().equals(SecurityUtil.getCurrentMemberId())) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
+        checkDeleteAuthority(comment.getStudyArticle().getStudyBoard().getStudy(), member, comment);
         // 현재 댓글이 부모댓글이 아니라면 부모 댓글의 대댓글 수 감소
         if(comment.getParentId() != comment.getId()) {
             findStudyArticleComment(comment.getParentId()).removeReplyCount();
         }
-        comment.setIsDeleted(true);
+        studyArticleCommentRepository.delete(comment);
+//        comment.setIsDeleted(true);
         return HttpStatus.OK;
     }
 
@@ -95,6 +106,37 @@ public class StudyCommentServiceImpl implements StudyCommentService{
     public StudyArticleComment findStudyArticleComment(Long commentId) {
         return studyArticleCommentRepository.findById(commentId)
             .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    // 가입 여부
+    public void checkAuthority(Study study, Member member) {
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+    }
+
+
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
+    public void checkDeleteAuthority(Study study, Member member, StudyArticleComment comment) {
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!(memberStudy.getAuthority().equals(GroupAuthority.소유자) ||
+            memberStudy.getAuthority().equals(GroupAuthority.관리자) ||
+            comment.getMember().getId().equals(member.getId()))) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+
     }
 
 }

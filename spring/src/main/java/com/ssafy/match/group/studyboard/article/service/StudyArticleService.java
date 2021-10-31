@@ -1,8 +1,13 @@
 package com.ssafy.match.group.studyboard.article.service;
 
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.study.entity.CompositeMemberStudy;
+import com.ssafy.match.group.study.entity.MemberStudy;
+import com.ssafy.match.group.study.entity.Study;
+import com.ssafy.match.group.study.repository.MemberStudyRepository;
 import com.ssafy.match.group.studyboard.article.dto.StudyArticleInfoResponseDto;
 import com.ssafy.match.group.studyboard.article.dto.StudyArticleRequestDto;
 import com.ssafy.match.group.studyboard.article.dto.StudyArticleSimpleInfoResponseDto;
@@ -36,10 +41,15 @@ public class StudyArticleService {
     private final MemberRepository memberRepository;
     private final StudyArticleTagRepository studyArticleTagRepository;
     private final StudyArticleCommentRepository studyArticleCommentRepository;
+    private final MemberStudyRepository memberStudyRepository;
 
     @Transactional(readOnly = true)
     public StudyArticleInfoResponseDto getStudyArticleDetail(Long articleId) {
         StudyArticle studyArticle = findStudyArticle(articleId);
+
+        // 권한 체크 (소속원인지 확인)
+        checkAuthority(studyArticle.getStudyBoard().getStudy(), findMember(SecurityUtil.getCurrentMemberId()));
+
         StudyArticleInfoResponseDto studyArticleInfoResponseDto = StudyArticleInfoResponseDto.of(
             studyArticle, getStudyArticleTagList(studyArticle));
         StudyContent studyContent = findStudyContent(studyArticle);
@@ -58,16 +68,25 @@ public class StudyArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<StudyArticleSimpleInfoResponseDto> getStudyArticles(Integer boardId,
-        Pageable pageable) {
-        Page<StudyArticle> studyArticles = studyArticleRepository.findAllByStudyBoard(findStudyBoard(boardId), pageable);
-        return studyArticles.map(m -> StudyArticleSimpleInfoResponseDto.of(m, getStudyArticleTagList(m)));
+    public Page<StudyArticleSimpleInfoResponseDto> getStudyArticles(Integer boardId, Pageable pageable) {
+        StudyBoard studyBoard = findStudyBoard(boardId);
+        // 권한 체크 (소속원인지 확인)
+        checkAuthority(studyBoard.getStudy(), findMember(SecurityUtil.getCurrentMemberId()));
+
+        Page<StudyArticle> studyArticles = studyArticleRepository.findAllByStudyBoard(studyBoard,
+            pageable);
+        return studyArticles.map(
+            m -> StudyArticleSimpleInfoResponseDto.of(m, getStudyArticleTagList(m)));
     }
 
     @Transactional
     public StudyArticleInfoResponseDto createArticle(StudyArticleRequestDto dto) {
         StudyBoard studyBoard = findStudyBoard(dto.getStudyBoardId());
+        // 권한 체크 (소속원인지 확인)
+        Study study = studyBoard.getStudy();
         Member member = findMember(SecurityUtil.getCurrentMemberId());
+        checkAuthority(study, member);
+
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
@@ -75,17 +94,25 @@ public class StudyArticleService {
             StudyArticle.of(dto, studyBoard, member));
         addContent(studyArticle, dto.getContent());
         addTags(studyArticle, dto.getTags());
-        return StudyArticleInfoResponseDto.of(studyArticle, dto.getTags());
+
+        StudyArticleInfoResponseDto studyArticleInfoResponseDto = StudyArticleInfoResponseDto.of(
+            studyArticle, dto.getTags());
+        studyArticleInfoResponseDto.setContent(dto.getContent());
+        return studyArticleInfoResponseDto;
     }
 
     @Transactional
-    public StudyArticleInfoResponseDto updateArticle(Long articleId,
-        StudyArticleRequestDto dto) {
-        // 게시글
+    public StudyArticleInfoResponseDto updateArticle(Long articleId, StudyArticleRequestDto dto) {
         StudyArticle studyArticle = findStudyArticle(articleId);
+
+        // 권한 체크 (소속원인지 확인)
+        checkUpdateAuthority(studyArticle.getStudyBoard().getStudy(),
+            findMember(SecurityUtil.getCurrentMemberId()), studyArticle);
+
         if (dto.getContent() == null) {
             throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
         }
+
         // 게시글 내용
         StudyContent studyContent = findStudyContent(studyArticle);
         studyContent.setContent(dto.getContent());
@@ -102,6 +129,11 @@ public class StudyArticleService {
     @Transactional
     public HttpStatus deleteArticle(Long articleId) {
         StudyArticle studyArticle = findStudyArticle(articleId);
+
+        // 소속원이고 작성자이거나 소유자, 관리자인지
+        checkDeleteAuthority(studyArticle.getStudyBoard().getStudy(),
+            findMember(SecurityUtil.getCurrentMemberId()), studyArticle);
+
         StudyContent studyContent = findStudyContent(studyArticle);
         deleteAllCommentByStudyArticle(studyArticle);
         studyArticleTagRepository.deleteAllTagsByStudyArticle(studyArticle);
@@ -116,7 +148,7 @@ public class StudyArticleService {
         studyContentRepository.save(StudyContent.of(studyArticle, content));
     }
 
-    // 스터디 게시글 조회수 증가
+    // 클럽 게시글 조회수 증가
     @Transactional
     public HttpStatus plusViewCount(Long studyArticleId) {
         findStudyArticle(studyArticleId).plusViewCount();
@@ -131,7 +163,7 @@ public class StudyArticleService {
     public Member findMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        if(!member.getIs_active()){
+        if (!member.getIs_active()) {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
         return member;
@@ -147,7 +179,7 @@ public class StudyArticleService {
             .orElseThrow(() -> new CustomException(ErrorCode.CONTENT_NOT_FOUND));
     }
 
-    public void deleteAllCommentByStudyArticle(StudyArticle studyArticle){
+    public void deleteAllCommentByStudyArticle(StudyArticle studyArticle) {
         studyArticleCommentRepository.deleteAllByStudyArticle(studyArticle);
     }
 
@@ -161,6 +193,52 @@ public class StudyArticleService {
 
         for (String tag : tags) {
             studyArticleTagRepository.save(StudyArticleTag.of(studyArticle, tag));
+        }
+
+    }
+
+    // 가입 여부
+    public void checkAuthority(Study study, Member member) {
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+    }
+
+    // 수정 권한 (가입 여부 + 작성자 확인)
+    public void checkUpdateAuthority(Study study, Member member, StudyArticle studyArticle) {
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!studyArticle.getMember().getId().equals(member.getId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+        }
+
+    }
+
+    // 삭제 권한 (가입 여부 + 작성자 + 관리자, 소유자)
+    public void checkDeleteAuthority(Study study, Member member, StudyArticle studyArticle) {
+        CompositeMemberStudy compositeMemberStudy = new CompositeMemberStudy(member, study);
+
+        MemberStudy memberStudy = memberStudyRepository.findById(compositeMemberStudy)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberStudy.getIsActive())) {
+            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+
+        if (!(memberStudy.getAuthority().equals(GroupAuthority.소유자) ||
+            memberStudy.getAuthority().equals(GroupAuthority.관리자) ||
+            studyArticle.getMember().getId().equals(member.getId()))) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
     }
