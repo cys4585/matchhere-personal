@@ -1,31 +1,47 @@
 package com.ssafy.match.group.studyboard.article.entity;
 
 
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@Builder
 @Entity(name = "matching.study_content")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class StudyContent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_article_id")
     private StudyArticle studyArticle;
 
-    @Column(name = "content")
+    @NotBlank
     private String content;
 
-    @Builder
-    public StudyContent(StudyArticle studyArticle, String content) {
-        this.studyArticle = studyArticle;
+    public void setContent(String content){
         this.content = content;
+    }
+
+    public static StudyContent of(StudyArticle studyArticle, String content) {
+        return StudyContent.builder()
+            .studyArticle(studyArticle)
+            .content(content)
+            .build();
     }
 
 }

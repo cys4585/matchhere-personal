@@ -13,11 +13,14 @@
 import { ref } from "vue"
 export default {
   name: "CommentForm",
-  setup() {
+  emits: ["onSubmit"],
+  setup(props, { emit }) {
     const content = ref("")
 
     const handleSubmit = () => {
-      alert(content.value)
+      if (content.value) {
+        emit("onSubmit", content.value)
+      }
       content.value = ""
     }
 

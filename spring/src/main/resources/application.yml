@@ -9,7 +9,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&MVCC=TRUE
+    url: jdbc:mysql://mysql:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&MVCC=TRUE
     username: root
     password: madmin
   servlet:
@@ -36,7 +36,7 @@ spring:
         max-page-size: 100
   kafka:
     consumer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: kafka:9092
       group-id: spring-boot-test
       auto-offset-reset: earliest
   #  kafka:
@@ -71,9 +71,9 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-  sql:
-    init:
-      mode: always
+#  sql:
+#    init:
+#      mode: always
 #logging:
 #  level:
 #    org.hibernate.SQL: debug # JPA, 하이버네이트가 생성하는 SQL이 로그에 생성 (logger)

@@ -1,21 +1,30 @@
 package com.ssafy.match.group.studyboard.article.controller;
 
 
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleListDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleCreateRequestDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleInfoDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleListDto;
-import com.ssafy.match.group.studyboard.article.dto.StudyArticleUpdateRequestDto;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleInfoResponseDto;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleRequestDto;
+import com.ssafy.match.group.studyboard.article.dto.StudyArticleSimpleInfoResponseDto;
 import com.ssafy.match.group.studyboard.article.service.StudyArticleService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -24,45 +33,64 @@ import org.springframework.web.bind.annotation.*;
 public class StudyArticleController {
     private final StudyArticleService studyArticleService;
 
-    @GetMapping("/{boardid}/articles")
-    @ApiOperation(value = "(스터디)게시물 리스트 조회", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시물들을 조회한다.")
-    public ResponseEntity<Page<StudyArticleListDto>> getArticles(@PathVariable("boardid") Integer boardid, @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction= Sort.Direction.DESC) Pageable pageable) throws Exception {
-        return ResponseEntity.ok(studyArticleService.getStudyArticles(boardid, pageable));
+    @GetMapping("/{boardId}/articles")
+    @ApiOperation(value = "(스터디)게시글 리스트 조회", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시글들을 조회한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "게시글 리스트 조회"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<Page<StudyArticleSimpleInfoResponseDto>> getArticles(@PathVariable("boardId") Integer boardId,
+        @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return new ResponseEntity<>(studyArticleService.getStudyArticles(boardId, pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/{boardid}/articles/title/{title}")
-    @ApiOperation(value = "(스터디)게시물 리스트 제목 조회", notes = "<strong>받은 게시판 id와 제목</strong>을 사용해서 게시물들을 조회한다.")
-    public ResponseEntity<Page<StudyArticleListDto>> getArticlesByTitle(@PathVariable("boardid") Integer boardid, @PathVariable("title") String title, @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction= Sort.Direction.DESC) Pageable pageable) throws Exception {
-        return ResponseEntity.ok(studyArticleService.getStudyArticlesByTitle(boardid, title, pageable));
+    @GetMapping("/article/{articleId}")
+    @ApiOperation(value = "(스터디)게시글 상세조회", notes = "<strong>받은 article id</strong>를 사용해서 게시글 상세 조회")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "게시글 상제 정보"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<StudyArticleInfoResponseDto> getArticleDetail(@PathVariable("articleId") Long articleId) {
+        return new ResponseEntity<>(studyArticleService.getStudyArticleDetail(articleId), HttpStatus.OK);
     }
 
-    @GetMapping("/{boardid}/articles/nickname/{nickname}")
-    @ApiOperation(value = "(스터디)게시물 리스트 닉네임 조회", notes = "<strong>받은 게시판 id와 닉네임</strong>을 사용해서 게시물들을 조회한다.")
-    public ResponseEntity<Page<StudyArticleListDto>> getArticlesByNickname(@PathVariable("boardid") Integer boardid, @PathVariable("nickname") String nickname, @PageableDefault(size = 10) @SortDefault(sort = "createDate", direction= Sort.Direction.DESC) Pageable pageable) throws Exception {
-        return ResponseEntity.ok(studyArticleService.getStudyArticlesByNickname(boardid, nickname, pageable));
+    @PostMapping
+    @ApiOperation(value = "(스터디)게시판의 게시글 생성", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시글을 생성한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "생성 게시글 정보"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND"),
+    })
+    public ResponseEntity<StudyArticleInfoResponseDto> createArticle(@Valid @RequestBody StudyArticleRequestDto dto) {
+        return new ResponseEntity<>(studyArticleService.createArticle(dto), HttpStatus.OK);
     }
 
-    @GetMapping("/{boardid}/articles/{articleid}")
-    @ApiOperation(value = "(스터디)게시물 상세조회", notes = "<strong>받은 article id</strong>를 사용해서 게시물 상세 조회")
-    public ResponseEntity<StudyArticleInfoDto> getArticleDetail(@PathVariable("boardid") Integer boardid, @PathVariable("articleid") Long articleid) throws Exception {
-        return ResponseEntity.ok(studyArticleService.getStudyArticleDetail(articleid));
+    @PutMapping("/{articleId}")
+    @ApiOperation(value = "(스터디)게시판의 게시글 수정", notes = "<strong>받은 게시글 id</strong>를 사용해서 게시글을 수정한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "수정 후 정보"),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<StudyArticleInfoResponseDto> updateArticle(@PathVariable("articleId") Long articleId, @Valid @RequestBody StudyArticleRequestDto dto) {
+        return new ResponseEntity<>(studyArticleService.updateArticle(articleId, dto), HttpStatus.OK);
     }
 
-    @PostMapping("/{boardid}/articles")
-    @ApiOperation(value = "(스터디)게시판의 게시물 생성", notes = "<strong>받은 게시판 id</strong>를 사용해서 게시물을 생성한다.")
-    public ResponseEntity<Long> createArticle(@PathVariable("boardid") Integer boardid, @RequestBody StudyArticleCreateRequestDto studyArticleCreateRequestDto) throws Exception {
-        return ResponseEntity.ok(studyArticleService.createArticle(boardid, studyArticleCreateRequestDto));
+    @DeleteMapping("/{articleId}")
+    @ApiOperation(value = "(스터디)게시판의 게시글 삭제", notes = "<strong>받은 게시글 id</strong>를 사용해서 게시글을 삭제한다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "수정되었습니다."),
+        @ApiResponse(code = 404, message = "BOARD_NOT_FOUND\nMEMBER_NOT_FOUND\nCONTENT_NOT_FOUND\nARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> deleteArticle(@PathVariable("articleId") Long articleId) {
+        return new ResponseEntity<>("삭제되었습니다.", studyArticleService.deleteArticle(articleId));
     }
 
-    @PutMapping("/{boardid}/articles/{articleid}")
-    @ApiOperation(value = "(스터디)게시판의 게시물 수정", notes = "<strong>받은 게시물 id</strong>를 사용해서 게시물을 수정한다.")
-    public ResponseEntity<Long> updateArticle(@PathVariable("boardid") Integer boardid, @PathVariable("articleid") Long articleid, @RequestBody StudyArticleUpdateRequestDto studyArticleUpdateRequestDto) throws Exception {
-        return ResponseEntity.ok(studyArticleService.updateArticle(articleid, studyArticleUpdateRequestDto));
-    }
-
-    @DeleteMapping("/{boardid}/articles/{articleid}")
-    @ApiOperation(value = "(스터디)게시판의 게시물 삭제", notes = "<strong>받은 게시물 id</strong>를 사용해서 게시물을 삭제한다.")
-    public ResponseEntity<Boolean> deleteArticle(@PathVariable("boardid") Integer boardid, @PathVariable("articleid") Long articleid) {
-        return ResponseEntity.ok(studyArticleService.deleteArticle(articleid));
+    @PutMapping("/view-count/{studyArticleId}")
+    @ApiOperation(value = "조회 수 증가", notes = "<strong>받은 스터디 게시글 id</strong>로 조회수를 증가시킨다.")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "처리되었습니다."),
+        @ApiResponse(code = 404, message = "ARTICLE_NOT_FOUND"),
+    })
+    public ResponseEntity<String> plusViewCount(@PathVariable("studyArticleId") Long studyArticleId) {
+        return new ResponseEntity<>("처리되었습니다.", studyArticleService.plusViewCount(studyArticleId));
     }
 }

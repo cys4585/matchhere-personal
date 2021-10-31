@@ -212,8 +212,8 @@ public class SwaggerConfig {
     @Bean
     public Docket studyBoardApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .alternateTypeRules(
-                    AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
+//                .alternateTypeRules(
+//                    AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
                 .globalRequestParameters(headers)
                 .apiInfo(apiInfo)
                 .groupName("StudyBoard")

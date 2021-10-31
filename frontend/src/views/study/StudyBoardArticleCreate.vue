@@ -1,19 +1,35 @@
 <template>
-  <div class="container py-10">
+  <div class="container max-w-xl py-10">
     <h2 class="mb-4">게시글 작성</h2>
-    <StudyBoardForm @onSubmit="handleSubmit" />
+    <StudyBoardForm @onSubmit="handleSubmit" :studyId="studyId" />
   </div>
 </template>
 
 <script>
 import StudyBoardForm from "@/components/common/board/BoardArticleForm.vue"
+import { useStore } from "vuex"
+import { useRouter } from "vue-router"
 
 export default {
   name: "StudyBoardArticleCreate",
   components: { StudyBoardForm },
-  setup() {
-    const handleSubmit = (e) => {
-      console.log(e)
+  props: {
+    studyId: [String, Number],
+  },
+  setup(props) {
+    const store = useStore()
+    const router = useRouter()
+    const handleSubmit = async (data) => {
+      console.log(data)
+      const { studyBoardId } = data
+      await store.dispatch("study/createBoardArticle", data)
+      router.push({
+        name: "StudyBoardArticleList",
+        params: {
+          studyId: props.studyId,
+          boardId: studyBoardId,
+        },
+      })
     }
 
     return {

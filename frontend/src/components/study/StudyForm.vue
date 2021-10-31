@@ -35,25 +35,25 @@
       />
     </div>
     <div class="form-field">
-      <label for="subject">스터디 주제</label>
+      <label for="topic">스터디 주제</label>
       <input
         type="text"
-        id="subject"
-        v-model="fields.subject.value"
+        id="topic"
+        v-model="fields.topic.value"
         placeholder="ex) javascript, CS, 인터뷰"
-        @keydown.enter="handleAddSubject"
+        @keydown.enter="handleAddTopic"
       />
-      <div class="subject-list">
-        <div v-if="!subjectList.length" class="default">
+      <div class="topic-list">
+        <div v-if="!topicList.length" class="default">
           스터디 주제를 입력하세요 😀
         </div>
         <button
-          class="subject-list-item"
-          v-for="subject in subjectList"
-          :key="subject"
-          @click="handleRemoveSubject(subject)"
+          class="topic-list-item"
+          v-for="topic in topicList"
+          :key="topic"
+          @click="handleRemoveTopic(topic)"
         >
-          <span class="label">{{ subject }}</span>
+          <span class="label">{{ topic }}</span>
           <!-- <span class="material-icons">close</span> -->
         </button>
       </div>
@@ -73,31 +73,31 @@
         <input
           type="radio"
           name="project-progress-state"
-          value="준비 중"
+          value="스터디 준비 중"
           id="pps-ready"
-          v-model="fields.projectProgressState.value"
+          v-model="fields.studyProgressState.value"
         />
-        <label for="pps-ready">준비 중</label>
+        <label for="pps-ready">스터디 준비 중</label>
       </div>
       <div class="radio-label-input">
         <input
           type="radio"
           name="project-progress-state"
-          value="진행 중"
+          value="스터디 진행 중"
           id="pps-doing"
-          v-model="fields.projectProgressState.value"
+          v-model="fields.studyProgressState.value"
         />
-        <label for="pps-doing">진행 중</label>
+        <label for="pps-doing">스터디 진행 중</label>
       </div>
       <div class="radio-label-input">
         <input
           type="radio"
           name="project-progress-state"
-          value="종료"
+          value="스터디 종료"
           id="pps-done"
-          v-model="fields.projectProgressState.value"
+          v-model="fields.studyProgressState.value"
         />
-        <label for="pps-done">종료</label>
+        <label for="pps-done">스터디 종료</label>
       </div>
     </div>
     <SelectFormField :field="fields.city" v-model="fields.city.value" />
@@ -178,7 +178,17 @@ import SubmitButton from "@/components/common/SubmitButton.vue"
 export default {
   name: "StudyForm",
   components: { SelectFormField, SubmitButton },
-  setup() {
+  props: {
+    mode: {
+      type: String,
+      default: "create",
+    },
+    studyId: {
+      type: [String, Number],
+    },
+  },
+  emits: ["onSubmit"],
+  setup(_, { emit }) {
     const store = useStore()
     const fields = reactive({
       coverpic: {
@@ -189,14 +199,14 @@ export default {
       name: {
         value: "",
       },
-      subject: {
+      topic: {
         value: "",
       },
       schedule: {
         value: "",
       },
-      projectProgressState: {
-        value: "준비 중",
+      studyProgressState: {
+        value: "스터디 준비 중",
       },
       city: {
         value: "서울",
@@ -218,13 +228,13 @@ export default {
       },
     })
 
-    const subjectList = ref([])
+    const topicList = ref([])
 
     const canEdit = computed(() => {
       return (
         fields.coverpic.id &&
         fields.name.value &&
-        subjectList.value.length &&
+        topicList.value.length &&
         fields.schedule.value
       )
     })
@@ -252,46 +262,44 @@ export default {
       fields.coverpic.name = fileName
     }
 
-    const handleAddSubject = () => {
-      if (
-        subjectList.value &&
-        !subjectList.value.includes(fields.subject.value)
-      ) {
-        subjectList.value.push(fields.subject.value)
+    const handleAddTopic = () => {
+      if (topicList.value && !topicList.value.includes(fields.topic.value)) {
+        topicList.value.push(fields.topic.value)
       }
-      fields.subject.value = ""
+      fields.topic.value = ""
     }
 
-    const handleRemoveSubject = (subject) => {
-      subjectList.value = subjectList.value.filter((s) => s !== subject)
+    const handleRemoveTopic = (topic) => {
+      topicList.value = topicList.value.filter((s) => s !== topic)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const data = {
         uuid: fields.coverpic.id,
         name: fields.name.value,
-        subjects: [...subjectList.value],
+        topics: [...topicList.value],
         schedule: fields.schedule.value,
-        projectProgressState: fields.projectProgressState.value,
+        studyProgressState: fields.studyProgressState.value,
         city: fields.city.value,
         bio: fields.bio.value,
         publicScope: fields.publicScope.value,
         maxCount: fields.maxCount.value,
         recruitmentState: fields.recruitmentState.value,
       }
+      emit("onSubmit", data)
       console.log(data)
     }
 
     return {
       fields,
       cityList,
-      subjectList,
+      topicList,
       fileInputEl,
       canEdit,
       handleClickAddPhotoBtn,
       handleChangeFileInput,
-      handleAddSubject,
-      handleRemoveSubject,
+      handleAddTopic,
+      handleRemoveTopic,
       handleSubmit,
     }
   },
@@ -329,14 +337,14 @@ export default {
   }
 }
 
-.subject-list {
+.topic-list {
   @apply border border-gray-400 rounded p-4 flex gap-2 flex-wrap;
 
   .default {
     @apply text-sm font-medium text-gray-400;
   }
 
-  .subject-list-item {
+  .topic-list-item {
     @apply py-2 px-3 bg-blue-100 rounded flex items-center transition-all;
 
     &:hover {

@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-10">
+  <div class="container max-w-xl py-10">
     <router-view></router-view>
   </div>
 </template>
