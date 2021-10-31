@@ -8,9 +8,9 @@
       <span class="material-icons">work</span>
       <span class="label">프로젝트</span>
     </router-link>
-    <router-link to="/group">
+    <router-link :to="{ name: 'ClubList' }">
       <span class="material-icons">group</span>
-      <span class="label">그룹</span>
+      <span class="label">클럽</span>
     </router-link>
     <router-link :to="{ name: 'ChatList' }">
       <span class="material-icons">chat</span>
