@@ -81,6 +81,9 @@ export default {
     async getManagedStudyArticle(_, studyId) {
       return await studyAPI.getManagedStudyArticle(studyId)
     },
+    async getStudyMemberList(_, studyId) {
+      return await studyAPI.getStudyMemberList(studyId)
+    },
   },
   getters: {},
 }

@@ -179,6 +179,15 @@ const getManagedStudyArticle = async (studyId) => {
   }
 }
 
+const getStudyMemberList = async (studyId) => {
+  try {
+    const res = await http.get(`study/member/${studyId}`)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export default {
   createStudy,
   editStudy,
@@ -196,4 +205,5 @@ export default {
   getArticleComment,
   deleteArticleComment,
   getManagedStudyArticle,
+  getStudyMemberList,
 }

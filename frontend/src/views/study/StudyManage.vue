@@ -31,17 +31,11 @@
           </div>
           <div class="member-list grid gap-2">
             <div
-              v-for="i in 2"
-              :key="i"
+              v-for="member in memberList"
+              :key="member.id"
               class="member-list-item flex items-center justify-between py-2"
             >
-              <Member
-                :user="{
-                  email: 'kepy1106@gmail.com',
-                  name: '김병훈',
-                }"
-                :large="true"
-              />
+              <Member :user="member" :large="true" />
               <select>
                 <option value="소유자">소유자</option>
                 <option value="관리자">관리자</option>
@@ -104,17 +98,31 @@ export default {
   setup(props) {
     const store = useStore()
     const loading = ref(true)
+    const memberList = ref([])
     const managedArticle = ref(null)
 
-    onMounted(async () => {
+    const getArticle = async () => {
       const managedArticleData = await store.dispatch(
         "study/getManagedStudyArticle",
         props.studyId
       )
       managedArticle.value = { ...managedArticleData }
+    }
+
+    const getStudyMemberList = async () => {
+      const memberData = await store.dispatch(
+        "study/getStudyMemberList",
+        props.studyId
+      )
+      memberList.value = [...memberData]
+    }
+
+    onMounted(async () => {
+      await getStudyMemberList()
+      await getArticle()
       loading.value = false
     })
-    return { loading, managedArticle }
+    return { loading, memberList, managedArticle }
   },
 }
 </script>
