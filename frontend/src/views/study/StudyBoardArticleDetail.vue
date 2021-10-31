@@ -23,7 +23,7 @@
       </div>
     </article>
     <section>
-      <h4 class="font-medium mb-2">3개의 댓글</h4>
+      <h4 class="font-medium mb-2">{{ commentList.length }}개의 댓글</h4>
       <CommentForm @onSubmit="handleCreateComment" />
       <div class="comment-list">
         <CommentListItem
@@ -32,6 +32,7 @@
           :comment="comment"
           :articleId="articleId"
           @onSubmitComment="handleSubmitReComment"
+          @onDelete="handleDeleteComment"
         />
       </div>
     </section>
@@ -67,11 +68,15 @@ export default {
     const commentList = ref([])
 
     const handleSubmitReComment = async ({ newComment, parentId }) => {
-      commentList.value.forEach((c) => {
-        if (c.id === parentId) {
-          c.reCommentList.push(newComment)
-        }
-      })
+      // TODO: 사용자 경험이 좋지 않다.
+      // 펼쳐놨던 ReComment가 다시 접힘상태가 됨
+      console.log(newComment, parentId)
+      handleGetComments()
+      // commentList.value.forEach((c) => {
+      //   if (c.id === parentId) {
+      //     c.reCommentList.push(newComment)
+      //   }
+      // })
     }
 
     const handleCreateComment = async (content) => {
@@ -84,7 +89,36 @@ export default {
         "study/createArticleComment",
         payload
       )
-      commentList.value.push(newComment)
+      console.log(newComment)
+      handleGetComments()
+      // commentList.value.push({ ...newComment, reCommentList: [] })
+    }
+
+    const handleDeleteComment = async (targetComment) => {
+      console.log(targetComment)
+      handleGetComments()
+      // if (targetComment.id === targetComment.parentId) {
+      //   commentList.value = commentList.value.filter(
+      //     (c) => c.id !== targetComment.id
+      //   )
+      // } else {
+      //   commentList.value.forEach((c) => {
+      //     if (c.id === targetComment.parentId) {
+      //       c.reCommentList = c.reCommentList.filter(
+      //         (reComment) => reComment.id !== targetComment.id
+      //       )
+      //       c.replyCount -= 1
+      //     }
+      //   })
+      // }
+    }
+
+    const handleGetComments = async () => {
+      const commentData = await store.dispatch(
+        "study/getArticleComment",
+        props.articleId
+      )
+      commentList.value = [...commentData]
     }
 
     onMounted(async () => {
@@ -92,14 +126,10 @@ export default {
         "study/getBoardArticle",
         props.articleId
       )
-      const commentData = await store.dispatch(
-        "study/getArticleComment",
-        props.articleId
-      )
       console.log(data)
       article.value = { ...data }
       article.value.createdDate = dateFormatter(article.value.createdDate)
-      commentList.value = [...commentData]
+      await handleGetComments()
       loading.value = false
     })
     return {
@@ -107,6 +137,7 @@ export default {
       article,
       commentList,
       handleCreateComment,
+      handleDeleteComment,
       handleSubmitReComment,
     }
   },

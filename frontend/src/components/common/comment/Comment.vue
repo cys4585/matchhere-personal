@@ -31,12 +31,14 @@ export default {
       default: false,
     },
   },
-  setup(props) {
+  emits: ["onDelete"],
+  setup(props, { emit }) {
     const store = useStore()
     const formattedCreateDate = computed(() => dateFormatter(props.createDate))
 
     const handleDelete = async () => {
       await store.dispatch("study/deleteArticleComment", props.comment.id)
+      emit("onDelete", props.comment)
     }
 
     return { formattedCreateDate, handleDelete }

@@ -1,5 +1,5 @@
 <template>
-  <Comment :comment="comment" />
+  <Comment :comment="comment" @onDelete="handleDelete" />
   <button class="re-comment-toggle-btn" @click="handleClickOpenBtn">
     <span class="material-icons">
       {{ reCommentContainerOpen ? "arrow_drop_up" : "arrow_drop_down" }}
@@ -15,6 +15,7 @@
         :key="reComment.id"
         :comment="reComment"
         :nestedComment="true"
+        @onDelete="handleDelete"
       />
     </div>
     <CommentForm @onSubmit="handleSubmitComment" />
@@ -34,13 +35,17 @@ export default {
     comment: Array,
     articleId: Number,
   },
-  emits: ["onSubmitComment"],
+  emits: ["onSubmitComment", "onDelete"],
   setup(props, { emit }) {
     const store = useStore()
     const reCommentContainerOpen = ref(false)
 
     const handleClickOpenBtn = () => {
       reCommentContainerOpen.value = !reCommentContainerOpen.value
+    }
+
+    const handleDelete = (comment) => {
+      emit("onDelete", comment)
     }
 
     const handleSubmitComment = async (content) => {
@@ -58,6 +63,7 @@ export default {
 
     return {
       reCommentContainerOpen,
+      handleDelete,
       handleClickOpenBtn,
       handleSubmitComment,
     }
