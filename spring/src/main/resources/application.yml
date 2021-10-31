@@ -9,7 +9,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://mysql:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&MVCC=TRUE
+    url: jdbc:mysql://localhost:3306/matching?useUnicode=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&MVCC=TRUE
     username: root
     password: madmin
   servlet:
@@ -36,7 +36,7 @@ spring:
         max-page-size: 100
   kafka:
     consumer:
-      bootstrap-servers: kafka:9092
+      bootstrap-servers: localhost:9092
       group-id: spring-boot-test
       auto-offset-reset: earliest
   #  kafka:
