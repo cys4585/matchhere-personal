@@ -32,7 +32,7 @@ export default {
   name: "CommentListItem",
   components: { Comment, CommentForm },
   props: {
-    comment: Array,
+    comment: Object,
     articleId: Number,
   },
   emits: ["onSubmitComment", "onDelete"],

@@ -14,7 +14,13 @@
       </div>
     </div>
     <p class="content">{{ comment.content }}</p>
-    <button class="delete-btn" @click="handleDelete">삭제</button>
+    <button
+      class="delete-btn"
+      @click="handleDelete"
+      v-if="comment.writer.id === userId"
+    >
+      삭제
+    </button>
   </div>
 </template>
 
@@ -34,14 +40,17 @@ export default {
   emits: ["onDelete"],
   setup(props, { emit }) {
     const store = useStore()
-    const formattedCreateDate = computed(() => dateFormatter(props.createDate))
+    const userId = computed(() => store.state.member.user?.id)
+    const formattedCreateDate = computed(() =>
+      dateFormatter(props.comment.createDate)
+    )
 
     const handleDelete = async () => {
       await store.dispatch("study/deleteArticleComment", props.comment.id)
       emit("onDelete", props.comment)
     }
 
-    return { formattedCreateDate, handleDelete }
+    return { userId, formattedCreateDate, handleDelete }
   },
 }
 </script>
