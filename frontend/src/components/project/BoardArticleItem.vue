@@ -10,7 +10,7 @@
       <div class="other-info">
         <div class="user">
           <img :src="profilePic" alt="" class="w-6 h-6" />
-          <span class="text-gray-600">{{ article.createdMember }}</span>
+          <span class="text-gray-600">{{ article.writer.name }}</span>
         </div>
         <span class="text-gray-600">{{
           article.createdDate.slice(0, 10)

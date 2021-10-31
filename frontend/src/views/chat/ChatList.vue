@@ -14,9 +14,7 @@ import { useStore } from "vuex"
 export default {
   name: "ChatList",
   components: { ChatUserListItem },
-  emits: ["routeChat"],
-  setup(props, { emit }) {
-    emit("routeChat", "list")
+  setup() {
     const store = useStore()
 
     const chatRoomList = ref()
@@ -24,11 +22,11 @@ export default {
     onMounted(async () => {
       try {
         const resData = await store.dispatch("chat/getChatList")
-        // console.log(resData)
         chatRoomList.value = resData.filter((room) => {
           const userIds = room.id.split("-")
           return userIds[0] !== userIds[1]
         })
+        console.log(resData)
         console.log(chatRoomList.value)
       } catch (error) {
         console.log(error.message)

@@ -1,10 +1,11 @@
 <template>
-  <nav v-if="!isChatDetail">
+  <nav v-if="!isChatDetailPage">
     <div class="nav-center">
       <router-link class="logo" to="/">MatchHere</router-link>
       <div class="navs">
         <router-link :to="{ name: 'StudyList' }">스터디</router-link>
-        <router-link to="/">프로젝트</router-link>
+        <router-link :to="{ name: 'ProjectList' }">프로젝트</router-link>
+        <router-link :to="{ name: 'ClubList' }">클럽</router-link>
         <router-link to="/chat">채팅</router-link>
       </div>
       <div class="buttons">
@@ -28,12 +29,11 @@
 </template>
 
 <script>
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter } from "vue-router"
 export default {
   name: "MainNav",
-  props: ["isChatDetail"],
   setup() {
     const store = useStore()
     const router = useRouter()
@@ -47,10 +47,18 @@ export default {
       router.push({ name: "Home" })
     }
 
+    const isChatDetailPage = computed(
+      () => store.getters["getIsChatDetailPage"]
+    )
+    watch(isChatDetailPage, () => {
+      console.log(isChatDetailPage.value)
+    })
+
     return {
       user,
       isAuthenticated,
       handleClickLogoutBtn,
+      isChatDetailPage,
     }
   },
 }

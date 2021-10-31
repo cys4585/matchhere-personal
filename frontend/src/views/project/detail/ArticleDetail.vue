@@ -16,19 +16,20 @@
             >
           </div>
           <p class="flex gap-2 items-center">
-            <img :src="profilePic" alt="" class="w-6 h-6 rounded-full" />
-            <span class="text-xs text-gray-600">{{
-              article.createdMember
-            }}</span>
+            <img
+              :src="article.writer.coverPicUri || profilePic"
+              class="w-6 h-6 rounded-full"
+            />
+            <span class="text-xs text-gray-600">{{ article.writer.name }}</span>
             <span class="text-xs text-gray-500">{{
               article.createdDate.slice(0, 10)
             }}</span>
           </p>
         </div>
         <hr />
-        <div
+        <pre
           v-html="article.content.replace(/(?:\r\n|\r|\n)/g, '<br />')"
-        ></div>
+        ></pre>
       </div>
     </div>
     <div class="pt-4 grid gap-4">

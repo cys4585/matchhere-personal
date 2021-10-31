@@ -18,18 +18,23 @@ import ChatHeader from "@/components/chat/ChatHeader.vue"
 import ChatListContainer from "@/components/chat/ChatListContainer.vue"
 import ChatControler from "@/components/chat/ChatControler.vue"
 import { ref } from "@vue/reactivity"
-import { onBeforeUnmount, onMounted } from "@vue/runtime-core"
+import { onBeforeUnmount, onMounted, onUnmounted } from "@vue/runtime-core"
 import { useRoute, useRouter } from "vue-router"
 import { useStore } from "vuex"
 export default {
   name: "ChatDetail",
   components: { ChatHeader, ChatListContainer, ChatControler },
-  emits: ["routeChat"],
-  setup(props, { emit }) {
+  setup() {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
-    emit("routeChat", "detail")
+
+    onMounted(() => {
+      store.commit("SET_IS_CHAT_DETAIL_PAGE", true)
+    })
+    onUnmounted(() => {
+      store.commit("SET_IS_CHAT_DETAIL_PAGE", false)
+    })
 
     const roomId = ref()
     const targetNickname = ref()
