@@ -89,7 +89,8 @@ public class ClubCommentServiceImpl implements ClubCommentService {
         if(comment.getParentId() != comment.getId()) {
             findClubArticleComment(comment.getParentId()).removeReplyCount();
         }
-        comment.setIsDeleted(true);
+        clubArticleCommentRepository.delete(comment);
+//        comment.setIsDeleted(true);
         return HttpStatus.OK;
     }
 

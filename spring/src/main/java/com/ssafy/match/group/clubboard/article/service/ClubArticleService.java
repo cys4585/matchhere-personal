@@ -101,7 +101,10 @@ public class ClubArticleService {
             ClubArticle.of(dto, clubBoard, member));
         addContent(clubArticle, dto.getContent());
         addTags(clubArticle, dto.getTags());
-        return ClubArticleInfoResponseDto.of(clubArticle, dto.getTags());
+
+        ClubArticleInfoResponseDto clubArticleInfoResponseDto = ClubArticleInfoResponseDto.of(clubArticle, dto.getTags());
+        clubArticleInfoResponseDto.setContent(dto.getContent());
+        return clubArticleInfoResponseDto;
     }
 
     @Transactional
@@ -212,8 +215,22 @@ public class ClubArticleService {
         // 가입 여부 확인
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+
+    }
+
+    public void checkUpdateAuthority(Club club, Member member, ClubArticle clubArticle) {
+        CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
+        // 가입 여부 확인
+        MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
         if (!memberClub.getIsActive()) {
             throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+        }
+        if (!(memberClub.getAuthority().equals(GroupAuthority.소유자) ||
+            memberClub.getAuthority().equals(GroupAuthority.관리자) ||
+            !clubArticle.getMember().getId().equals(member.getId()))) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
         }
 
     }

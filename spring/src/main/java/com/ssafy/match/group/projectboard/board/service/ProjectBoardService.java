@@ -1,7 +1,14 @@
 package com.ssafy.match.group.projectboard.board.service;
 
+import com.ssafy.match.common.entity.GroupAuthority;
 import com.ssafy.match.common.exception.CustomException;
 import com.ssafy.match.common.exception.ErrorCode;
+import com.ssafy.match.group.club.entity.Club;
+import com.ssafy.match.group.club.entity.CompositeMemberClub;
+import com.ssafy.match.group.club.entity.MemberClub;
+import com.ssafy.match.group.project.entity.CompositeMemberProject;
+import com.ssafy.match.group.project.entity.MemberProject;
+import com.ssafy.match.group.project.repository.MemberProjectRepository;
 import com.ssafy.match.group.projectboard.article.entity.ProjectArticle;
 import com.ssafy.match.group.projectboard.article.entity.ProjectContent;
 import com.ssafy.match.group.projectboard.article.repository.ProjectArticleRepository;
@@ -17,6 +24,7 @@ import com.ssafy.match.group.project.repository.ProjectRepository;
 import com.ssafy.match.group.projectboard.comment.repository.ProjectArticleCommentRepository;
 import com.ssafy.match.member.entity.Member;
 import com.ssafy.match.member.repository.MemberRepository;
+import com.ssafy.match.util.SecurityUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +42,41 @@ public class ProjectBoardService {
     private final ProjectContentRepository projectContentRepository;
     private final ProjectArticleTagRepository projectArticleTagRepository;
     private final ProjectArticleCommentRepository projectArticleCommentRepository;
+    private final MemberRepository memberRepository;
+    private final MemberProjectRepository memberProjectRepository;
 
     @Transactional(readOnly = true)
     public List<ProjectBoardInfoDto> getProjectBoards(Long projectId) {
-        return projectBoardRepository.findAllByProject(findProject(projectId)).stream()
+        Project project = findProject(projectId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+
+        // 가입 여부 확인
+        checkAuthority(project, member);
+
+        return projectBoardRepository.findAllByProject(project).stream()
             .map(ProjectBoardInfoDto::from)
             .collect(Collectors.toList());
     }
 
     @Transactional
     public ProjectBoardInfoDto createBoard(Long projectId, ProjectBoardCreateRequestDto dto) {
-        return ProjectBoardInfoDto.from(projectBoardRepository.save(ProjectBoard.of(dto, findProject(projectId))));
+        Project project = findProject(projectId);
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        checkChangeAuthority(project, findMember(SecurityUtil.getCurrentMemberId()));
+
+        return ProjectBoardInfoDto.from(projectBoardRepository.save(ProjectBoard.of(dto, project)));
     }
 
     @Transactional
     public HttpStatus deleteBoard(Integer boardId) {
-        List<ProjectArticle> projectArticles = projectArticleRepository.findAllByProjectBoard(findBoard(boardId));
+        ProjectBoard projectBoard = findBoard(boardId);
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        checkChangeAuthority(projectBoard.getProject(), findMember(SecurityUtil.getCurrentMemberId()));
+
+        List<ProjectArticle> projectArticles = projectArticleRepository.findAllByProjectBoard(projectBoard);
+
         for (ProjectArticle projectArticle: projectArticles) {
             ProjectContent projectContent = findProjectContent(projectArticle);
             projectContentRepository.delete(projectContent);
@@ -60,12 +87,17 @@ public class ProjectBoardService {
 
         projectBoardRepository.delete(projectBoardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND)));
+
         return HttpStatus.OK;
     }
 
     @Transactional
     public ProjectBoardInfoDto updateBoard(Integer boardId, ProjectBoardUpdateDto projectBoardUpdateDto) {
         ProjectBoard projectBoard = findBoard(boardId);
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        checkChangeAuthority(projectBoard.getProject(), findMember(SecurityUtil.getCurrentMemberId()));
+
         projectBoard.setName(projectBoardUpdateDto.getName());
         return ProjectBoardInfoDto.from(projectBoard);
     }
@@ -88,6 +120,15 @@ public class ProjectBoardService {
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
     }
 
+    public Member findMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (!member.getIs_active()) {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        return member;
+    }
+
     public ProjectArticle findProjectArticle(Long projectArticleId) {
         return projectArticleRepository.findById(projectArticleId)
             .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
@@ -100,5 +141,30 @@ public class ProjectBoardService {
 
     public void deleteAllByProjectArticle(ProjectArticle projectArticle){
         projectArticleCommentRepository.deleteAllByProjectArticle(projectArticle);
+    }
+
+    // 가입 여부만 확인 (ex 조회)
+    public void checkAuthority(Project project, Member member){
+
+        CompositeMemberProject cmp = new CompositeMemberProject(member, project);
+        // 가입 여부 확인
+        MemberProject memberProject = memberProjectRepository.findById(cmp)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+        if(!memberProject.getIsActive()) throw new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND);
+
+    }
+
+    // 가입 여부 + 권한 (ex 생성 수정 삭제)
+    public void checkChangeAuthority(Project project, Member member){
+
+        CompositeMemberProject cmp = new CompositeMemberProject(member, project);
+        // 가입 여부 확인
+        MemberProject memberProject = memberProjectRepository.findById(cmp)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND));
+        if(!memberProject.getIsActive()) throw new CustomException(ErrorCode.MEMBER_PROJECT_NOT_FOUND);
+
+        // 팀원이면 권한 x
+        if (memberProject.getAuthority().equals(GroupAuthority.팀원)) throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+
     }
 }

@@ -43,18 +43,24 @@ public class ClubBoardService {
 
     @Transactional(readOnly = true)
     public List<ClubBoardInfoDto> getClubBoards(Long clubId) {
-        return clubBoardRepository.findAllByClub(findClub(clubId))
-            .stream()
+        Club club = findClub(clubId);
+        Member member = findMember(SecurityUtil.getCurrentMemberId());
+
+        // 가입 여부 확인
+        checkAuthority(club, member);
+
+        return clubBoardRepository.findAllByClub(club).stream()
             .map(ClubBoardInfoDto::from)
             .collect(Collectors.toList());
     }
 
     @Transactional
     public ClubBoardInfoDto createBoard(Long clubId, ClubBoardCreateRequestDto dto) {
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
         Club club = findClub(clubId);
-        // 권한 체크 (팀원이면 x)
-        checkAuthority(club, member);
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
+        checkChangeAuthority(club, findMember(SecurityUtil.getCurrentMemberId()));
+
         return ClubBoardInfoDto.from(
             clubBoardRepository.save(ClubBoard.of(dto, club)));
     }
@@ -62,12 +68,13 @@ public class ClubBoardService {
     @Transactional // 권한 확인 로직 필요
     public HttpStatus deleteBoard(Integer boardId) {
         ClubBoard clubBoard = findBoard(boardId);
-        // 권한 체크 (팀원이면 x)
+
+        // 가입 여부 + 권한(관리자 or 소유자) 확인
         Club club = clubBoard.getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
-        checkAuthority(club, member);
+        checkChangeAuthority(club, findMember(SecurityUtil.getCurrentMemberId()));
 
         List<ClubArticle> clubArticles = clubArticleRepository.findAllByClubBoard(clubBoard);
+
         for (ClubArticle clubArticle : clubArticles) {
             ClubContent clubContent = findClubContent(clubArticle);
             clubContentRepository.delete(clubContent);
@@ -78,16 +85,16 @@ public class ClubBoardService {
 
         clubBoardRepository.delete(clubBoardRepository.findById(boardId)
             .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND)));
+
         return HttpStatus.OK;
     }
 
     @Transactional  // 권한 확인 로직 필요
     public ClubBoardInfoDto updateBoard(Integer boardId, ClubBoardUpdateDto clubBoardUpdateDto) {
         ClubBoard clubBoard = findBoard(boardId);
+
         // 권한 체크 (팀원이면 x)
-        Club club = clubBoard.getClub();
-        Member member = findMember(SecurityUtil.getCurrentMemberId());
-        checkAuthority(club, member);
+        checkAuthority(clubBoard.getClub(), findMember(SecurityUtil.getCurrentMemberId()));
 
         clubBoard.setName(clubBoardUpdateDto.getName());
         return ClubBoardInfoDto.from(clubBoard);
@@ -138,12 +145,20 @@ public class ClubBoardService {
         // 가입 여부 확인
         MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
-        if (!memberClub.getIsActive()) {
-            throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
-        }
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+
+    }
+
+    public void checkChangeAuthority(Club club, Member member){
+
+        CompositeMemberClub compositeMemberClub = new CompositeMemberClub(member, club);
+        // 가입 여부 확인
+        MemberClub memberClub = memberClubRepository.findById(compositeMemberClub)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND));
+        if (Boolean.FALSE.equals(memberClub.getIsActive())) throw new CustomException(ErrorCode.MEMBER_CLUB_NOT_FOUND);
+
         // 팀원이면 권한 x
-        if (memberClub.getAuthority().equals(GroupAuthority.팀원)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
-        }
+        if (memberClub.getAuthority().equals(GroupAuthority.팀원)) throw new CustomException(ErrorCode.UNAUTHORIZED_CHANGE);
+
     }
 }
